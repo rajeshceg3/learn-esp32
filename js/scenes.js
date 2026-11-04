@@ -291,23 +291,26 @@ servo: {
 },
 stepper: {
   build(s) {
-    const st = C.stepper(); st.position.set(76, 0, 0); s.add(st, 'stepper');
-    const drv = C.stepperDriver();
-    drv.position.set(46, 9.2, -8); s.add(drv, 'drv');
-    ['D14', 'D27', 'D26', 'D25'].forEach((p, i) => s.wires.push(wireTo(pin(p), bb(10 + i, 5), [WIRE.orange, WIRE.yellow, WIRE.green, WIRE.purple][i], 13, p)));
-    s.wires.push(wireTo(pin('VIN'), bb(16, 6), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(17, 7), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D14'), label: 'COILS · 14·27·26·25', i: 'pins', d: 'Four coils energised in sequence.' }, { at: V(76, 18, 0), label: 'STEPPER', click: 'stepper', i: 'gear', d: 'Click to reverse direction.' } ];
-    s.api.stepper = a => s.refs.stepper.userData.setAngle(a);
-    s.onClick = (w, api) => { if (w === 'stepper') api._dir = -(api._dir ?? 1); };
+    const st=C.stepper();st.position.set(76,0,0);s.add(st,'stepper');
+    const drv=C.stepperDriver();drv.position.set(46,9.2,-8);s.add(drv,'drv');
+    const btn=C.pushButton();btn.position.copy(bb(9,2));s.add(btn,'btn');
+    ['D14','D27','D26','D25'].forEach((p,i)=>s.wires.push(wireTo(pin(p),bb(10+i,5),[WIRE.orange,WIRE.yellow,WIRE.green,WIRE.purple][i],13,p)));
+    s.wires.push(wireTo(pin('VIN'),bb(16,6),WIRE.red,15,'VIN'),wireTo(pin('GND'),bb(17,7),WIRE.navy,12,'GND'),wireTo(pin('D4'),bb(8,2),WIRE.white,14,'D4'),wireTo(pin('GND'),bb(10,3),WIRE.navy,10,'GND'));
+    s.tags=[{at:pin('D14'),label:'COILS · 14·27·26·25',i:'pins',d:'Four coils energised in sequence.'},{at:V(76,18,0),label:'STEPPER',i:'gear',d:'2048 steps per turn.'},{at:bb(9,2).add(V(0,8,0)),label:'BUTTON',click:'btn',i:'hand',d:'Press to spin the wheel.'}];
+    s.api.stepper=a=>s.refs.stepper.userData.setAngle(a);
+    s.api.pressButton=on=>s.refs.btn.userData.setPressed(on);
+    s.onClick=(w,api)=>{if(w==='btn')api.spinWheel?.();};
   },
   sim: api => {
-    api._dir = 1; let a = 0;
-    return {
-      running: false,
-      start() { this.running = true; api.serial('Stepping… 2048 steps per turn. Click the motor to reverse.'); },
-      stop() { this.running = false; },
-      tick(dt) { if (!this.running) return; a += dt * 2.2 * api._dir; api.line?.(12); api.stepper(a); },
+    let a=0,from=0,target=0,t=0,busy=false,at=0;
+    const prizes=['200','100','50','JACKPOT','1000','2×','500','AGAIN'];
+    const sim={running:false,
+      start(){this.running=true;api.serial('Press the button to spin the wheel!');},
+      stop(){this.running=false;busy=false;api.pressButton(false);},
+      tick(dt){if(!this.running||!busy)return;t=Math.min(4,t+dt);const u=t/4,e=u*u*(3-2*u);a=from+(target-from)*e;api.stepper(a);api.pressButton(t<.18);api.line?.(16);if(t>=4){busy=false;api.serial('Landed on '+prizes[at]);}},
     };
+    api.spinWheel=()=>{if(!sim.running||busy)return;busy=true;t=0;from=a;const next=Math.floor(Math.random()*8);const desired=-(next*Math.PI/4+Math.PI/8)-Math.PI/2;const delta=((desired-a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);target=a+Math.PI*2+delta;at=next;api.pressButton(true);api.serial('Spinning…');};
+    return sim;
   },
 },
 plant: {

@@ -354,30 +354,40 @@ void loop() {
 },
 {
   id: 'stepper', num: 13, title: 'Spin the wheel', heading: 'Spin the wheel',
-  lede: 'A stepper motor turns in exact steps — 2048 make one full turn of this one. Four coils, driven in sequence through a ULN2003 board, walk it around.',
-  features: [['gear', '2048 steps per revolution'], ['pins', 'Four GPIOs drive four coils'], ['hand', 'Click to reverse direction']],
-  pinout: [['GPIO 14·27·26·25', 'Coils 1–4', 'Energised in sequence.', '#2a56a3'], ['VIN', 'ULN2003 supply', 'The driver board takes 5 V.', '#d64a3a'], ['GND', 'Ground', 'Shared with the board.', '#2f3547']],
+  lede: 'A stepper motor turns in exact steps. Press the button to spin a prize wheel, then slow down onto a segment. Four coils are driven through a ULN2003 board.',
+  features: [['gear', '2048 nominal steps per revolution'], ['pins', 'Four GPIOs drive four coils'], ['hand', 'Press the button to spin']],
+  pinout: [['GPIO 14·27·26·25', 'Coils 1–4', 'ULN2003 inputs, energised in sequence.', '#2a56a3'], ['GPIO4', 'Button', 'Internal pull-up; press connects to ground.', '#f2efe6'], ['VIN · GND', 'Driver power', '5 V motor supply with shared ground.', '#d64a3a']],
   example: [
-    'The sequence 1000 → 1100 → 0100 → 0110 … steps the rotor one eighth-step at a time.',
-    'Slower steps mean more torque; too fast and it stalls and buzzes.',
-    'Count 2048 steps and the flag is back where it started — open-loop precision.',
+    'The button uses INPUT_PULLUP, so a press reads LOW.',
+    'Choose a segment and count a whole turn plus the steps to reach it.',
+    'The example uses AccelStepper to speed up and slow down. The app shows a scripted simulation, not an execution of this code.',
   ],
-  specs: [['Motor', '28BYJ-48, 5 V'], ['Steps / rev', '2048 (half-step)'], ['Driver', 'ULN2003 board'], ['Max rate', '≈ 500 steps / s']],
+  specs: [['Motor', '28BYJ-48, 5 V'], ['Steps / rev', '2048 nominal steps'], ['Driver', 'ULN2003 board'], ['Button', 'GPIO4 to GND']],
   code:
-`const int COILS[] = {14, 27, 26, 25};
-const int SEQ[][4] = {{1,0,0,0},{1,1,0,0},{0,1,0,0},
-  {0,1,1,0},{0,0,1,0},{0,0,1,1},{0,0,0,1},{1,0,0,1}};
-int step = 0;
+`#include <AccelStepper.h>
+const int BUTTON = 4;
+const int STEPS = 2048, SEGMENTS = 8;
+AccelStepper wheel(AccelStepper::FULL4WIRE, 14, 26, 27, 25);
+int at = 0;
+bool wasPressed = false;
 
 void setup() {
-  for (int c : COILS) pinMode(c, OUTPUT);
+  pinMode(BUTTON, INPUT_PULLUP);
+  Serial.begin(115200);
+  wheel.setMaxSpeed(500);
+  wheel.setAcceleration(250);
 }
 
 void loop() {
-  for (int i = 0; i < 4; i++)
-    digitalWrite(COILS[i], SEQ[step][i]);
-  step = (step + 1) % 8;
-  delay(3);
+  bool pressed = digitalRead(BUTTON) == LOW;
+  if (pressed && !wasPressed && wheel.distanceToGo() == 0) {
+    int prize = random(SEGMENTS);
+    int ahead = (prize - at + SEGMENTS) % SEGMENTS;
+    wheel.move(STEPS + ahead * (STEPS / SEGMENTS));
+    at = prize;
+  }
+  wasPressed = pressed;
+  wheel.run();
 }`,
   sim: 'stepper',
 },
