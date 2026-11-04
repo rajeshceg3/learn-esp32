@@ -376,6 +376,30 @@ function localizedPart(part) {
 function openPartInfo(part) { openSheet('component', localizedPart(part)); }
 
 
+// The rendered jumper layout omits level-shifting parts. Say so at the scene,
+// not only in lesson prose, and provide a direct path to the complete circuit.
+const WIRING_CUE = {
+ en:'Simplified scene: never wire 5V ECHO directly to GPIO18. Open circuit for the required divider.',
+ es:'Escena simplificada: no conectes ECHO de 5V directo a GPIO18. Abre el circuito con el divisor.',
+ pt:'Cena simplificada: não ligue ECHO de 5V direto ao GPIO18. Abra o circuito com o divisor.',
+ fr:'Scène simplifiée : jamais ECHO 5V directement sur GPIO18. Ouvrir le circuit avec le diviseur.',
+ de:'Vereinfachte Szene: 5V ECHO nie direkt an GPIO18. Schaltung mit Spannungsteiler öffnen.',
+ it:'Scena semplificata: mai ECHO 5V diretto a GPIO18. Apri il circuito con il partitore.',
+ tr:'Basit sahne: 5V ECHO doğrudan GPIO18’e bağlanmaz. Bölücülü devreyi aç.',
+ id:'Adegan sederhana: jangan hubungkan ECHO 5V langsung ke GPIO18. Buka rangkaian pembagi.',
+ zh:'简化场景：切勿将5V ECHO直接连接GPIO18。打开电路图查看必需的分压器。',
+ 'zh-tw':'簡化場景：切勿將5V ECHO直接連接GPIO18。開啟電路圖查看必要的分壓器。',
+ ja:'簡略図です。5V ECHOをGPIO18に直結しないでください。分圧回路図を開く。',
+ ko:'단순화된 장면: 5V ECHO를 GPIO18에 직접 연결하지 마세요. 분압 회로도 열기.',
+ hi:'सरल दृश्य: 5V ECHO को सीधे GPIO18 से न जोड़ें। ज़रूरी विभाजक वाला सर्किट खोलें।',
+ he:'תצוגה מפושטת: אין לחבר ECHO של 5V ישירות ל-GPIO18. פתחו מעגל עם מחלק מתח.'
+};
+function updateWiringCue(id=LESSONS[state.lesson].id) {
+ const cue=$('#wiringCue');cue.hidden=!['distance','project'].includes(id)||!!state.settings.schematic;
+ cue.textContent=WIRING_CUE[currentLang()]||WIRING_CUE.en;
+}
+$('#wiringCue').addEventListener('click',()=>{state.settings.schematic=true;saveSettings();applySettings();});
+
 // ---------- scene container ----------
 class LessonScene {
   constructor() { this.root = new THREE.Group(); this.refs = {}; this.wires = []; this.tags = []; this.api = {}; this.tagParts = false; }
@@ -384,6 +408,7 @@ class LessonScene {
 
 function loadLesson(i, keepTab) {
   schPanel.setLesson(LESSONS[i].id, trLesson(LESSONS[i]).heading);
+  updateWiringCue(LESSONS[i].id);
   $('#panel').classList.remove('open');
   $('#sheet').classList.remove('open');state.sheet=null;
   stopSim();
@@ -890,6 +915,7 @@ function applySettings() {
   grid.visible = false;
   canvas.parentElement.classList.toggle('no-grid', !state.settings.grid);
   schPanel.setOpen(!!state.settings.schematic);
+  updateWiringCue();
   rebuildTags();
   if (!state.settings.sound) tone(0);
   document.querySelector('.tool-btn[data-k="waveT"]')?.classList.toggle('on', state.settings.flow);
