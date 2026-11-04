@@ -42,7 +42,7 @@ const grid = new THREE.GridHelper(600, 60, 0xd8c5a8, 0xe3d3ba);
 grid.material.transparent = true; grid.material.opacity = .5; grid.position.y = .05; scene.add(grid);
 
 // ---------- camera rig ----------
-const rig = { target: new THREE.Vector3(6, 6, 6), az: -.62, pol: 1.02, dist: 210, tAz: -.62, tPol: 1.02, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
+const rig = { target: new THREE.Vector3(6, 6, 6), az: -.62, pol: 1.07, dist: 210, tAz: -.62, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
 function applyCam(dt) {
   const k = state.settings.reduceMotion ? 1 : 1 - Math.exp(-dt * 9);
   rig.az += (rig.tAz - rig.az) * k; rig.pol += (rig.tPol - rig.pol) * k; rig.dist += (rig.tDist - rig.dist) * k;
@@ -248,8 +248,8 @@ function frameScene(snap) {
   const ca = Math.abs(Math.cos(rig.az)), sa = Math.abs(Math.sin(rig.az));
   const halfW = (sz.x * ca + sz.z * sa) / 2;
   const halfH = (sz.y + (sz.x * sa + sz.z * ca) * .45) / 2;
-  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 1.04 : 1.18) + 14;
-  rig.tTarget.set(c.x + (aspect < 1 ? -5 : 0), Math.max(2, c.y * .55), c.z);
+  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 0.84 : 1.05) + 12;
+  rig.tTarget.set(c.x + (aspect < 1 ? -5 : 0), aspect < 1 ? Math.min(-2, c.y * .2 - 6) : Math.max(2, c.y * .55), c.z);
   rig.tDist = THREE.MathUtils.clamp(dist, 120, 700);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
