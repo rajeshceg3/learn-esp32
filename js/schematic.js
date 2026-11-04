@@ -22,7 +22,150 @@ const NOTE_TEXT = {
  hi:['SW1 आंतरिक पुल-अप का उपयोग करता है; दबाने पर LOW।','वाइपर: 0–3.3 V → ADC 0–4095।','हर रंग के लिए एक PWM चैनल।'],
  he:['SW1 משתמש בנגד משיכה פנימי; בלחיצה LOW.','זחלן: 0–3.3 V → ADC 0–4095.','ערוץ PWM אחד לכל צבע.'],
 };
-const noteFor = (id, fallback) => { const i=['button','pot','rgb'].indexOf(id);return i<0?fallback:(NOTE_TEXT[currentLang()]||NOTE_TEXT.en)[i]; };
+const EXTRA_NOTES = {
+ "en": [
+  "More light → higher divider voltage.",
+  "Internal pull-ups: pressed = LOW.",
+  "Fit a flyback diode across the motor.",
+  "10 mV/°C; offset 500 mV.",
+  "IN1–IN4 drive the coils in sequence.",
+  "Both modules share 3V3 and GND.",
+  "More pressure → less resistance.",
+  "Far: green. Near: red."
+ ],
+ "es": [
+  "Más luz → mayor tensión del divisor.",
+  "Pull-ups internos: pulsado = LOW.",
+  "Coloca un diodo de protección en el motor.",
+  "10 mV/°C; offset de 500 mV.",
+  "IN1–IN4 activan las bobinas en secuencia.",
+  "Ambos módulos comparten 3V3 y GND.",
+  "Más presión → menor resistencia.",
+  "Lejos: verde. Cerca: rojo."
+ ],
+ "pt": [
+  "Mais luz → maior tensão no divisor.",
+  "Pull-ups internos: pressionado = LOW.",
+  "Use um diodo de proteção no motor.",
+  "10 mV/°C; offset de 500 mV.",
+  "IN1–IN4 ativam as bobinas em sequência.",
+  "Os dois módulos compartilham 3V3 e GND.",
+  "Mais pressão → menor resistência.",
+  "Longe: verde. Perto: vermelho."
+ ],
+ "fr": [
+  "Plus de lumière → tension plus élevée.",
+  "Pull-ups internes : appuyé = LOW.",
+  "Placez une diode de roue libre sur le moteur.",
+  "10 mV/°C ; décalage de 500 mV.",
+  "IN1–IN4 activent les bobines en séquence.",
+  "Les deux modules partagent 3V3 et GND.",
+  "Plus de pression → moins de résistance.",
+  "Loin : vert. Proche : rouge."
+ ],
+ "de": [
+  "Mehr Licht → höhere Teilerspannung.",
+  "Interne Pull-ups: gedrückt = LOW.",
+  "Freilaufdiode parallel zum Motor einbauen.",
+  "10 mV/°C; Offset 500 mV.",
+  "IN1–IN4 schalten die Spulen nacheinander.",
+  "Beide Module teilen sich 3V3 und GND.",
+  "Mehr Druck → weniger Widerstand.",
+  "Weit: grün. Nah: rot."
+ ],
+ "it": [
+  "Più luce → tensione del partitore maggiore.",
+  "Pull-up interni: premuto = LOW.",
+  "Monta un diodo di ricircolo sul motore.",
+  "10 mV/°C; offset di 500 mV.",
+  "IN1–IN4 attivano le bobine in sequenza.",
+  "I due moduli condividono 3V3 e GND.",
+  "Più pressione → meno resistenza.",
+  "Lontano: verde. Vicino: rosso."
+ ],
+ "tr": [
+  "Daha çok ışık → daha yüksek gerilim.",
+  "Dahili pull-up: basılınca LOW.",
+  "Motora paralel koruma diyodu bağlayın.",
+  "10 mV/°C; ofset 500 mV.",
+  "IN1–IN4 bobinleri sırayla çalıştırır.",
+  "İki modül de 3V3 ve GND kullanır.",
+  "Daha çok basınç → daha az direnç.",
+  "Uzak: yeşil. Yakın: kırmızı."
+ ],
+ "id": [
+  "Lebih terang → tegangan pembagi naik.",
+  "Pull-up internal: ditekan = LOW.",
+  "Pasang dioda flyback paralel pada motor.",
+  "10 mV/°C; offset 500 mV.",
+  "IN1–IN4 mengaktifkan kumparan berurutan.",
+  "Kedua modul berbagi 3V3 dan GND.",
+  "Tekanan naik → resistansi turun.",
+  "Jauh: hijau. Dekat: merah."
+ ],
+ "zh": [
+  "光照越强 → 分压电压越高。",
+  "内部上拉：按下时为 LOW。",
+  "在电机两端并联续流二极管。",
+  "10 mV/°C；偏移 500 mV。",
+  "IN1–IN4 依次驱动线圈。",
+  "两个模块共用 3V3 和 GND。",
+  "压力越大 → 电阻越小。",
+  "远：绿灯。近：红灯。"
+ ],
+ "zh-tw": [
+  "光照越強 → 分壓電壓越高。",
+  "內部上拉：按下時為 LOW。",
+  "在馬達兩端並聯續流二極體。",
+  "10 mV/°C；偏移 500 mV。",
+  "IN1–IN4 依次驅動線圈。",
+  "兩個模組共用 3V3 和 GND。",
+  "壓力越大 → 電阻越小。",
+  "遠：綠燈。近：紅燈。"
+ ],
+ "ja": [
+  "光が強いほど分圧電圧が上昇。",
+  "内部プルアップ：押すと LOW。",
+  "モーターに並列で保護ダイオードを接続。",
+  "10 mV/°C、オフセット 500 mV。",
+  "IN1–IN4 が順番にコイルを駆動。",
+  "両モジュールで 3V3 と GND を共有。",
+  "圧力が高いほど抵抗が低下。",
+  "遠い：緑。近い：赤。"
+ ],
+ "ko": [
+  "빛이 강할수록 분압 전압 상승.",
+  "내부 풀업: 누르면 LOW.",
+  "모터에 플라이백 다이오드를 병렬 연결.",
+  "10 mV/°C, 오프셋 500 mV.",
+  "IN1–IN4가 코일을 순서대로 구동.",
+  "두 모듈은 3V3와 GND를 공유.",
+  "압력이 높을수록 저항 감소.",
+  "멀리: 초록. 가까이: 빨강."
+ ],
+ "hi": [
+  "अधिक प्रकाश → अधिक विभाजक वोल्टेज।",
+  "आंतरिक पुल-अप: दबाने पर LOW।",
+  "मोटर के समानांतर फ्लाइबैक डायोड लगाएँ।",
+  "10 mV/°C; ऑफसेट 500 mV।",
+  "IN1–IN4 कॉइल को क्रम से चलाते हैं।",
+  "दोनों मॉड्यूल में साझा 3V3 और GND।",
+  "अधिक दबाव → कम प्रतिरोध।",
+  "दूर: हरा। पास: लाल।"
+ ],
+ "he": [
+  "יותר אור → מתח מחלק גבוה יותר.",
+  "נגדי משיכה פנימיים: בלחיצה LOW.",
+  "חברו דיודת הגנה במקביל למנוע.",
+  "10 mV/°C; היסט של 500 mV.",
+  "IN1–IN4 מפעילים את הסלילים לפי הסדר.",
+  "שני המודולים חולקים 3V3 ו־GND.",
+  "יותר לחץ → פחות התנגדות.",
+  "רחוק: ירוק. קרוב: אדום."
+ ]
+};
+Object.keys(NOTE_TEXT).forEach(lang=>NOTE_TEXT[lang].push(...EXTRA_NOTES[lang]));
+const noteFor = (id, fallback) => { const i=['button','pot','rgb','light','piano','motor','temp','stepper','plant','force','project'].indexOf(id);return i<0?fallback:(NOTE_TEXT[currentLang()]||NOTE_TEXT.en)[i]; };
 // Separate text rows keep longer translated notes inside the diagram viewBox.
 function noteRows(text, x, y) {
  const rows=[];let line='';for(const word of text.split(' ')){if((line+' '+word).length>43&&line){rows.push(line);line=word;}else line+=(line?' ':'')+word;}if(line)rows.push(line);
@@ -187,7 +330,7 @@ const SCH = {
     pads: { p0: [98, 40], p1: [98, 82], p2: [98, 124], p3: [98, 166], p4: [98, 208], prV: [196, 59], prA: [196, 77], oV: [196, 208], oG: [196, 216], oSD: [196, 224], oSC: [196, 232], g0: [252, 68] },
     wires: [['p0', [140, 40], [140, 59], 'prV'], ['p0', [128, 40], [128, 208], 'oV'], ['prA', [170, 77], [170, 124], 'p2'], ['p3', [150, 166], [150, 224], 'oSD'], ['p4', [175, 208], [175, 232], 'oSC'], ['oG', [150, 216], [150, 258], [118, 258], [118, 82], 'p1'], ['oG', [150, 240]]],
     gndAt: [150, 240],
-    note: 'Both modules share 3V3, GND and the I²C bus.',
+    note: 'Both modules share 3V3 and GND.',
   },
   force: {
     pins: ['3V3', 'GPIO35', 'GPIO25', 'GPIO26', 'GPIO33', 'GND'],
