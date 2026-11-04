@@ -591,3 +591,6 @@ svg{display:block}
 
 /* Circuit geometry and pin identifiers stay left-to-right inside RTL interfaces. */
 .sch{direction:ltr}
+
+.sheet-close{flex-shrink:0;margin-left:10px;width:30px;height:30px;border:1px solid var(--line-soft);border-radius:6px;background:transparent;color:var(--navy);font-size:23px;line-height:1;cursor:pointer}.sheet-close:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.sheet-head{flex-wrap:wrap;align-items:center;gap:4px}.sheet-title{flex:1}.sheet-sub{order:3;flex-basis:100%;margin-left:0}.sheet-close{margin-left:6px}

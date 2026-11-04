@@ -175,7 +175,7 @@ function rebuildTags() {
       d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);d.addEventListener('blur',end);
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
       d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
-    } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector);else cur.scene.onClick?.(t.click, api);});
+    } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(t.click, api);});
     tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
@@ -314,7 +314,7 @@ function pickAt(e) {
       let o = hits[0].object;
       while (o && !o.userData._clickId && o.parent) o = o.parent === cur.scene.root ? null : o.parent;
       const id = o?.userData?._clickId;
-      if (id) {const inspector=cur.scene.inspect?.(id);if(inspector)openSheet(inspector);else cur.scene.onClick?.(id, api); return; }
+      if (id) {const inspector=cur.scene.inspect?.(id);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(id, api); return; }
     }
   }
   const hits = ray.intersectObjects(Object.values(board.parts), false);
@@ -695,9 +695,18 @@ function renderNavs() {
 }
 
 // ---------- sheets ----------
+let sheetOpener=null;
+function closeSheet(restoreFocus=true){
+  $('#sheet').classList.remove('open');state.sheet=null;
+  if(restoreFocus&&sheetOpener?.isConnected)sheetOpener.focus({preventScroll:true});
+  sheetOpener=null;
+}
+$('#sheetClose').onclick=()=>closeSheet();
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.sheet){e.preventDefault();closeSheet();}});
 function openSheet(kind, data, anchor) {
   const sh = $('#sheet'), title = $('#sheetTitle'), sub = $('#sheetSub'), body = $('#sheetBody');
-  if (state.sheet === kind && !data) { sh.classList.remove('open'); state.sheet = null; return; }
+  if (state.sheet === kind && !data) { closeSheet(); return; }
+  if(!state.sheet){sheetOpener=anchor||document.activeElement;if(!sheetOpener||sheetOpener===document.body){sheetOpener=canvas;canvas.tabIndex=0;}}
   state.sheet = kind;
   if(innerWidth<1024){sh.style.top='auto';sh.style.maxHeight='calc(100dvh - 100px)';}
   if (kind === 'components') {
@@ -754,6 +763,7 @@ function openSheet(kind, data, anchor) {
     body.innerHTML = `<div class="comp-row"><span class="comp-ic">${ICON.chip}</span><div><div class="comp-desc">${data.desc}</div></div></div>`;
   }
   body.scrollTop = 0; sh.classList.add('open');
+  $('#sheetClose').focus({preventScroll:true});
   if (innerWidth >= 1024) {
     // Keep popovers inside both the viewport and the clipped main container.
     const parentTop = sh.offsetParent ? sh.offsetParent.getBoundingClientRect().top : 0;
@@ -771,7 +781,7 @@ function openSheet(kind, data, anchor) {
 }
 document.addEventListener('pointerdown', e => {
   const sh = $('#sheet');
-  if (state.sheet && sh.classList.contains('open') && !sh.contains(e.target) && !e.target.closest('.nav-btn') && !e.target.closest('.toolbar')) { sh.classList.remove('open'); state.sheet = null; }
+  if (state.sheet && sh.classList.contains('open') && !sh.contains(e.target) && !e.target.closest('.nav-btn') && !e.target.closest('.toolbar')) { closeSheet(false); }
 });
 
 function applySettings() {
