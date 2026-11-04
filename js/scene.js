@@ -55,7 +55,7 @@ function boardTexture() {
   const c = cv.getContext('2d');
   c.fillStyle = '#232a44'; c.fillRect(0, 0, W, H);
   // subtle traces
-  c.strokeStyle = 'rgba(140,160,210,.16)'; c.lineWidth = 1.4;
+  c.strokeStyle = 'rgba(140,160,210,.22)'; c.lineWidth = 1.4;
   let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i < 26; i++) {
     const x = rnd() * W, y = rnd() * H, l = 20 + rnd() * 90, v = rnd() > .5;
@@ -77,7 +77,7 @@ function boardTexture() {
   c.fillText('EN', px(BOARD.W / 2 - 21.5), py(-4.2)); c.fillText('BOOT', px(BOARD.W / 2 - 21.5), py(4.6));
   c.fillText('38-56-7D-2A', px(BOARD.W / 2 + 14), py(0)); // module markings flavour
   // silkscreen component outlines
-  c.strokeStyle = 'rgba(233,228,216,.5)'; c.lineWidth = 1.6;
+  c.strokeStyle = 'rgba(233,228,216,.75)'; c.lineWidth = 1.8;
   const srect = (xm, zm, wm, dm) => c.strokeRect(px(BOARD.W / 2 + xm - wm / 2), py(zm - dm / 2), wm * K, dm * K);
   srect(14, 0, 20.4, 20.4);   // module footprint
   srect(-12, 0, 6, 6);        // USB-UART
@@ -114,11 +114,17 @@ export function buildBoard() {
   shape.lineTo(-w, -d + r); shape.absarc(-w + r, -d + r, r, Math.PI, Math.PI * 1.5);
   const geo = new THREE.ExtrudeGeometry(shape, { depth: BOARD.T, bevelEnabled: false, curveSegments: 20 });
   geo.rotateX(-Math.PI / 2);
-  const pcb = ink(new THREE.Mesh(geo, [MAT.pcbEdge, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 }), MAT.pcbEdge]), 0x141a2e, 12);
+  const pcb = ink(new THREE.Mesh(geo, MAT.pcbEdge), 0x141a2e, 12);
   pcb.position.y = BOARD.T; pcb.castShadow = pcb.receiveShadow = true;
-  // fix material groups: extrude gives 2 groups (side walls+caps). Simplest: single mat with texture loses edges.
-  pcb.material = [MAT.pcbEdge, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 })];
   g.add(pcb);
+  // textured top face: silkscreen + traces, UV-remapped rounded shape
+  const tg = new THREE.ShapeGeometry(shape, 20);
+  { const uv = tg.attributes.uv, pa = tg.attributes.position;
+    for (let i = 0; i < uv.count; i++) uv.setXY(i, (pa.getX(i) + BOARD.W / 2) / BOARD.W, (pa.getY(i) + BOARD.D / 2) / BOARD.D); }
+  tg.rotateX(-Math.PI / 2);
+  const topFace = new THREE.Mesh(tg, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 }));
+  topFace.position.y = BOARD.T * 2 + .06; topFace.receiveShadow = true; // pcb sits at y=T, extrude adds another T
+  g.add(topFace);
   reg(pcb, 'board', 'ESP32 DevKit V1', 'A 30-pin development board built around the ESP32-WROOM-32 module.');
   A('board', 0, 3, 0);
 

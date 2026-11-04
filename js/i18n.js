@@ -50,6 +50,7 @@ export function applyLang(code) {
 let LSTR = null; // { tags: {EN:xx}, lessons: {id: {title,heading,lede,features,pinout,example,specs}} }
 export function setLocaleData(d) { LSTR = d || null; }
 export function trTag(label) { return (LSTR && LSTR.tags && LSTR.tags[label]) || label; }
+export function trTagDesc(label, en) { return (LSTR && LSTR.tagDesc && LSTR.tagDesc[label]) || en || ''; }
 // merge translated fields over the English lesson, arrays aligned by index
 export function trLesson(L) {
   const t = LSTR && LSTR.lessons && LSTR.lessons[L.id];

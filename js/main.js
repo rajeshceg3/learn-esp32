@@ -4,7 +4,7 @@ import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
 import { SCENES, BOARD_POS, BB_POS } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
-import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag } from './i18n.js';
+import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc } from './i18n.js';
 import { createSchematicPanel } from './schematic.js';
 
 const $ = s => document.querySelector(s);
@@ -115,61 +115,87 @@ const schPanel = createSchematicPanel(document.getElementById('schematic'), {
 
 // ---------- tags ----------
 const tagsEl = $('#tags');
+const leadersEl = $('#leaders');
 let tagDivs = [];
 function rebuildTags() {
   tagsEl.innerHTML = ''; tagDivs = [];
+  leadersEl.innerHTML = '';
+  if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
+  const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
+  tagsEl.appendChild(rt);
   if (!state.settings.labels) return;
   const list = cur.scene?.tags || [];
   list.forEach(t => {
-    const d = document.createElement('button'); d.className = 'tag'; d.textContent = trTag(t.label);
+    const dot = document.createElement('span'); dot.className = 'tag-dot'; tagsEl.appendChild(dot);
+    const d = document.createElement('button'); d.className = 'tag';
+    d.innerHTML = `<span class="tag-ic">${ICON[t.i || 'pins']}</span><span class="tag-tx"><b>${trTag(t.label)}</b>${t.d ? `<i>${trTagDesc(t.label, t.d)}</i>` : ''}</span>`;
     if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
-    tagsEl.appendChild(d); tagDivs.push({ d, t });
+    tagsEl.appendChild(d);
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    leadersEl.appendChild(ln);
+    tagDivs.push({ d, t, dot, ln });
   });
-  if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
-  // runtime HIGH/LOW tag
-  const rt = document.createElement('div'); rt.className = 'tag live'; rt.id = 'runTag'; rt.style.display = 'none';
-  tagsEl.appendChild(rt);
 }
 function placeTags() {
-  if (!tagDivs.length) return;
   const r = canvas.getBoundingClientRect();
   const v = new THREE.Vector3();
-  tagDivs.forEach(({ d, t }) => {
-    if (t.dyn && cur.scene?.refs?.[t.dyn]) cur.scene.refs[t.dyn].getWorldPosition(v), v.y += 8;
+  const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
+  tagDivs.forEach(({ d, t, dot, ln }) => {
+    if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
     v.project(camera);
-    const x = (v.x * .5 + .5) * r.width, y = (-v.y * .5 + .5) * r.height;
-    d._x = x; d._y = y;
-    d.style.display = (v.z < 1 && x > -40 && x < r.width + 40 && y > -20 && y < r.height + 20) ? 'flex' : 'none';
+    const ax = (v.x * .5 + .5) * r.width, ay = (-v.y * .5 + .5) * r.height;
+    const ok = v.z < 1 && ax > -40 && ax < r.width + 40 && ay > -20 && ay < r.height + 20;
+    d.style.display = ok ? 'flex' : 'none';
+    dot.style.display = ok ? 'block' : 'none';
+    ln.style.display = ok ? '' : 'none';
+    if (!ok) return;
+    d._ax = ax; d._ay = ay;
+    dot.style.left = ax + 'px'; dot.style.top = ay + 'px';
+    const w = d.offsetWidth, h = d.offsetHeight;
+    let cx, cy;
+    if (wide) {
+      cx = ax + (ax < r.width * .52 ? -(w / 2 + 32) : (w / 2 + 32));
+      cy = ay - h / 2 - 40;
+      if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
+    } else { cx = ax; cy = ay - 26; }
+    d._x = cx; d._y = cy;
   });
-  // de-overlap: nudge colliding pills apart, keep inside the stage
+  // de-overlap: nudge colliding cards apart
   const vis = tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
-  for (let pass = 0; pass < 5; pass++) {
+  for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
       const a = vis[i], b = vis[j];
-      const hw = (a.offsetWidth + b.offsetWidth) / 2 + 6, hh = 26;
+      const hw = (a.offsetWidth + b.offsetWidth) / 2 + 10, hh = (a.offsetHeight + b.offsetHeight) / 2 + 8;
       const dx = b._x - a._x, dy = b._y - a._y;
       if (Math.abs(dx) < hw && Math.abs(dy) < hh) {
         const push = (hh - Math.abs(dy)) / 2 + 1;
         a._y -= push * (dy >= 0 ? 1 : -1); b._y += push * (dy >= 0 ? 1 : -1);
-        if (Math.abs(dx) < hw * .55) { const px = (hw - Math.abs(dx)) / 4; a._x -= px * (dx >= 0 ? 1 : -1); b._x += px * (dx >= 0 ? 1 : -1); }
+        if (Math.abs(dx) < hw * .6) { const px = (hw - Math.abs(dx)) / 4 + 1; a._x -= px * (dx >= 0 ? 1 : -1); b._x += px * (dx >= 0 ? 1 : -1); }
         moved = true;
       }
     }
     if (!moved) break;
   }
-  vis.forEach(d => {
-    d._x = Math.min(r.width - d.offsetWidth / 2 - 4, Math.max(d.offsetWidth / 2 + 4, d._x));
-    d._y = Math.min(r.height - 16, Math.max(16, d._y));
+  tagDivs.forEach(({ d, ln }) => {
+    if (d.style.display === 'none') return;
+    d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
+    d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
     d.style.left = d._x + 'px'; d.style.top = d._y + 'px';
+    // dotted leader from anchor dot to the nearest point on the card edge
+    const hw = d.offsetWidth / 2, hh = d.offsetHeight / 2;
+    const ex = Math.min(d._x + hw, Math.max(d._x - hw, d._ax));
+    const ey = Math.min(d._y + hh, Math.max(d._y - hh, d._ay));
+    ln.setAttribute('x1', d._ax.toFixed(1)); ln.setAttribute('y1', d._ay.toFixed(1));
+    ln.setAttribute('x2', ex.toFixed(1)); ln.setAttribute('y2', ey.toFixed(1));
   });
-  const rt = $('#runTag');
-  if (rt && rt.style.display !== 'none' && cur.scene?.wires?.length) {
+  const rt2 = $('#runTag');
+  if (rt2 && rt2.style.display !== 'none' && cur.scene?.wires?.length) {
     // anchor the run tag above the first signal wire's midpoint
     const w = cur.scene.wires.find(w => w.dot.visible) || cur.scene.wires[0];
     const p = w.curve.getPoint(.5).project(camera);
-    rt.style.left = ((p.x * .5 + .5) * r.width + 30) + 'px'; rt.style.top = ((-p.y * .5 + .5) * r.height - 34) + 'px';
+    rt2.style.left = ((p.x * .5 + .5) * r.width + 30) + 'px'; rt2.style.top = ((-p.y * .5 + .5) * r.height - 34) + 'px';
   }
 }
 
@@ -215,7 +241,7 @@ function pickAt(e) {
 }
 
 // ---------- part info popover ----------
-const partTag = document.createElement('div'); partTag.className = 'tag live'; partTag.id = 'partTag'; partTag.style.display = 'none'; partTag.style.pointerEvents = 'none';
+const partTag = document.createElement('div'); partTag.className = 'tag mini live'; partTag.id = 'partTag'; partTag.style.display = 'none'; partTag.style.pointerEvents = 'none';
 tagsEl.appendChild(partTag);
 function openPartInfo(part) {
   openSheet('component', { title: part.label, desc: part.desc });
@@ -235,6 +261,7 @@ function loadLesson(i, keepTab) {
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
+  bboard.visible = LESSONS[i].sim !== 'builtin';
   def.build(ls);
   lessonGroup.add(ls.root);
   ls.wires.forEach(w => lessonGroup.add(w.mesh));
@@ -251,8 +278,8 @@ function loadLesson(i, keepTab) {
 
 function frameScene(snap) {
   const box = new THREE.Box3().setFromObject(board.group)
-    .union(new THREE.Box3().setFromObject(bboard))
     .union(new THREE.Box3().setFromObject(lessonGroup));
+  if (bboard.visible) box.union(new THREE.Box3().setFromObject(bboard));
   if (box.isEmpty()) return;
   const c = box.getCenter(new THREE.Vector3());
   const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1, aspect = w / h;
@@ -263,7 +290,7 @@ function frameScene(snap) {
   // true silhouette bounds: sample world-space vertices of every visible mesh
   const pts = [];
   const tv = new THREE.Vector3();
-  for (const root of [board.group, bboard, lessonGroup]) {
+  for (const root of (bboard.visible ? [board.group, bboard, lessonGroup] : [board.group, lessonGroup])) {
     root.updateWorldMatrix(true, true);
     root.traverse(o => {
       if (!o.isMesh || !o.visible || !o.geometry?.attributes?.position) return;
@@ -274,7 +301,7 @@ function frameScene(snap) {
   }
   camera.aspect = aspect; camera.updateProjectionMatrix();
   const tgt = rig.tTarget, sp = Math.sin(rig.tPol), saz = Math.sin(rig.tAz), caz = Math.cos(rig.tAz);
-  const allowX = 1 - Math.min(.2, 74 / w), allowY = 1 - Math.min(.14, 38 / h);
+  const allowX = 1 - Math.min(.1, 44 / w), allowY = 1 - Math.min(.09, 30 / h);
   let dist = 300;
   for (let it = 0; it < 6; it++) {
     camera.position.set(tgt.x + dist * sp * saz, tgt.y + dist * Math.cos(rig.tPol), tgt.z + dist * sp * caz);
@@ -333,6 +360,7 @@ function renderPanel() {
   } else {
     h = `<div class="specs">${L.specs.map(([k, v]) => `<div class="spec-row"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
+  h = `<div class="tab-card">${h}</div>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
       <button class="icon-btn" id="btnCopy" title="Copy code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
@@ -479,16 +507,16 @@ function renderNavs() {
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],
     ['lessons', 'Lessons', 'lessons', () => $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' })],
-    ['comp', 'Components', 'comp', () => openSheet('components')],
+    ['comp', 'Components', 'comp', el => openSheet('components', null, el)],
     ['play', 'Simulator', 'play', () => state.running ? stopSim() : startSim()],
-    ['settings', 'Settings', 'settings', () => openSheet('settings')],
-    ['lang', 'Language', 'globe', () => openSheet('language'), 'EN'],
+    ['settings', 'Settings', 'settings', el => openSheet('settings', null, el)],
+    ['lang', 'Language', 'globe', el => openSheet('language', null, el), 'EN'],
   ];
   $('#bottomnav').innerHTML = items.map(([k, a, ic, , badge]) =>
     `<button class="nav-btn" data-k="${k}" aria-label="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
   $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="Expand sidebar" title="Expand">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
     `<button class="nav-btn" data-k="${k}" aria-label="${a}" title="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
-  document.querySelectorAll('.nav-btn[data-k]').forEach(b => b.onclick = items.find(x => x[0] === b.dataset.k)?.[3]);
+  document.querySelectorAll('.nav-btn[data-k]').forEach(b => { const fn = items.find(x => x[0] === b.dataset.k)?.[3]; b.onclick = () => fn?.(b); });
   const tog = $('#sidebar .side-toggle');
   tog.onclick = () => {
     const sb = $('#sidebar'), on = sb.classList.toggle('expanded');
@@ -501,7 +529,7 @@ function renderNavs() {
 }
 
 // ---------- sheets ----------
-function openSheet(kind, data) {
+function openSheet(kind, data, anchor) {
   const sh = $('#sheet'), title = $('#sheetTitle'), sub = $('#sheetSub'), body = $('#sheetBody');
   if (state.sheet === kind && !data) { sh.classList.remove('open'); state.sheet = null; return; }
   state.sheet = kind;
@@ -554,6 +582,10 @@ function openSheet(kind, data) {
     body.innerHTML = `<div class="comp-row"><span class="comp-ic">${ICON.chip}</span><div><div class="comp-desc">${data.desc}</div></div></div>`;
   }
   sh.classList.add('open');
+  if (innerWidth >= 1024) {
+    const top = anchor ? anchor.getBoundingClientRect().top - 6 : 100;
+    sh.style.top = Math.min(innerHeight - 220, Math.max(64, top)) + 'px';
+  }
 }
 document.addEventListener('pointerdown', e => {
   const sh = $('#sheet');

@@ -18,9 +18,12 @@ export const SCENES = {
 builtin: {
   build(s) {
     s.tags = [
-      { at: pin('D2'), label: 'GPIO2' },
-      { at: V(2 + BOARD_POS.x, 5, 6.2 + BOARD_POS.z), label: 'BUILT-IN LED' },
-      { at: V(BOARD_POS.x - 24, 6, BOARD_POS.z), label: 'USB' },
+      { at: V(BOARD_POS.x - 24, 6, BOARD_POS.z), label: 'USB PORT', i: 'usb', d: 'Uploads code and powers the board.' },
+      { at: V(14 + BOARD_POS.x, 9, BOARD_POS.z), label: 'MICROCONTROLLER', i: 'chip', d: 'ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.' },
+      { at: pin('D14'), label: 'GPIO PINS', i: 'pins', d: 'Digital in/out, PWM, touch, I\u00b2C and SPI.' },
+      { at: pin('D34'), label: 'ADC PINS', i: 'wave', d: 'Analog inputs read sensors from 0 to 4095.' },
+      { at: V(BOARD_POS.x - 21.6, 6, BOARD_POS.z), label: 'EN \u00b7 BOOT', i: 'reset', d: 'EN restarts the sketch; BOOT enters upload mode.' },
+      { at: V(2 + BOARD_POS.x, 5, 6.2 + BOARD_POS.z), label: 'BUILT-IN LED', i: 'bulb', d: 'Blue LED wired to GPIO2.' },
     ];
     s.tagParts = true;
   },
@@ -37,9 +40,9 @@ blink: {
     const res = C.resistor(220); res.position.copy(bb(16, 2)); res.position.z += 1.27; s.add(res, 'resistor');
     s.wires.push(wireTo(pin('D26'), bb(11, 2), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(19, 4), WIRE.navy, 12, 'GND'));
     s.tags = [
-      { at: pin('D26'), label: 'GPIO26' }, { at: pin('GND'), label: 'GND' },
-      { at: bb(14, 2).add(V(0, 10, 0)), label: 'LED', click: 'led' },
-      { at: bb(16, 2).add(V(0, 6, 0)), label: 'RESISTOR', click: 'resistor' },
+      { at: pin('D26'), label: 'GPIO26', i: 'bolt', d: 'Your sketch switches it HIGH and LOW.' }, { at: pin('GND'), label: 'GND', i: 'plug', d: 'The return path: current flows back here.' },
+      { at: bb(14, 2).add(V(0, 10, 0)), label: 'LED', click: 'led', i: 'bulb', d: 'Lights up whenever GPIO26 goes HIGH.' },
+      { at: bb(16, 2).add(V(0, 6, 0)), label: 'RESISTOR', click: 'resistor', i: 'res', d: 'Stops the LED drawing too much current.' },
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
     s.api.ledColor = c => s.refs.led.userData.setColor(c);
@@ -68,9 +71,9 @@ button: {
     const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(18, 7)); s.add(led, 'led');
     s.wires.push(wireTo(pin('D27'), bb(12, 1), WIRE.green, 14, 'D27'), wireTo(pin('D26'), bb(15, 7), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
     s.tags = [
-      { at: pin('D27'), label: 'GPIO27 · IN' },
-      { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button' },
-      { at: bb(18, 7).add(V(0, 10, 0)), label: 'LED' },
+      { at: pin('D27'), label: 'GPIO27 · IN', i: 'bolt', d: 'Reads LOW while the button is held.' },
+      { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button', i: 'hand', d: 'Click to press and hold.' },
+      { at: bb(18, 7).add(V(0, 10, 0)), label: 'LED', i: 'bulb', d: 'Follows the button state.' },
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
     s.api.press = p => s.refs.button.userData.setPressed(p);
@@ -95,9 +98,9 @@ pot: {
     const led = C.led5mm(0xf2efe6); led.position.copy(bb(19, 7)); s.add(led, 'led');
     s.wires.push(wireTo(pin('D34'), bb(13, 5), WIRE.green, 14, 'D34'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'), wireTo(pin('D25'), bb(16, 7), WIRE.orange, 14, 'D25'));
     s.tags = [
-      { at: pin('D34'), label: 'GPIO34 · ADC' },
-      { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot' },
-      { at: bb(19, 7).add(V(0, 10, 0)), label: 'LED' },
+      { at: pin('D34'), label: 'GPIO34 · ADC', i: 'wave', d: 'Analog input: reads 0 to 4095.' },
+      { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot', i: 'gear', d: 'Click to turn the knob.' },
+      { at: bb(19, 7).add(V(0, 10, 0)), label: 'LED', i: 'bulb', d: 'Brightness follows the knob.' },
     ];
     s.api.level = v => { const l = s.refs.led.userData; l.setLit(v > .02); l.body.material.emissiveIntensity = v * 1.7; };
     s.api.knob = a => s.refs.pot.userData.setAngle(a);
@@ -121,8 +124,8 @@ rgb: {
     [['D25', 11, WIRE.red], ['D26', 12, WIRE.green], ['D33', 13, 0x4d7de8]].forEach(([p, cr, c]) => s.wires.push(wireTo(pin(p), bb(cr, 2), c, 14, p)));
     s.wires.push(wireTo(pin('GND'), bb(18, 3), WIRE.navy, 12, 'GND'));
     s.tags = [
-      { at: pin('D25'), label: 'R·G·B = 25·26·33' },
-      { at: bb(15, 2).add(V(0, 10, 0)), label: 'RGB LED', click: 'rgb' },
+      { at: pin('D25'), label: 'R·G·B = 25·26·33', i: 'pins', d: 'Three outputs mix one colour.' },
+      { at: bb(15, 2).add(V(0, 10, 0)), label: 'RGB LED', click: 'rgb', i: 'bulb', d: 'Click to try the next palette colour.' },
     ];
     s.api.rgb = (r, g, b) => s.refs.rgb.userData.setRGB(r, g, b);
     const pal = [[255, 30, 110], [255, 190, 0], [0, 200, 150], [60, 120, 255], [170, 0, 255], [244, 240, 232]];
@@ -147,9 +150,9 @@ light: {
     torch.position.copy(bb(8, 2)).add(V(0, 14, 0)); s.add(torch, 'torch');
     s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 14, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 14, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
     s.tags = [
-      { at: pin('D35'), label: 'GPIO35 · ADC' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR' },
-      { at: V(bb(8, 2).x, 26, bb(8, 2).z), label: 'TORCH', click: 'torch' },
-      { at: bb(19, 7).add(V(0, 10, 0)), label: 'NIGHT LIGHT' },
+      { at: pin('D35'), label: 'GPIO35 · ADC', i: 'wave', d: 'Reads the light level.' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR', i: 'info', d: 'Resistance drops as light rises.' },
+      { at: V(bb(8, 2).x, 26, bb(8, 2).z), label: 'TORCH', click: 'torch', i: 'bolt', d: 'Click to move it closer.' },
+      { at: bb(19, 7).add(V(0, 10, 0)), label: 'NIGHT LIGHT', i: 'bulb', d: 'Turns on when it gets dark.' },
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
     s.onClick = (w, api) => { if (w === 'torch') { api._near = !api._near;
@@ -172,9 +175,9 @@ distance: {
     const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
     s.wires.push(wireTo(pin('D5'), bb(11, 6), WIRE.yellow, 14, 'D5'), wireTo(pin('D18'), bb(12, 7), WIRE.green, 14, 'D18'), wireTo(pin('VIN'), bb(19, 5), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(20, 8), WIRE.navy, 12, 'GND'));
     s.tags = [
-      { at: pin('D5'), label: 'TRIG · GPIO5' }, { at: pin('D18'), label: 'ECHO · GPIO18' },
-      { at: bb(15, 6).add(V(0, 12, 0)), label: 'HC-SR04' },
-      { at: V(96, 14, 28), label: 'OBSTACLE', click: 'car', dyn: 'car' },
+      { at: pin('D5'), label: 'TRIG · GPIO5', i: 'bolt', d: 'Sends the ultrasonic pulse.' }, { at: pin('D18'), label: 'ECHO · GPIO18', i: 'wave', d: 'Listens for the echo.' },
+      { at: bb(15, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance with sound.' },
+      { at: V(96, 14, 28), label: 'OBSTACLE', click: 'car', dyn: 'car', i: 'hand', d: 'Click to move it.' },
     ];
     s.api._dist = 30;
     s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist >= 44 ? 8 : api._dist + 12;
@@ -194,7 +197,7 @@ sound: {
   build(s) {
     const bz = C.buzzer(); bz.position.copy(bb(15, 2)); s.add(bz, 'buzzer');
     s.wires.push(wireTo(pin('D19'), bb(11, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(19, 3), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D19'), label: 'GPIO19' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER' } ];
+    s.tags = [ { at: pin('D19'), label: 'GPIO19', i: 'bolt', d: 'Plays tones with ledcTone.' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
   },
   sim: api => {
     const seq = [[262, 'C'], [330, 'E'], [392, 'G'], [0, 'rest']]; let i = -1, wait = 0;
@@ -214,7 +217,7 @@ piano: {
     const keys = C.pianoKeys(8); keys.position.set(46, 8.7, 30); s.add(keys, 'keys');
     const bz = C.buzzer(); bz.position.copy(bb(6, 2)); s.add(bz, 'buzzer');
     s.wires.push(wireTo(pin('D19'), bb(3, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(9, 4), WIRE.navy, 10, 'GND'));
-    s.tags = [ { at: V(46, 16, 30), label: '8 KEYS — TAP TO PLAY', click: 'keys' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER' } ];
+    s.tags = [ { at: V(46, 16, 30), label: '8 KEYS — TAP TO PLAY', click: 'keys', i: 'hand', d: 'Each key plays a note.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
     s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
     s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
       const i = Math.round((lp.x + 24.5) / 7);
@@ -236,7 +239,7 @@ motor: {
     const tr = C.npn(); tr.position.copy(bb(14, 2)); s.add(tr, 'npn');
     const res = C.resistor(1000); res.position.copy(bb(12, 2)); res.position.z += 1.27; s.add(res, 'resistor');
     s.wires.push(wireTo(pin('D27'), bb(10, 2), WIRE.orange, 14, 'D27'), wireTo(pin('VIN'), V(78, 2, -14), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(17, 4), WIRE.navy, 12, 'GND'), wireTo(bb(16, 2), V(78, 2, 2), WIRE.navy, 18));
-    s.tags = [ { at: pin('D27'), label: 'GPIO27 · PWM' }, { at: bb(14, 2).add(V(0, 7, 0)), label: '2N2222' }, { at: V(78, 26, -6), label: 'MOTOR', click: 'motor' } ];
+    s.tags = [ { at: pin('D27'), label: 'GPIO27 · PWM', i: 'bolt', d: 'PWM sets the motor speed.' }, { at: bb(14, 2).add(V(0, 7, 0)), label: '2N2222', i: 'chip', d: 'Transistor switches the motor current.' }, { at: V(78, 26, -6), label: 'MOTOR', click: 'motor', i: 'gear', d: 'Click to change speed.' } ];
     s.api.spin = v => s.refs.motor.userData.spin(v);
     s.api.tickMotor = dt => s.refs.motor.userData.tick(dt);
     const speeds = [0, 6, 14, 22];
@@ -256,7 +259,7 @@ temp: {
   build(s) {
     const t = C.tmp36(); t.position.copy(bb(14, 2)); s.add(t, 'tmp');
     s.wires.push(wireTo(pin('D32'), bb(14, 4), WIRE.green, 13, 'D32'), wireTo(pin('3V3'), bb(11, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(17, 1), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D32'), label: 'GPIO32 · ADC' }, { at: bb(14, 2).add(V(0, 8, 0)), label: 'TMP36', click: 'tmp' } ];
+    s.tags = [ { at: pin('D32'), label: 'GPIO32 · ADC', i: 'wave', d: 'Reads the sensor voltage.' }, { at: bb(14, 2).add(V(0, 8, 0)), label: 'TMP36', click: 'tmp', i: 'info', d: 'Outputs 10 mV per °C.' } ];
     s.onClick = (w, api) => { if (w === 'tmp') api._warm = ((api._warm ?? 1) + 1) % 3; };
   },
   sim: api => {
@@ -274,7 +277,7 @@ servo: {
   build(s) {
     const sv = C.servo(); sv.position.set(74, 0, 2); sv.rotation.y = .5; s.add(sv, 'servo');
     s.wires.push(wireTo(pin('D13'), V(64, 2, 8), WIRE.orange, 15, 'D13'), wireTo(pin('VIN'), V(68, 2, 12), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), V(60, 2, 12), WIRE.navy, 13, 'GND'));
-    s.tags = [ { at: pin('D13'), label: 'GPIO13 · 50 Hz' }, { at: V(74, 20, 2), label: 'SERVO', click: 'servo' } ];
+    s.tags = [ { at: pin('D13'), label: 'GPIO13 · 50 Hz', i: 'bolt', d: '50 Hz pulses set the angle.' }, { at: V(74, 20, 2), label: 'SERVO', click: 'servo', i: 'gear', d: 'Click to change sweep speed.' } ];
     s.api.servo = a => s.refs.servo.userData.setAngle(a);
     s.onClick = (w, api) => { if (w === 'servo') api._rate = ((api._rate ?? 0) + 1) % 3; };
   },
@@ -296,7 +299,7 @@ stepper: {
     drv.position.set(46, 9.2, -8); s.add(drv, 'drv');
     ['D14', 'D27', 'D26', 'D25'].forEach((p, i) => s.wires.push(wireTo(pin(p), bb(10 + i, 5), [WIRE.orange, WIRE.yellow, WIRE.green, WIRE.purple][i], 13, p)));
     s.wires.push(wireTo(pin('VIN'), bb(16, 6), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(17, 7), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D14'), label: 'COILS · 14·27·26·25' }, { at: V(76, 18, 0), label: 'STEPPER', click: 'stepper' } ];
+    s.tags = [ { at: pin('D14'), label: 'COILS · 14·27·26·25', i: 'pins', d: 'Four coils energised in sequence.' }, { at: V(76, 18, 0), label: 'STEPPER', click: 'stepper', i: 'gear', d: 'Click to reverse direction.' } ];
     s.api.stepper = a => s.refs.stepper.userData.setAngle(a);
     s.onClick = (w, api) => { if (w === 'stepper') api._dir = -(api._dir ?? 1); };
   },
@@ -323,7 +326,7 @@ plant: {
     const probe = C.soilProbe(); probe.position.set(76, 6.4, 4); probe.rotation.y = .4; s.add(probe, 'probe');
     const ol = C.oled(); ol.position.copy(bb(14, 5)); s.add(ol, 'oled');
     s.wires.push(wireTo(pin('D34'), bb(10, 5), WIRE.green, 14, 'D34'), wireTo(pin('D21'), bb(11, 6), WIRE.purple, 14, 'D21'), wireTo(pin('D22'), bb(12, 7), WIRE.yellow, 14, 'D22'), wireTo(pin('3V3'), bb(17, 4), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(18, 8), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34' }, { at: pin('D21'), label: 'I²C · 21/22' }, { at: bb(14, 5).add(V(0, 9, 0)), label: 'OLED' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant' } ];
+    s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34', i: 'wave', d: 'Reads soil moisture.' }, { at: pin('D21'), label: 'I²C · 21/22', i: 'pins', d: 'Bus that drives the OLED display.' }, { at: bb(14, 5).add(V(0, 9, 0)), label: 'OLED', i: 'info', d: 'Shows the moisture level.' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant', i: 'hand', d: 'Click to water it.' } ];
     s.api.oledDraw = fn => s.refs.oled.userData.draw(fn);
     s.onClick = (w, api) => { if (w === 'plant') api._wet = ((api._wet ?? 1) + 1) % 3; };
   },
@@ -346,7 +349,7 @@ force: {
     const f = C.fsr(); f.position.copy(bb(13, 2)); s.add(f, 'fsr');
     const leds = [0x3fbf6a, 0xf2c23a, 0xe8392e].map((c, i) => { const l = C.led5mm(c); l.position.copy(bb(18 + i * 2, 7)); s.add(l, 'bar' + i); return l; });
     s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 13, 'D35'), wireTo(pin('D25'), bb(17, 6), WIRE.orange, 13, 'D25'), wireTo(pin('D26'), bb(19, 6), WIRE.yellow, 13, 'D26'), wireTo(pin('D33'), bb(21, 6), WIRE.red, 13, 'D33'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D35'), label: 'FSR · GPIO35' }, { at: bb(13, 2).add(V(0, 6, 0)), label: 'PRESS PAD', click: 'fsr' }, { at: bb(20, 7).add(V(0, 11, 0)), label: 'LED BAR' } ];
+    s.tags = [ { at: pin('D35'), label: 'FSR · GPIO35', i: 'wave', d: 'Reads pressure on the pad.' }, { at: bb(13, 2).add(V(0, 6, 0)), label: 'PRESS PAD', click: 'fsr', i: 'hand', d: 'Click to press.' }, { at: bb(20, 7).add(V(0, 11, 0)), label: 'LED BAR', i: 'bulb', d: 'More force lights more bars.' } ];
     s.api.bar = n => leds.forEach((l, i) => l.userData.setLit(i < n));
     s.onClick = (w, api) => { if (w === 'fsr') api._f = ((api._f ?? 0) + 1) % 4; };
   },
@@ -367,7 +370,7 @@ project: {
     const tl = C.trafficLight(); tl.position.copy(bb(22, 2)); s.add(tl, 'tl');
     const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
     s.wires.push(wireTo(pin('D5'), bb(7, 6), WIRE.yellow, 13, 'D5'), wireTo(pin('D18'), bb(8, 7), WIRE.green, 13, 'D18'), wireTo(pin('D25'), bb(20, 4), WIRE.red, 14, 'D25'), wireTo(pin('D26'), bb(21, 5), WIRE.orange, 14, 'D26'), wireTo(pin('D33'), bb(22, 6), WIRE.green, 14, 'D33'), wireTo(pin('VIN'), bb(13, 5), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(14, 8), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car' } ];
+    s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance to the car.' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT', i: 'bulb', d: 'Green, amber or red by distance.' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car', i: 'hand', d: 'Click to move it closer.' } ];
     s.api.tl = (r, y, g) => s.refs.tl.userData.set(r, y, g);
     s.api._dist = 40;
     s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist <= 8 ? 46 : api._dist - 12;
