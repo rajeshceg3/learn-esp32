@@ -551,3 +551,4 @@ svg{display:block}
  .code-pre{border:1px solid var(--line);border-radius:7px;background:var(--code-bg)}
  .panel.full .tab-card{height:auto;min-height:0}.panel.full .info-content{height:auto;overflow:visible}.code-card.full{padding-top:0}
 }
+@media(min-width:1024px){.code-card:not(.full):has(.console:not([hidden])) .code-pre{max-height:64px}}
