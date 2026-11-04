@@ -583,3 +583,6 @@ svg{display:block}
 /* Pin identities stay beside their names, with descriptions on their own row. */
 @media(max-width:1023px){.pin-row{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:6px 10px}.pin-chip{min-width:0;max-width:100%;overflow-wrap:anywhere}.pin-name{min-width:0;overflow-wrap:anywhere}.pin-desc{grid-column:1/-1;min-width:0;overflow-wrap:anywhere}}
 @media(max-width:360px){.pin-row{grid-template-columns:minmax(0,1fr)}.pin-chip{justify-self:start}.pin-name,.pin-desc{grid-column:1}}
+
+.console-grip{height:5px;flex:none;cursor:ns-resize;touch-action:none;background:var(--code-bg);position:relative;border-top:1px solid var(--line-soft)}
+.console-grip::after{content:"";position:absolute;width:24px;height:2px;background:var(--line);left:calc(50% - 12px);top:1px;border-radius:2px}

@@ -14,7 +14,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const state = {
   lesson: 0, tab: 'overview', running: false, sim: null, scene: null,
   settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, schematic: false, lang: 'en' },
-  done: new Set(), sheet: null, startedAt: 0, timing: [500, 500], logs: [], activeLine: 0,
+  consoleHeight:null,done: new Set(), sheet: null, startedAt: 0, timing: [500, 500], logs: [], activeLine: 0,
 };
 try { Object.assign(state.settings, JSON.parse(localStorage.getItem('esp32:settings') || '{}'));
   (JSON.parse(localStorage.getItem('esp32:done') || '[]')).forEach(i => state.done.add(i)); } catch {}
@@ -76,6 +76,7 @@ canvas.addEventListener('pointercancel',()=>{drag=null;});
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
   const key=e.key.toLowerCase();
+  if(key===' '&&!e.target?.closest('button,[role=button]')){e.preventDefault();state.running?stopSim():startSim();return;}
   if(key==='q'){rig.tAz+=.3;idle.t=0;}
   if(key==='e'){rig.tAz-=.3;idle.t=0;}
   if(['w','a','s','d'].includes(key)){
@@ -407,10 +408,20 @@ function renderPanel() {
       <button class="icon-btn primary ${state.running ? 'is-running' : ''}" id="btnRun" title="${T(state.running ? 'stop' : 'run')}" aria-label="${T(state.running ? 'stop' : 'run')}"><svg viewBox="0 0 24 24" fill="currentColor" id="runIcon"><path d="M8 5v14l11-7z"/></svg></button>
     </span></div>
     <div class="code-pre">${hl(code())}</div>
+    <div class="console-grip" id="consoleGrip" role="separator" aria-orientation="horizontal" aria-label="${T('serial_monitor')}" tabindex="0" ${state.running ? '' : 'hidden'}></div>
     <div class="console-head" ${state.running ? '' : 'hidden'}><span class="serial-dot"></span><b>${T('serial_monitor')}</b><span id="serialStatus">${T('running')}</span><button id="consoleStop" class="icon-btn" title="${T('stop')}" aria-label="${T('stop')}">×</button></div>
     <div class="console" id="console" ${state.running ? '' : 'hidden'}></div>
   </div>`;
   body.innerHTML = h;
+  const grip=$('#consoleGrip'),serial=$('#console');
+  const sizeSerial=v=>{const min=40,max=Math.max(min,Math.min(260,innerHeight*.3));state.consoleHeight=Math.round(Math.min(max,Math.max(min,v)));serial.style.height=state.consoleHeight+'px';grip.setAttribute('aria-valuemin',min);grip.setAttribute('aria-valuemax',Math.round(max));grip.setAttribute('aria-valuenow',state.consoleHeight);};
+  if(state.consoleHeight!==null)sizeSerial(state.consoleHeight);
+  let resizeDrag=null;
+  grip.onpointerdown=e=>{resizeDrag={y:e.clientY,h:serial.offsetHeight};grip.setPointerCapture(e.pointerId);e.preventDefault();};
+  grip.onpointermove=e=>{if(resizeDrag)sizeSerial(resizeDrag.h+resizeDrag.y-e.clientY);};
+  grip.onpointerup=grip.onpointercancel=()=>{resizeDrag=null;};
+  grip.onkeydown=e=>{if(['ArrowUp','ArrowDown','Home','End'].includes(e.key)){e.preventDefault();sizeSerial(e.key==='Home'?40:e.key==='End'?260:serial.offsetHeight+(e.key==='ArrowUp'?8:-8));}};
+
   $('#btnFs') && ($('#btnFs').onclick = () => {
     const p = $('#panel'), on = p.classList.toggle('full');
     $('#btnFs').innerHTML = on ? ICON.collapse : ICON.expand;
@@ -456,7 +467,7 @@ function startSim() {
   if (state.running) return;
   const generation=++runGeneration,lesson=state.lesson;
   state.running = true; api.line?.(0); state.startedAt = performance.now();
-  document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
+  $('#consoleGrip').hidden=false;document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
   $('#serialStatus').textContent=T('running');
   $('#btnRun').classList.add('is-running');document.querySelectorAll('.nav-btn[data-k=play]').forEach(e=>e.classList.add('on')); $('#btnRun').title=T('stop'); $('#btnRun').setAttribute('aria-label',T('stop'));
   cur.sim?.setTiming?.(...state.timing);
