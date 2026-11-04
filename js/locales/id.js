@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Tanaman pintar', heading: 'Tanaman pintar',
       lede: 'Sensor kapasitif di tanah mengatakan seberapa basah tanahnya, dan layar OLED kecil mengubahnya jadi persentase dan suasana hati. Siram tanamannya, lihat ia tersenyum.',
-      features: ['Probe kapasitif di GPIO34', 'OLED lewat I²C di GPIO 21/22', "Klik tanaman atau penyiram untuk menyiram"],
+      features: ['Probe kapasitif di GPIO34', 'OLED lewat I²C di GPIO 21/22', "Tahan tanaman atau WATER untuk menyiram; lepaskan agar mengering"],
       pinout: [['Masukan kelembapan', 'Tanah kering terbaca tinggi, basah terbaca rendah.'], ['SDA · SCL', 'Bus I²C milik OLED.'], ['Suplai modul', 'Kedua modul berjalan pada 3,3 V.']],
       example: [
         'Probe kapasitif tidak berkarat seperti yang resistif — aman ditinggal di pot.',

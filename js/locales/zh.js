@@ -224,7 +224,7 @@ export default {
     plant: {
       title: '智能植物', heading: '智能植物',
       lede: '土壤中的电容传感器告诉你土壤有多湿，一块小小的 OLED 屏把它变成百分比和心情。给植物浇水，看它微笑。',
-      features: ['电容探头接 GPIO34', 'OLED 经 I²C 接 GPIO 21/22', "点击植物或洒水壶浇水"],
+      features: ['电容探头接 GPIO34', 'OLED 经 I²C 接 GPIO 21/22', "按住植物或 WATER 浇水，松开后土壤逐渐变干"],
       pinout: [['湿度输入', '干土读数高，湿土读数低。'], ['SDA · SCL', 'OLED 的 I²C 总线。'], ['模块电源', '两个模块都用 3.3 V。']],
       example: [
         '电容探头不像电阻式那样生锈——可以一直留在花盆里。',

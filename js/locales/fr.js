@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Plante connectée', heading: 'Plante connectée',
       lede: 'Un capteur capacitif dans la terre dit à quel point elle est humide, et un petit écran OLED transforme ça en pourcentage et en humeur. Arrosez la plante, regardez-la sourire.',
-      features: ['Sonde capacitive sur GPIO34', 'OLED en I²C sur GPIO 21/22', "Cliquez sur la plante ou l’arrosoir pour arroser"],
+      features: ['Sonde capacitive sur GPIO34', 'OLED en I²C sur GPIO 21/22', "Maintenez la plante ou WATER pour arroser ; relâchez pour laisser sécher"],
       pinout: [['Humidité', 'Terre sèche : lecture haute ; humide : basse.'], ['SDA · SCL', 'Le bus I²C de l’OLED.'], ['Alimentation', 'Les deux modules tournent en 3,3 V.']],
       example: [
         'Les sondes capacitives ne se corrodent pas comme les résistives — elles peuvent rester dans le pot.',

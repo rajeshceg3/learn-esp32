@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Pianta intelligente', heading: 'Pianta intelligente',
       lede: 'Un sensore capacitivo nel terreno dice quanto è umido, e un piccolo schermo OLED lo trasforma in una percentuale e in uno stato d’animo. Annaffia la pianta e guardala sorridere.',
-      features: ['Sonda capacitiva su GPIO34', 'OLED via I²C su GPIO 21/22', "Clicca la pianta o l’annaffiatoio per annaffiare"],
+      features: ['Sonda capacitiva su GPIO34', 'OLED via I²C su GPIO 21/22', "Tieni premuto pianta o WATER per annaffiare; rilascia per far asciugare"],
       pinout: [['Umidità', 'Terreno secco legge alto, umido legge basso.'], ['SDA · SCL', 'Il bus I²C dell’OLED.'], ['Alimentazione', 'Entrambi i moduli vanno a 3,3 V.']],
       example: [
         'Le sonde capacitive non si corrodono come quelle resistive — possono restare nel vaso.',

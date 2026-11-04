@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Akıllı bitki', heading: 'Akıllı bitki',
       lede: 'Topraktaki kapasitif sensör ne kadar nemli olduğunu söyler; küçük bir OLED ekran bunu yüzdeye ve bir ifadeye çevirir. Bitkiyi sula, gülümsemesini izle.',
-      features: ['GPIO34’te kapasitif prob', 'GPIO 21/22’de I²C ile OLED', "Sulamak için bitkiye veya sulama kabına tıklayın"],
+      features: ['GPIO34’te kapasitif prob', 'GPIO 21/22’de I²C ile OLED', "Sulamak için bitkiyi veya WATER’ı basılı tutun; kuruması için bırakın"],
       pinout: [['Nem girişi', 'Kuru toprak yüksek, ıslak toprak düşük okur.'], ['SDA · SCL', 'OLED’in I²C veri yolu.'], ['Besleme', 'İki modül de 3,3 V ile çalışır.']],
       example: [
         'Kapasitif problar rezistif olanlar gibi paslanmaz — saksıda bırakmak güvenli.',

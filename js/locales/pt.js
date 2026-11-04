@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Planta inteligente', heading: 'Planta inteligente',
       lede: 'Um sensor capacitivo no solo diz quão úmido ele está, e uma telinha OLED transforma isso em porcentagem e humor. Regue a planta e veja-a sorrir.',
-      features: ['Sonda capacitiva em GPIO34', 'OLED via I²C em GPIO 21/22', "Clique na planta ou no regador para regar"],
+      features: ['Sonda capacitiva em GPIO34', 'OLED via I²C em GPIO 21/22', "Segure a planta ou WATER para regar; solte para secar"],
       pinout: [['Umidade', 'Solo seco lê alto, úmido lê baixo.'], ['SDA · SCL', 'O barramento I²C da OLED.'], ['Alimentação', 'Ambos os módulos rodam a 3,3 V.']],
       example: [
         'Sondas capacitivas não corróem como as resistivas — podem ficar no vaso.',

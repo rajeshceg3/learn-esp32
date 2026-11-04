@@ -59,9 +59,10 @@ function applyCam(dt) {
 
 // pointer controls: drag pans, wheel zooms, Q/E rotate
 let drag = null;
-let heldPianoPointer = null, objectDrag = null;
+let heldPianoPointer = null, objectDrag = null, heldScenePointer = null;
 const objectDragPlane = new THREE.Plane(new THREE.Vector3(0,1,0),0);
 function sceneGroundPoint(e){ const r=canvas.getBoundingClientRect();mouseV.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(mouseV,camera);return ray.ray.intersectPlane(objectDragPlane,new THREE.Vector3()); }
+function releaseScenePointer(){if(heldScenePointer!==null)cur.scene?.holdEnd?.(api);heldScenePointer=null;}
 function releasePianoPointer() { if (heldPianoPointer !== null) cur.sim?.release?.(); heldPianoPointer = null; }
 canvas.addEventListener('pointerdown', e => {
   if (e.button !== 0) return;
@@ -70,6 +71,7 @@ canvas.addEventListener('pointerdown', e => {
     if (i >= 0) { releasePianoPointer(); heldPianoPointer = e.pointerId; cur.sim?.note?.(i, true); canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
   }
   sceneGroundPoint(e);
+  if(state.running&&cur.scene?.holdStart?.(ray,api)){heldScenePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);e.preventDefault();return;}
   if (cur.scene?.beginDrag && cur.scene.beginDrag(ray, e, canvas, camera)) { const pt=sceneGroundPoint(e); objectDrag={id:e.pointerId,start:pt,x:e.clientX,y:e.clientY,moved:0};canvas.setPointerCapture(e.pointerId);e.preventDefault();return; }
   drag = { x: e.clientX, y: e.clientY, tx: rig.tTarget.x, tz: rig.tTarget.z, moved: 0 }; canvas.setPointerCapture(e.pointerId);
 });
@@ -84,11 +86,11 @@ canvas.addEventListener('pointermove', e => {
     idle.t = 0;
   }
 });
-canvas.addEventListener('pointerup', e => { if(objectDrag?.id===e.pointerId){if(objectDrag.moved<6)pickAt(e);objectDrag=null;return;} if(heldPianoPointer===e.pointerId){releasePianoPointer();objectDrag=null;drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
+canvas.addEventListener('pointerup', e => { if(heldScenePointer===e.pointerId){releaseScenePointer();return;} if(objectDrag?.id===e.pointerId){if(objectDrag.moved<6)pickAt(e);objectDrag=null;return;} if(heldPianoPointer===e.pointerId){releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
 canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); idle.t = 0; }, { passive: false });
-canvas.addEventListener('pointercancel',()=>{releasePianoPointer();objectDrag=null;drag=null;});
-canvas.addEventListener('lostpointercapture',()=>{releasePianoPointer();objectDrag=null;});
-addEventListener('blur',releasePianoPointer);
+canvas.addEventListener('pointercancel',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;});
+canvas.addEventListener('lostpointercapture',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;});
+addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();});
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
   const key=e.key.toLowerCase();
@@ -164,7 +166,13 @@ function rebuildTags() {
     const dot = document.createElement('span'); dot.className = 'tag-dot'; tagsEl.appendChild(dot);
     const d = document.createElement('button'); d.className = 'tag';
     d.innerHTML = `<span class="tag-ic">${ICON[t.i || 'pins']}</span><span class="tag-tx"><b>${trTag(t.label)}</b>${t.d ? `<i>${trTagDesc(t.label, t.d)}</i>` : ''}</span>`;
-    if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
+    if (t.hold) {
+      d.addEventListener('pointerdown',e=>{if(!state.running)return;e.preventDefault();d.setPointerCapture(e.pointerId);cur.scene.tagHold?.(t.click,true,api);});
+      const end=()=>cur.scene.tagHold?.(t.click,false,api);
+      d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);d.addEventListener('blur',end);
+      d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
+      d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
+    } else if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
     tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);

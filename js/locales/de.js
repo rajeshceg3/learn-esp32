@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Schlaue Pflanze', heading: 'Schlaue Pflanze',
       lede: 'Ein kapazitiver Sensor in der Erde sagt, wie feucht sie ist, und ein kleines OLED-Display macht daraus Prozente und eine Stimmung. Gieß die Pflanze und sieh sie lächeln.',
-      features: ['Kapazitive Sonde an GPIO34', 'OLED über I²C an GPIO 21/22', "Klicke Pflanze oder Gießkanne zum Gießen"],
+      features: ['Kapazitive Sonde an GPIO34', 'OLED über I²C an GPIO 21/22', "Pflanze oder WATER zum Gießen halten; zum Trocknen loslassen"],
       pinout: [['Feuchtigkeit', 'Trockene Erde liest hoch, nasse niedrig.'], ['SDA · SCL', 'Der I²C-Bus des OLEDs.'], ['Versorgung', 'Beide Module laufen mit 3,3 V.']],
       example: [
         'Kapazitive Sonden korrodieren nicht wie resistive — sie dürfen im Topf bleiben.',

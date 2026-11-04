@@ -396,7 +396,7 @@ void loop() {
 {
   id: 'plant', num: 14, title: 'Smart plant', heading: 'Smart plant',
   lede: 'A capacitive sensor in the soil says how wet it is, and a little OLED screen turns that into a percentage and a mood. Water the plant, watch it smile.',
-  features: [['wave', 'Capacitive probe on GPIO34'], ['chip', 'OLED over I²C on GPIO 21/22'], ['hand', 'Click the plant or watering can to water it']],
+  features: [['wave', 'Capacitive probe on GPIO34'], ['chip', 'OLED over I²C on GPIO 21/22'], ['hand', 'Hold the plant or WATER to water; release to let it dry']],
   pinout: [['GPIO34', 'Moisture in', 'Dry soil reads high, wet reads low.', '#1aa3a1'], ['GPIO21 · 22', 'SDA · SCL', 'The OLED’s I²C bus.', '#6a4fa3'], ['3V3 · GND', 'Module supply', 'Both modules run at 3.3 V.', '#d64a3a']],
   example: [
     'Capacitive probes don’t corrode like resistive ones — safe to leave in the pot.',
