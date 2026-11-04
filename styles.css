@@ -479,3 +479,35 @@ svg{display:block}
  .panel.full .tab-card{height:auto;overflow:visible}
  .panel.full .panel-body{overflow:auto}
 }
+/* Numbered explanations remain original ESP32 teaching content. */
+.example{list-style:none;counter-reset:ex}
+.example li{position:relative;padding-inline-start:42px;min-height:30px;counter-increment:ex}
+.example li::before{content:counter(ex);position:absolute;inset-inline-start:0;top:0;width:29px;height:29px;border:1px solid var(--line);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--cond);font-weight:600;color:var(--navy)}
+@media(max-width:1023px){
+ .tabbar{height:58px;align-items:stretch;padding-inline:6px}
+ .tab{font-size:15px;font-weight:500;letter-spacing:.02em}.tab.on{font-weight:700}
+ .tab-card{border-radius:9px;margin:0 4px 4px;border:1px solid var(--line);height:345px}
+ .panel-body{border:1px solid var(--line);border-top:0;border-radius:0 0 12px 12px;gap:0;background:var(--card)}
+ .lesson-head{padding:12px 15px 4px}.lesson-title{font-size:22px;letter-spacing:.015em}
+ .example{font-size:16px;line-height:1.4;padding:9px 15px 15px;gap:13px}
+ .example code{font-size:.84em}
+ .code-card{margin:12px -1px -1px;border-radius:10px;padding:0 8px 8px;background:var(--card)}
+ .code-head{height:55px;padding:6px 8px;border:0}
+ .code-title{font-size:17px;letter-spacing:.035em}
+ .code-actions{gap:8px}.code-actions .icon-btn{width:40px;height:38px;border-radius:8px}.code-actions .icon-btn.primary{width:44px;background:#2c3d67;border-color:#2c3d67}
+ .code-actions .icon-btn.primary.is-running{background:var(--teal-deep);border-color:var(--teal-deep)}
+ .code-actions .icon-btn svg{width:19px;height:19px}
+ .code-pre{font-size:14px;line-height:1.55;max-height:335px;border:1px solid var(--line);border-radius:8px;padding:10px 0;background:var(--code-bg)}
+ .code-ln{width:43px;padding-right:12px;border-right:1px solid var(--line-soft);margin-right:10px}
+ .console-head{margin-top:0;font-size:12px;padding:4px 8px}
+ .console{height:76px;font-size:12px;padding:6px 10px}
+ .bottomnav{background:#eadecc}.nav-btn{color:#747980}
+}
+@media(max-width:1023px){
+ .rail-wrap:not(.can-left)::before,.rail-wrap:not(.can-right)::after{display:none}
+ .panel-body{display:contents}
+ .tab-card{margin:0;padding-top:0;border-radius:0 0 12px 12px;border:1px solid var(--line);border-top:0}
+ .code-card{margin:12px 0 0}
+ .code-card.full{padding-top:0}
+ .example li{color:var(--ink)}
+}

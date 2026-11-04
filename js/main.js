@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: mobile-document-scroll-20261104
+// Build: mobile-readable-cards-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -377,7 +377,7 @@ function renderPanel() {
   } else if (state.tab === 'pinout') {
     h = cardHead(T('tab_pinout')) + `<div class="pinout">${L.pinout.map(([pin, name, desc, c]) => `<div class="pin-row"><span class="pin-chip" style="background:${c}">${pin}</span><span class="pin-name">${name}</span><span class="pin-desc">${desc}</span></div>`).join('')}</div>`;
   } else if (state.tab === 'example') {
-    h = cardHead(T('tab_example')) + `<div class="example">${L.example.map(p => `<p>${p}</p>`).join('')}</div>`;
+    h = cardHead(T('tab_example')) + `<ol class="example">${L.example.map(p => `<li>${p}</li>`).join('')}</ol>`;
   } else {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
@@ -502,7 +502,15 @@ function renderRail() {
     if(innerWidth<1024 && document.dir!=='rtl')rail.scrollLeft=state.lesson===0 ? 0 : active.offsetLeft-rail.offsetLeft-rail.clientWidth*.38;
     else active.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'});
   });
-  const maskEdgeLabels=()=>{const r=rail.getBoundingClientRect();rail.querySelectorAll('.lesson-card').forEach(c=>{const q=c.getBoundingClientRect();c.classList.toggle('edge-cut',innerWidth<1024 && (q.left<r.left-2 || q.right>r.right+2))})};
+  const maskEdgeLabels=()=>{
+    const r=rail.getBoundingClientRect(), max=rail.scrollWidth-rail.clientWidth;
+    const offset=Math.abs(rail.scrollLeft), rtl=document.dir==='rtl';
+    const canPrev=offset>2,canNext=offset<max-2;
+    $('#railPrev').hidden=!canPrev;$('#railNext').hidden=!canNext;
+    rail.parentElement.classList.toggle('can-left',rtl?canNext:canPrev);
+    rail.parentElement.classList.toggle('can-right',rtl?canPrev:canNext);
+    rail.querySelectorAll('.lesson-card').forEach(c=>{const q=c.getBoundingClientRect();c.classList.toggle('edge-cut',innerWidth<1024 && (q.left<r.left-2 || q.right>r.right+2))});
+  };
   rail.onscroll=maskEdgeLabels;requestAnimationFrame(()=>requestAnimationFrame(maskEdgeLabels));
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
