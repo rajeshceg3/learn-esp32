@@ -74,3 +74,6 @@ for(const [lang,values] of Object.entries(CONTROLS)) CONTROL_KEYS.forEach((k,i)=
 
 const TURN_RIGHT={en:'Turn right',es:'Girar a la derecha',pt:'Girar à direita',fr:'Tourner à droite',de:'Nach rechts drehen',it:'Gira a destra',tr:'Sağa döndür',id:'Putar ke kanan',zh:'向右旋转','zh-tw':'向右旋轉',ja:'右に回転',ko:'오른쪽으로 회전',hi:'दाएँ घुमाएँ',he:'סיבוב ימינה'};
 for(const [lang,label]of Object.entries(TURN_RIGHT)) STR[lang].turn_right=label;
+
+const EXAMPLE_HEAD={en:'HOW THE CODE WORKS',es:'CÓMO FUNCIONA EL CÓDIGO',pt:'COMO O CÓDIGO FUNCIONA',fr:'COMMENT FONCTIONNE LE CODE',de:'SO FUNKTIONIERT DER CODE',it:'COME FUNZIONA IL CODICE',tr:'KOD NASIL ÇALIŞIR',id:'CARA KERJA KODE',zh:'代码如何工作','zh-tw':'程式碼如何運作',ja:'コードの仕組み',ko:'코드 작동 원리',hi:'कोड कैसे काम करता है',he:'איך הקוד עובד'};
+for(const [lang,label]of Object.entries(EXAMPLE_HEAD)) STR[lang].example_heading=label;

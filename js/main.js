@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: mobile-readable-cards-20261104
+// Build: nested-info-locales-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -377,12 +377,12 @@ function renderPanel() {
   } else if (state.tab === 'pinout') {
     h = cardHead(T('tab_pinout')) + `<div class="pinout">${L.pinout.map(([pin, name, desc, c]) => `<div class="pin-row"><span class="pin-chip" style="background:${c}">${pin}</span><span class="pin-name">${name}</span><span class="pin-desc">${desc}</span></div>`).join('')}</div>`;
   } else if (state.tab === 'example') {
-    h = cardHead(T('tab_example')) + `<ol class="example">${L.example.map(p => `<li>${p}</li>`).join('')}</ol>`;
+    h = cardHead(T('example_heading')) + `<ol class="example">${L.example.map(p => `<li>${p}</li>`).join('')}</ol>`;
   } else {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
-  h = `<div class="tab-card">${h}</div>`;
+  h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
       <button class="icon-btn" id="btnCodeFs" title="${T('fullscreen_code')}" aria-label="${T('fullscreen_code')}">${ICON.expand}</button>

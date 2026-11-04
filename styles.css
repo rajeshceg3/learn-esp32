@@ -511,3 +511,12 @@ svg{display:block}
  .code-card.full{padding-top:0}
  .example li{color:var(--ink)}
 }
+@media(max-width:1023px){
+ .tab-card{height:auto;overflow:visible;padding:0 3px 3px}
+ .info-content{height:345px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+ .tabbar{border-bottom:0}
+ .panel.full .info-content{height:auto;overflow:visible}
+}
+@media(max-width:1023px){.tabbar{overflow-x:auto;justify-content:space-between;scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}.tab{flex:none}.tab.on:focus:not(:focus-visible){outline:none}}
+.example code,.lesson-lede code,.feature-list code{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.tab:focus:not(:focus-visible){outline:none}
