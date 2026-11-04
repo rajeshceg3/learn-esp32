@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: drafting-grid-labels-20261104
+// Build: rail-toolbar-direction-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -256,6 +256,7 @@ function pickAt(e) {
 const partTag = document.createElement('div'); partTag.className = 'tag mini live'; partTag.id = 'partTag'; partTag.style.display = 'none'; partTag.style.pointerEvents = 'none';
 tagsEl.appendChild(partTag);
 function localizedPart(part) {
+  if(part.id==='board')return {title:trLesson(LESSONS[0]).heading,desc:trLesson(LESSONS[0]).lede};
   const byId={module:'ESP32-WROOM-32',usb:'Micro-USB port',en:'EN button',boot:'BOOT button',uart:'USB-UART bridge',reg:'3.3 V regulator',bled:'Built-in LED',pled:'Power LED',gpioT:'GPIO pins',gpioB:'GPIO pins'};
   const descById={module:'The 240 MHz dual-core module that runs your code, with Wi-Fi and Bluetooth.',usb:'Uploads sketches and powers the board from your computer.',en:'Restarts your sketch from the top.',boot:'Hold while pressing EN to enter upload mode.',uart:'Turns USB into serial so your computer can talk to the chip.',reg:'Steps the 5 V USB supply down to a steady 3.3 V.',bled:'Wired to GPIO2 — blinks with LED_BUILTIN.',pled:'Lit whenever the board has power.',gpioT:'30 pins: digital in/out, analog in, touch, PWM, I²C, SPI.',gpioB:'30 pins: digital in/out, analog in, touch, PWM, I²C, SPI.'};
   return {title:trCompName(byId[part.id]||part.label),desc:trCompDesc(descById[part.id]||part.desc)};
@@ -274,7 +275,7 @@ function loadLesson(i, keepTab) {
   $('#panel').classList.remove('open');
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 ? 1.0 : (innerWidth < 1024 ? .65 : -.62); rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
+  rig.tAz = i === 0 ? 1.0 : .65; rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -497,6 +498,8 @@ function renderRail() {
     if(innerWidth<1024 && document.dir!=='rtl')rail.scrollLeft=state.lesson===0 ? 0 : active.offsetLeft-rail.offsetLeft-rail.clientWidth*.38;
     else active.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'});
   });
+  const maskEdgeLabels=()=>{const r=rail.getBoundingClientRect();rail.querySelectorAll('.lesson-card').forEach(c=>{const q=c.getBoundingClientRect();c.classList.toggle('edge-cut',innerWidth<1024 && (q.left<r.left-2 || q.right>r.right+2))})};
+  rail.onscroll=maskEdgeLabels;requestAnimationFrame(()=>requestAnimationFrame(maskEdgeLabels));
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
     const i = +img.dataset.thumb;
@@ -535,6 +538,8 @@ const ICON = {
   plus: I('<path d="M12 5v14M5 12h14"/>'),
   info: I('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>'),
   up3d: I('<path d="M12 3l7 4v10l-7 4-7-4V7l7-4z"/><path d="M12 11l7-4M12 11v10M12 11L5 7"/>'),
+  compass: I('<circle cx="12" cy="12" r="9"/><path d="m10 14 2-9 2 5z" fill="#ce5c3c"/><path d="m14 10-2 9-2-5z" fill="currentColor"/>'),
+  flow: I('<path d="M3 14h4l3-6 4 8 3-5h4"/><circle cx="10" cy="8" r="2" fill="currentColor"/><circle cx="17" cy="11" r="2" fill="currentColor"/>'),
   waveT: I('<path d="M2 12h3l2-6 3 12 3-12 2 6h7"/>'),
   check: I('<path d="M4 12l5 5L20 7"/>'),
   expand: I('<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>'),
@@ -546,24 +551,25 @@ const ICON = {
 // ---------- toolbar ----------
 const toolbar = $('#toolbar');
 toolbar.innerHTML = [
-  ['reset', 'Reset view', 'reset'], ['rotL', 'Turn left', 'rotL'], ['minus', 'Zoom out', 'minus'], ['plus', 'Zoom in', 'plus'],
-  ['info', 'About this view', 'info'], ['up3d', 'Reset angle', 'up3d'], ['waveT', 'Current flow', 'waveT'],
+  ['rotL', 'Turn left', 'rotL'], ['rotR', 'Turn right', 'rotR'], ['minus', 'Zoom out', 'minus'], ['plus', 'Zoom in', 'plus'],
+  ['reset', 'Reset view', 'compass'], ['waveT', 'Current flow', 'flow'], ['schematic', 'Schematic', 'waveT'],
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : (innerWidth < 1024 ? .65 : -.62); rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : .65; rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
   if (k === 'plus') rig.tDist = Math.max(90, rig.tDist * .87);
   if (k === 'up3d') { rig.tAz = -.62; rig.tPol = 1.07; }
+  if (k === 'schematic') {state.settings.schematic=!state.settings.schematic;saveSettings();applySettings();}
   if (k === 'info') openPartInfo({ label: 'Learn ESP32', desc: 'Sixteen interactive lessons on the ESP32: wire it, run the code, watch it work. Design inspired by Learn Arduino by Dilum Sanjaya; this is an original ESP32 implementation.' });
   if (k === 'waveT') { state.settings.flow = !state.settings.flow; b.classList.toggle('on', state.settings.flow); saveSettings(); }
 });
 
 // ---------- navs ----------
 function renderNavs() {
-  const toolKeys=['reset_view','turn_left','zoom_out','zoom_in','about_view','reset_angle','flow']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
+  const toolKeys=['turn_left','turn_right','zoom_out','zoom_in','reset_view','flow','schematic']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],
     ['lessons', 'Lessons', 'lessons', () => $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' })],
@@ -669,6 +675,7 @@ function applySettings() {
   rebuildTags();
   if (!state.settings.sound) tone(0);
   document.querySelector('.tool-btn[data-k="waveT"]')?.classList.toggle('on', state.settings.flow);
+  document.querySelector('.tool-btn[data-k="schematic"]')?.classList.toggle('on',state.settings.schematic);
 }
 
 // ---------- language ----------
