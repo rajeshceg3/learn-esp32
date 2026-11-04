@@ -439,7 +439,7 @@ function startSim() {
   state.running = true; api.line?.(0); state.startedAt = performance.now();
   document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
   $('#serialStatus').textContent=T('running');
-  $('#btnRun').classList.add('is-running'); $('#btnRun').title=T('stop'); $('#btnRun').setAttribute('aria-label',T('stop'));
+  $('#btnRun').classList.add('is-running');document.querySelectorAll('.nav-btn[data-k=play]').forEach(e=>e.classList.add('on')); $('#btnRun').title=T('stop'); $('#btnRun').setAttribute('aria-label',T('stop'));
   cur.sim?.setTiming?.(...state.timing);
   $('#runIcon').innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
   log(T('uploading'), 'sys');
@@ -450,7 +450,7 @@ function startSim() {
 }
 function stopSim() {
   if (!state.running) return;
-  state.running = false; api.line?.(0);
+  state.running = false; api.line?.(0);document.querySelectorAll('.nav-btn[data-k=play]').forEach(e=>e.classList.remove('on'));
   $('#btnRun')?.classList.remove('is-running'); if($('#btnRun')) { $('#btnRun').title=T('run'); $('#btnRun').setAttribute('aria-label',T('run')); }
   if ($('#serialStatus')) $('#serialStatus').textContent=T('stopped');
   const ic = $('#runIcon'); if (ic) ic.innerHTML = '<path d="M8 5v14l11-7z"/>';
@@ -584,7 +584,7 @@ function renderNavs() {
   const toolKeys=['turn_left','turn_right','zoom_out','zoom_in','reset_view','flow','schematic']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],
-    ['lessons', 'Lessons', 'lessons', () => $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' })],
+    ['lessons', 'Lessons', 'lessons', () => { if(innerWidth>=1024) $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' }); }],
     ['comp', 'Components', 'comp', el => openSheet('components', null, el)],
     ['play', 'Simulator', 'play', () => state.running ? stopSim() : startSim()],
     ['settings', 'Settings', 'settings', el => openSheet('settings', null, el)],
@@ -594,7 +594,7 @@ function renderNavs() {
     `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
   $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="${T('expand_sidebar')}" title="${T('expand_sidebar')}">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
     `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}" title="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
-  document.querySelectorAll('.nav-btn[data-k]').forEach(b => { const fn = items.find(x => x[0] === b.dataset.k)?.[3]; b.onclick = () => fn?.(b); });
+  document.querySelectorAll('.nav-btn[data-k]').forEach(b => { const fn = items.find(x => x[0] === b.dataset.k)?.[3]; b.onclick = () => { document.querySelectorAll('.nav-btn.on').forEach(n=>n.classList.remove('on')); b.classList.add('on'); fn?.(b); }; });
   const tog = $('#sidebar .side-toggle');
   tog.onclick = () => {
     const sb = $('#sidebar'), on = sb.classList.toggle('expanded');

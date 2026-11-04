@@ -495,7 +495,7 @@ svg{display:block}
  .code-head{height:55px;padding:6px 8px;border:0}
  .code-title{font-size:17px;letter-spacing:.035em}
  .code-actions{gap:8px}.code-actions .icon-btn{width:40px;height:38px;border-radius:8px}.code-actions .icon-btn.primary{width:44px;background:#2c3d67;border-color:#2c3d67}
- .code-actions .icon-btn.primary.is-running{background:var(--teal-deep);border-color:var(--teal-deep)}
+ .code-actions .icon-btn.primary.is-running{background:#c5523c;border-color:#c5523c}
  .code-actions .icon-btn svg{width:19px;height:19px}
  .code-pre{font-size:14px;line-height:1.55;max-height:335px;border:1px solid var(--line);border-radius:8px;padding:10px 0;background:var(--code-bg)}
  .code-ln{width:43px;padding-right:12px;border-right:1px solid var(--line-soft);margin-right:10px}
@@ -521,3 +521,5 @@ svg{display:block}
 .example code,.lesson-lede code,.feature-list code{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .tab:focus:not(:focus-visible){outline:none}
 @media(max-width:1023px){.bottomnav .nav-btn:nth-child(-n+4){color:#2b3d62}.bottomnav .nav-btn[data-k=home] svg{fill:currentColor;stroke:none}.bottomnav .nav-btn[data-k=lessons] svg,.bottomnav .nav-btn[data-k=comp] svg{stroke-width:1.8}.bottomnav .nav-btn[data-k=play] svg path{fill:currentColor}}
+
+@media(max-width:1023px){.bottomnav .nav-btn.on{border-radius:12px;background:#d4ccbf}.bottomnav .nav-btn.on::after{content:"";position:absolute;bottom:-8px;width:26px;height:3px;border-radius:2px;background:var(--teal)}.bottomnav .nav-btn.on svg{fill:none}.bottomnav .nav-btn.on[data-k=home] svg{fill:currentColor}.bottomnav .nav-btn.on[data-k=play] svg path{fill:currentColor}}
