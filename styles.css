@@ -586,3 +586,5 @@ svg{display:block}
 
 .console-grip{height:5px;flex:none;cursor:ns-resize;touch-action:none;background:var(--code-bg);position:relative;border-top:1px solid var(--line-soft)}
 .console-grip::after{content:"";position:absolute;width:24px;height:2px;background:var(--line);left:calc(50% - 12px);top:1px;border-radius:2px}
+
+@media(min-width:1024px){.schematic{width:340px;padding:8px 10px 10px;top:6px}.sch-head h3{font-size:13px}.sch-lesson{font-size:11px}}

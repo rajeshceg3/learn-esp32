@@ -76,6 +76,7 @@ canvas.addEventListener('pointercancel',()=>{drag=null;});
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
   const key=e.key.toLowerCase();
+  if(key==='c'&&!e.target?.closest('button,[role=button]')){state.settings.schematic=!state.settings.schematic;saveSettings();applySettings();return;}
   if(key===' '&&!e.target?.closest('button,[role=button]')){e.preventDefault();state.running?stopSim():startSim();return;}
   if(key==='q'){rig.tAz+=.3;idle.t=0;}
   if(key==='e'){rig.tAz-=.3;idle.t=0;}
