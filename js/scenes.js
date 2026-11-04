@@ -223,7 +223,10 @@ piano: {
       { at:pin('D32'),label:'KEY INPUTS',i:'pins',d:'GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.' },
       { at:V(21.5,8.5,9.4),label:'GND RAIL',i:'plug',d:'One common ground for all eight keys.' }
     ];
-    s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
+    let heldKey=-1;
+    s.tags[1].value=()=>heldKey<0?'GPIO19 · 0 Hz':`GPIO19 · ${[262,294,330,349,392,440,494,523][heldKey]} Hz`;
+    s.tags[2].value=()=>heldKey<0?'KEY INPUTS · HIGH':`GPIO${inputs[heldKey].slice(1)} · LOW`;
+    s.api.pressKey = (i, on) => {heldKey=on?i:-1;s.tags[2].at.copy(pin(heldKey<0?'D32':inputs[heldKey]));s.refs.keys.userData.press(i, on);};
     s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
       const i = Math.round((lp.x + 24.5) / 7);
       return (i >= 0 && i < 8 && Math.abs(lp.z) < 7 && lp.y > -2 && lp.y < 6) ? i : -1; };
