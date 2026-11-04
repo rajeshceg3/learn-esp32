@@ -281,6 +281,7 @@ svg{display:block}
   .tag.mini .tag-tx i{display:none}
   .sheet{left:64px;right:auto;bottom:auto;top:100px;width:320px;max-height:calc(100% - 120px);border:1px solid var(--line);border-radius:14px;transform:translateX(-14px);opacity:0;visibility:hidden;transition:opacity .22s,transform .22s,visibility .22s}
   .sheet.open{transform:none;opacity:1;visibility:visible}
+  [dir=rtl] .sheet{left:auto;right:64px}
 }
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.01ms !important;transition-duration:.01ms !important}
@@ -335,3 +336,20 @@ svg{display:block}
 .sch .w{stroke:#41537a}
 
 .part-tag{position:absolute;display:none;z-index:7;pointer-events:none;font-family:var(--cond);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--card);background:var(--navy);padding:4px 9px;border-radius:7px;white-space:nowrap}
+
+/* reference-pattern spec tiles */
+.specs{padding:4px 16px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spec-tile{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--card)}
+.spec-tile b{display:block;font-family:var(--cond);font-weight:600;font-size:10.5px;letter-spacing:.1em;color:var(--faint);margin-bottom:2px}
+.spec-tile span{font-size:13px;color:var(--navy)}
+/* active code line while the sketch runs */
+.code-line.active{background:rgba(15,118,110,.16);border-radius:3px}
+/* code card fullscreen overlay */
+.code-card.full{position:fixed;inset:10px;z-index:46;display:flex;flex-direction:column;background:var(--card);box-shadow:0 18px 60px rgba(24,33,61,.25)}
+.code-card.full .code-pre{max-height:none;flex:1;overflow:auto}
+.code-card.full .console{max-height:30vh}
+/* rail tap arrows */
+.rail-wrap{position:relative;display:flex;align-items:center;gap:4px}
+.rail-wrap .lesson-rail{flex:1;min-width:0}
+.rail-nav{flex:none;width:26px;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--faint);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.rail-nav:hover{color:var(--teal);border-color:var(--teal)}

@@ -4,7 +4,7 @@ import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
 import { SCENES, BOARD_POS, BB_POS } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
-import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc } from './i18n.js';
+import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
 import { createSchematicPanel } from './schematic.js';
 
 const $ = s => document.querySelector(s);
@@ -43,7 +43,7 @@ const grid = new THREE.GridHelper(600, 60, 0xd8c5a8, 0xe3d3ba);
 grid.material.transparent = true; grid.material.opacity = .5; grid.position.y = .05; scene.add(grid);
 
 // ---------- camera rig ----------
-const rig = { target: new THREE.Vector3(6, 6, 6), az: -.62, pol: 1.07, dist: 210, tAz: -.62, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
+const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
 function applyCam(dt) {
   const k = state.settings.reduceMotion ? 1 : 1 - Math.exp(-dt * 9);
   rig.az += (rig.tAz - rig.az) * k; rig.pol += (rig.tPol - rig.pol) * k; rig.dist += (rig.tDist - rig.dist) * k;
@@ -97,6 +97,7 @@ function tone(f) {
 const api = {
   serial: t => log(t), tone,
   setBuiltin: on => { board.builtinLed.material = on ? new THREE.MeshStandardMaterial({ color: 0x5aa0ec, emissive: 0x2a6ae0, emissiveIntensity: 1.8 }) : MAT.blueLed; },
+  line: n => { document.querySelectorAll('#panelBody .code-line').forEach((el, i) => el.classList.toggle('active', i + 1 === n)); },
   tag: t => { const el = $('#runTag'); if (!el) return; if (t) { el.textContent = trTag(t); el.style.display = 'flex'; } else el.style.display = 'none'; },
   // schematic pin values ride on flow() calls below
   flow: (net, on) => { if (!state.settings.flow) on = false;
@@ -359,11 +360,13 @@ function renderPanel() {
   } else if (state.tab === 'example') {
     h = `<div class="example">${L.example.map(p => `<p>${p}</p>`).join('')}</div>`;
   } else {
-    h = `<div class="specs">${L.specs.map(([k, v]) => `<div class="spec-row"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
+    h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
+      <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card">${h}</div>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
+      <button class="icon-btn" id="btnCodeFs" title="Fullscreen code">${ICON.expand}</button>
       <button class="icon-btn" id="btnCopy" title="Copy code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
       <button class="icon-btn primary" id="btnRun" title="Run sketch"><svg viewBox="0 0 24 24" fill="currentColor" id="runIcon"><path d="M8 5v14l11-7z"/></svg></button>
     </span></div>
@@ -375,6 +378,10 @@ function renderPanel() {
     const p = $('#panel'), on = p.classList.toggle('full');
     $('#btnFs').innerHTML = on ? ICON.collapse : ICON.expand;
   });
+  $('#btnCodeFs').onclick = () => {
+    const c = $('#btnCodeFs').closest('.code-card'), on = c.classList.toggle('full');
+    $('#btnCodeFs').innerHTML = on ? ICON.collapse : ICON.expand;
+  };
   $('#btnCopy').onclick = () => { navigator.clipboard?.writeText(L.code); log(T('copied'), 'sys'); };
   $('#btnRun').onclick = () => state.running ? stopSim() : startSim();
 }
@@ -388,7 +395,7 @@ function log(t, cls = '') {
 // ---------- run / stop ----------
 function startSim() {
   if (state.running) return;
-  state.running = true; state.startedAt = performance.now();
+  state.running = true; api.line?.(0); state.startedAt = performance.now();
   $('#runIcon').innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
   log(T('uploading'), 'sys');
   cur.sim.start();
@@ -398,7 +405,7 @@ function startSim() {
 }
 function stopSim() {
   if (!state.running) return;
-  state.running = false;
+  state.running = false; api.line?.(0);
   const ic = $('#runIcon'); if (ic) ic.innerHTML = '<path d="M8 5v14l11-7z"/>';
   cur.sim?.stop(); tone(0);
   log(T('stopped'), 'sys');
@@ -436,8 +443,11 @@ function renderRail() {
       <span class="lt">${L.num}. ${trLesson(L).title.toUpperCase()}</span>
       ${state.done.has(i) ? '<span class="done-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 7"/></svg></span>' : ''}
       <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-    </button>`).join('') + `<span class="rail-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></span>`;
+    </button>`).join('');
   rail.querySelectorAll('.lesson-card').forEach(c => c.onclick = () => loadLesson(+c.dataset.i));
+  // explicit prev/next tap arrows like the reference rail
+  $('#railPrev').onclick = () => loadLesson((state.lesson + LESSONS.length - 1) % LESSONS.length);
+  $('#railNext').onclick = () => loadLesson((state.lesson + 1) % LESSONS.length);
   requestAnimationFrame(() => rail.querySelector('.lesson-card.on')?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' }));
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
@@ -493,7 +503,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${a}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = -.62; rig.tPol = 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = 1.0; rig.tPol = 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
@@ -550,7 +560,7 @@ function openSheet(kind, data, anchor) {
       ['Built-in LED', 'Wired to GPIO2 — blinks with LED_BUILTIN.', 'bulb'],
       ['Power LED', 'Lit whenever the board has power.', 'bolt'],
     ];
-    body.innerHTML = comps.map(([n, d, ic]) => `<div class="comp-row"><span class="comp-ic">${ICON[ic]}</span><div><div class="comp-name">${n.toUpperCase()}</div><div class="comp-desc">${d}</div></div></div>`).join('');
+    body.innerHTML = comps.map(([n, d, ic]) => `<div class="comp-row"><span class="comp-ic">${ICON[ic]}</span><div><div class="comp-name">${trCompName(n).toUpperCase()}</div><div class="comp-desc">${trCompDesc(d)}</div></div></div>`).join('');
   } else if (kind === 'settings') {
     title.textContent = T('settings'); sub.textContent = '';
     const S = state.settings;
@@ -584,14 +594,17 @@ function openSheet(kind, data, anchor) {
   }
   sh.classList.add('open');
   if (innerWidth >= 1024) {
-    const top = anchor ? anchor.getBoundingClientRect().top - 6 : 100;
-    sh.style.top = Math.max(12, top) + 'px';
+    // .sheet is absolutely positioned inside <main>: convert viewport coords to parent coords
+    const parentTop = sh.offsetParent ? sh.offsetParent.getBoundingClientRect().top : 0;
+    const topVp = anchor ? anchor.getBoundingClientRect().top - 6 : 100;
+    sh.style.top = Math.max(12 - parentTop, topVp - parentTop) + 'px';
     sh.style.maxHeight = 'none';
-    requestAnimationFrame(() => { // clamp so the whole popover stays in view
+    requestAnimationFrame(() => { // clamp so the whole popover, reset button included, stays in view
       const hh = sh.offsetHeight;
-      const maxTop = Math.max(12, innerHeight - hh - 12);
-      sh.style.top = Math.min(Math.max(12, top), maxTop) + 'px';
-      sh.style.maxHeight = (innerHeight - 24) + 'px';
+      const maxTopVp = Math.max(12, innerHeight - hh - 12);
+      const finalTopVp = Math.min(Math.max(12, topVp), maxTopVp);
+      sh.style.top = (finalTopVp - parentTop) + 'px';
+      sh.style.maxHeight = (innerHeight - finalTopVp - 12) + 'px';
     });
   }
 }

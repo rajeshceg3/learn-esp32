@@ -51,6 +51,8 @@ let LSTR = null; // { tags: {EN:xx}, lessons: {id: {title,heading,lede,features,
 export function setLocaleData(d) { LSTR = d || null; }
 export function trTag(label) { return (LSTR && LSTR.tags && LSTR.tags[label]) || label; }
 export function trTagDesc(label, en) { return (LSTR && LSTR.tagDesc && LSTR.tagDesc[en]) || en || ''; }
+export function trCompName(en) { return (LSTR && LSTR.compName && LSTR.compName[en]) || en; }
+export function trCompDesc(en) { return (LSTR && LSTR.compDesc && LSTR.compDesc[en]) || en; }
 // merge translated fields over the English lesson, arrays aligned by index
 export function trLesson(L) {
   const t = LSTR && LSTR.lessons && LSTR.lessons[L.id];
