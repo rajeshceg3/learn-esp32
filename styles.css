@@ -594,3 +594,9 @@ svg{display:block}
 
 .sheet-close{flex-shrink:0;margin-left:10px;width:30px;height:30px;border:1px solid var(--line-soft);border-radius:6px;background:transparent;color:var(--navy);font-size:23px;line-height:1;cursor:pointer}.sheet-close:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 .sheet-head{flex-wrap:wrap;align-items:center;gap:4px}.sheet-title{flex:1}.sheet-sub{order:3;flex-basis:100%;margin-left:0}.sheet-close{margin-left:6px}
+/* Native switch keeps pointer, keyboard and screen-reader semantics. */
+#heatPower{appearance:none;position:relative;flex-shrink:0;width:36px;height:22px;border-radius:12px;background:var(--track);border:1px solid var(--line);cursor:pointer;transition:background .15s}
+#heatPower:before{content:"";position:absolute;width:16px;height:16px;left:2px;top:2px;border-radius:50%;background:#fff;box-shadow:0 1px 2px #24314944;transition:transform .15s}
+#heatPower:checked{background:var(--teal);border-color:var(--teal)}
+#heatPower:checked:before{transform:translateX(14px)}
+#heatPower:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
