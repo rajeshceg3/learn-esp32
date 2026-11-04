@@ -7,20 +7,20 @@ const DIAGRAM_UI = {en:['Close','divider'],es:['Cerrar','divisor'],pt:['Fechar',
 const diagramUI = () => DIAGRAM_UI[currentLang()] || DIAGRAM_UI.en;
 
 const NOTE_TEXT = {
- en:['SW1 uses the internal pull-up; pressed reads LOW.','Wiper voltage 0–3.3 V → ADC 0–4095.','One PWM channel per colour leg.'],
- es:['SW1 usa la resistencia interna; pulsado lee LOW.','Cursor: 0–3,3 V → ADC 0–4095.','Un canal PWM por cada color.'],
- pt:['SW1 usa o pull-up interno; pressionado lê LOW.','Cursor: 0–3,3 V → ADC 0–4095.','Um canal PWM por cor.'],
- fr:['SW1 utilise le pull-up interne ; appuyé = LOW.','Curseur : 0–3,3 V → ADC 0–4095.','Un canal PWM par couleur.'],
- de:['SW1 nutzt den internen Pull-up; gedrückt = LOW.','Schleifer: 0–3,3 V → ADC 0–4095.','Ein PWM-Kanal pro Farbe.'],
- it:['SW1 usa il pull-up interno; premuto = LOW.','Cursore: 0–3,3 V → ADC 0–4095.','Un canale PWM per colore.'],
- tr:['SW1 dahili pull-up kullanır; basılınca LOW.','Sürgü: 0–3,3 V → ADC 0–4095.','Her renk için bir PWM kanalı.'],
- id:['SW1 memakai pull-up internal; ditekan = LOW.','Penggeser: 0–3,3 V → ADC 0–4095.','Satu kanal PWM untuk tiap warna.'],
- zh:['SW1 使用内部上拉；按下时为 LOW。','滑动端：0–3.3 V → ADC 0–4095。','每种颜色使用一个 PWM 通道。'],
- 'zh-tw':['SW1 使用內部上拉；按下時為 LOW。','滑動端：0–3.3 V → ADC 0–4095。','每種顏色使用一個 PWM 通道。'],
- ja:['SW1 は内部プルアップを使用。押すと LOW。','可動端：0–3.3 V → ADC 0–4095。','各色に PWM チャンネルを1つ使用。'],
- ko:['SW1은 내부 풀업 사용. 누르면 LOW.','와이퍼: 0–3.3 V → ADC 0–4095.','색상마다 PWM 채널 하나 사용.'],
- hi:['SW1 आंतरिक पुल-अप का उपयोग करता है; दबाने पर LOW।','वाइपर: 0–3.3 V → ADC 0–4095।','हर रंग के लिए एक PWM चैनल।'],
- he:['SW1 משתמש בנגד משיכה פנימי; בלחיצה LOW.','זחלן: 0–3.3 V → ADC 0–4095.','ערוץ PWM אחד לכל צבע.'],
+ en:['SW1 uses the internal pull-up; pressed reads LOW.','ADC raw: 0–4095; not calibrated volts.','One PWM channel per colour leg.'],
+ es:['SW1 usa la resistencia interna; pulsado lee LOW.','ADC bruto: 0–4095; no son voltios calibrados.','Un canal PWM por cada color.'],
+ pt:['SW1 usa o pull-up interno; pressionado lê LOW.','ADC bruto: 0–4095; não são volts calibrados.','Um canal PWM por cor.'],
+ fr:['SW1 utilise le pull-up interne ; appuyé = LOW.','ADC brut : 0–4095 ; pas des volts étalonnés.','Un canal PWM par couleur.'],
+ de:['SW1 nutzt den internen Pull-up; gedrückt = LOW.','ADC-Rohwert: 0–4095; keine kalibrierten Volt.','Ein PWM-Kanal pro Farbe.'],
+ it:['SW1 usa il pull-up interno; premuto = LOW.','ADC grezzo: 0–4095; non volt calibrati.','Un canale PWM per colore.'],
+ tr:['SW1 dahili pull-up kullanır; basılınca LOW.','Ham ADC: 0–4095; kalibre volt değildir.','Her renk için bir PWM kanalı.'],
+ id:['SW1 memakai pull-up internal; ditekan = LOW.','ADC mentah: 0–4095; bukan volt terkalibrasi.','Satu kanal PWM untuk tiap warna.'],
+ zh:['SW1 使用内部上拉；按下时为 LOW。','ADC 原始值：0–4095，并非校准电压。','每种颜色使用一个 PWM 通道。'],
+ 'zh-tw':['SW1 使用內部上拉；按下時為 LOW。','ADC 原始值：0–4095，並非校準電壓。','每種顏色使用一個 PWM 通道。'],
+ ja:['SW1 は内部プルアップを使用。押すと LOW。','ADC 生値：0–4095。校正済み電圧ではありません。','各色に PWM チャンネルを1つ使用。'],
+ ko:['SW1은 내부 풀업 사용. 누르면 LOW.','ADC 원시 값: 0–4095. 보정된 전압이 아닙니다.','색상마다 PWM 채널 하나 사용.'],
+ hi:['SW1 आंतरिक पुल-अप का उपयोग करता है; दबाने पर LOW।','ADC का कच्चा मान: 0–4095; कैलिब्रेटेड वोल्ट नहीं।','हर रंग के लिए एक PWM चैनल।'],
+ he:['SW1 משתמש בנגד משיכה פנימי; בלחיצה LOW.','ADC גולמי: 0–4095; לא מתח מכויל.','ערוץ PWM אחד לכל צבע.'],
 };
 const EXTRA_NOTES = {
  "en": [
@@ -248,7 +248,7 @@ const SCH = {
     pads: { p0: [98, 52], p1: [98, 94], p2: [98, 136], p3: [98, 178], ptA: [190, 96], ptB: [250, 96], ptW: [220, 122], lA: [190, 208], lB: [250, 208], g1: [280, 96], g2: [250, 236] },
     wires: [['p0', [130, 52], [130, 96], 'ptA'], ['ptB', 'g1'], ['g1', [280, 94], 'p1'], ['g1', [280, 108]], ['p2', [160, 136], [160, 122], 'ptW'], ['p3', [130, 178], [130, 208], 'lA'], ['lB', 'g2'], ['g2', [250, 250]]],
     gndAt: [[280, 108], [250, 250]],
-    note: 'Wiper voltage 0–3.3 V → ADC 0–4095.',
+    note: 'ADC raw: 0–4095; not calibrated volts.',
   },
   rgb: {
     pins: ['GPIO25', 'GPIO26', 'GPIO33', 'GND'],
@@ -371,6 +371,12 @@ export function buildSchematic(id) {
   if(id==='pot') {
     const note=noteRows(noteFor(id,spec.note),18,226);
     return {svg:`<svg class="sch" viewBox="0 0 380 ${238+note.height}" role="img" aria-label="ESP32 GPIO34 · RV1 · GPIO25 · LED"><g class="board"><rect class="box" x="18" y="56" width="96" height="155" rx="7"/>${T(66,74,'ESP32','block-t')}${T(106,108,'GPIO34','pin-t','end')}${T(106,188,'GPIO25','pin-t','end')}</g>${W([[114,104],[240,104]])}<path class="w" d="M234 100 L242 104 L234 108"/><text class="pinval" data-pin="GPIO34" x="157" y="96"></text><g class="sym" transform="translate(246 104) rotate(90)"><path d="M-36 0 H-18 M18 0 H36"/><path d="M-18 0 l5 -7 l8 14 l8 -14 l8 14 l7 -7"/></g>${W([[246,68],[246,50]])}${T(246,42,'3V3','pin-t')}<g class="sym" transform="translate(246 140)">${SYM.gnd()}</g>${T(280,109,'RV1','val')}${W([[114,184],[190,184]])}<g class="sym" transform="translate(220 184)">${SYM.resistor('R1','220 Ω')}</g>${W([[250,184],[274,184]])}<g class="sym" transform="translate(304 184)">${SYM.led('D1','')}</g>${W([[334,184],[354,184],[354,191]])}<g class="sym" transform="translate(354 191)">${SYM.gnd()}</g>${note.svg}</svg>`};
+  }
+  if(id==='plant') {
+    const note=noteRows(noteFor(id,spec.note),18,350);
+    const rows=[['3V3','VCC',70],['GPIO34','AOUT',104],['GND','GND',138],['3V3','VCC',210],['GND','GND',244],['GPIO21','SDA',278],['GPIO22','SCL',312]];
+    const wires=rows.map(([pin,label,y])=>`${T(108,y+4,pin,'pin-t','end')}${W([[116,y],[248,y]])}${T(256,y+4,label,'pin-t','start')}${pin==='GPIO34'?`<text class="pinval" data-pin="GPIO34" x="174" y="${y-8}"></text>`:''}`).join('');
+    return {svg:`<svg class="sch" viewBox="0 0 380 ${364+note.height}" role="img" aria-label="ESP32: soil probe and OLED share 3V3 and GND"><g class="board"><rect class="box" x="18" y="30" width="98" height="294" rx="6"/>${T(67,48,'ESP32','block-t')}<rect class="box" x="248" y="38" width="114" height="116" rx="5"/>${T(305,55,'SOIL','block-t')}<rect class="box" x="248" y="178" width="114" height="146" rx="5"/>${T(305,195,'OLED','block-t')}</g>${wires}${note.svg}</svg>`};
   }
   if(id==='servo')return moduleDiagram('SERVO',['GPIO13','VIN','GND'],['SIG','5V','GND']);
   if(id==='distance')return moduleDiagram('HC-SR04',['VIN','GPIO5','GPIO18','GND'],['VCC','TRIG','ECHO','GND'],`ECHO: 5 V → 3.3 V · ${diagramUI()[1]}`);
