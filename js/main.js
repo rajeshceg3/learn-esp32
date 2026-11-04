@@ -170,6 +170,10 @@ function placeTags() {
       else if(t.label==='LED') { cx=r.width*.83;cy=r.height*.21; }
       else if(t.label==='GND') { cx=r.width*.15;cy=r.height*.20; }
       else if(t.label==='GPIO26') { cx=r.width*.48;cy=r.height*.17; }
+      if(state.lesson===0){
+        const p={'USB PORT':[.16,.20],'MICROCONTROLLER':[.50,.17],'GPIO PINS':[.82,.23],'EN · BOOT':[.16,.74],'BUILT-IN LED':[.50,.80],'ADC PINS':[.83,.76]}[t.label];
+        if(p){cx=r.width*p[0];cy=r.height*p[1]}
+      }
       if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
     } else {
       // Attach a large pin marker to the physical part, with its compact label beside it.
@@ -337,6 +341,7 @@ function frameScene(snap) {
     if (Math.abs(need - 1) < .005) break;
   }
   dist *= 1.015;
+  if(!bboard.visible && aspect>=1)dist*=1.12;
   if (!bboard.visible && aspect < 1) dist *= .98; // board-only lesson on portrait: fill the frame like the reference (near-plane perspective clips if tighter)
   rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
