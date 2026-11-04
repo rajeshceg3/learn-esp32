@@ -107,6 +107,15 @@ pot: {
     let shownRaw=2048,shownPWM=0;
     s.tags[0].value=()=>`GPIO34 · ${shownRaw}`;
     s.tags[3].value=()=>`GPIO25 · PWM ${Math.round(shownPWM/255*100)}% (${shownPWM})`;
+    // Readouts describe this scripted circuit, not a calibrated voltage measurement.
+    // Keep them independent of the optional animated flow dots.
+    const wireLabels = {
+      D34: { value:()=>`ADC ${shownRaw}`, color:'#287749', fraction:.54, offset:[-12,-24] },
+      '3V3': { value:()=> '3.3 V', color:'#ac3b32', fraction:.25, offset:[-20,22] },
+      GND: { value:()=> 'GND', color:'#343b50', fraction:.72, offset:[18,24] },
+      D25: { value:()=>`PWM ${Math.round(shownPWM/255*100)}%`, color:'#945015', fraction:.65, offset:[12,-24] },
+    };
+    s.wires.forEach(w=>{w.badge=wireLabels[w.net];});
     s.api.potReadout=(raw,pwm)=>{shownRaw=raw;shownPWM=pwm;};
     s.api.level = v => { const l = s.refs.led.userData; l.setLit(v > .02); l.body.material.emissiveIntensity = v * 1.7; };
     s.api.knob = a => s.refs.pot.userData.setAngle(a);

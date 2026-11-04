@@ -154,9 +154,9 @@ const schPanel = createSchematicPanel(document.getElementById('schematic'), {
 // ---------- tags ----------
 const tagsEl = $('#tags');
 const leadersEl = $('#leaders');
-let tagDivs = [];
+let tagDivs = [], wireDivs = [];
 function rebuildTags() {
-  tagsEl.innerHTML = ''; tagDivs = [];
+  tagsEl.innerHTML = ''; tagDivs = []; wireDivs = [];
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
@@ -187,6 +187,13 @@ function rebuildTags() {
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
     tagDivs.push({ d, t, dot, ln });
+  });
+  (cur.scene?.wires||[]).filter(w=>w.badge).forEach(w=>{
+    const d=document.createElement('span');d.className='wire-badge';d.dir='ltr';
+    d.style.setProperty('--wire-color',w.badge.color);tagsEl.appendChild(d);
+    const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+    ln.classList.add('wire-leader');ln.style.stroke=w.badge.color;leadersEl.appendChild(ln);
+    wireDivs.push({w,d,ln});
   });
 }
 function placeTags() {
@@ -275,6 +282,29 @@ function placeTags() {
     const ey = Math.min(d._y + hh, Math.max(d._y - hh, d._ay));
     ln.setAttribute('x1', d._ax.toFixed(1)); ln.setAttribute('y1', d._ay.toFixed(1));
     ln.setAttribute('x2', ex.toFixed(1)); ln.setAttribute('y2', ey.toFixed(1));
+  });
+  // Wire badges share the projection but never the animated-dot visibility state.
+  // Greedy placement keeps small-screen badges clear of component callouts.
+  const occupied=vis.map(d=>({x:d._x,y:d._y,w:d.offsetWidth+8,h:d.offsetHeight+8}));
+  wireDivs.forEach(({w,d,ln})=>{
+    const value=w.badge.value();if(d.textContent!==value)d.textContent=value;
+    const p=w.curve.getPoint(w.badge.fraction??.5).project(camera);
+    const ax=(p.x*.5+.5)*r.width,ay=(-p.y*.5+.5)*r.height;
+    const ok=p.z<1&&ax>0&&ax<r.width&&ay>0&&ay<r.height;
+    d.style.display=ok?'block':'none';ln.style.display=ok?'':'none';if(!ok)return;
+    const bw=d.offsetWidth,bh=d.offsetHeight,offset=w.badge.offset||[0,-20];
+    let best=null;
+    for(const dy of[0,-28,28,-56,56,-84,84])for(const dx of[0,-42,42,-84,84]){
+      const x=Math.min(r.width-bw/2-7,Math.max(bw/2+7,ax+offset[0]+dx));
+      const y=Math.min(r.height-bh/2-48,Math.max(bh/2+36,ay+offset[1]+dy));
+      const hits=occupied.filter(b=>Math.abs(x-b.x)<(bw+b.w)/2&&Math.abs(y-b.y)<(bh+b.h)/2).length;
+      const cost=hits*10000+Math.hypot(x-ax,y-ay);if(!best||cost<best.cost)best={x,y,cost};
+    }
+    const {x,y}=best;d.style.left=x+'px';d.style.top=y+'px';
+    occupied.push({x,y,w:bw+8,h:bh+8});
+    ln.setAttribute('x1',ax);ln.setAttribute('y1',ay);
+    ln.setAttribute('x2',Math.min(x+bw/2,Math.max(x-bw/2,ax)));
+    ln.setAttribute('y2',Math.min(y+bh/2,Math.max(y-bh/2,ay)));
   });
   const rt2 = $('#runTag');
   if (rt2 && rt2.style.display !== 'none' && cur.scene?.wires?.length) {

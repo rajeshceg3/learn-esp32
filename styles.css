@@ -604,3 +604,8 @@ svg{display:block}
 .inspector-focus{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--navy);padding:6px 9px;font:inherit;cursor:pointer}.inspector-focus:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 /* Keep projected pin dots behind readable callout text in both directions. */
 #tags .tag{z-index:2}
+
+/* Technical net readouts: original, projected onto each labelled wire. */
+.wire-badge{position:absolute;transform:translate(-50%,-50%);padding:3px 6px;border:1px solid var(--wire-color);border-radius:5px;background:#fff9e9;color:var(--wire-color);font:600 10px var(--mono);white-space:nowrap;pointer-events:none;z-index:3;unicode-bidi:isolate;box-shadow:0 1px 2px #18213d15}
+#leaders .wire-leader{stroke-width:1;stroke-dasharray:2 2;opacity:.7}
+@media(min-width:1024px){.wire-badge{font-size:11px;padding:4px 7px}}
