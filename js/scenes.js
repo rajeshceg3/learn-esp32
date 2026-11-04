@@ -172,6 +172,10 @@ light: {
     const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(19, 7)); s.add(led, 'led');
     const torch = C.deskLamp();
     torch.position.set(bb(26,5).x+15,0,bb(26,5).z); s.add(torch,'torch');
+    // Reserve both lamp poses in the camera fit so a click cannot clip the far pose.
+    const lampBounds=new THREE.Box3().setFromObject(torch);
+    s.framingPoints=[];
+    for(const dx of[0,-10])for(const x of[lampBounds.min.x,lampBounds.max.x])for(const y of[lampBounds.min.y,lampBounds.max.y])for(const z of[lampBounds.min.z,lampBounds.max.z])s.framingPoints.push(V(x+dx,y,z));
     s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 22, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 21, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 23, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D35'), label: 'GPIO35 · ADC', i: 'wave', d: 'Reads the light level.' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR', i: 'info', d: 'Resistance drops as light rises.' },

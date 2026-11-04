@@ -449,6 +449,7 @@ function frameScene(snap) {
   const box = new THREE.Box3().setFromObject(board.group)
     .union(new THREE.Box3().setFromObject(lessonGroup));
   if (bboard.visible) box.union(new THREE.Box3().setFromObject(bboard));
+  for(const point of cur.scene?.framingPoints||[])box.expandByPoint(point);
   if (box.isEmpty()) return;
   const c = box.getCenter(new THREE.Vector3());
   const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1, aspect = w / h;
@@ -457,7 +458,7 @@ function frameScene(snap) {
   // grow distance until the full silhouette clears the viewport minus room
   // reserved for callout pills at the edges. Verified in pixels, not approximated.
   // true silhouette bounds: sample world-space vertices of every visible mesh
-  const pts = [];
+  const pts = (cur.scene?.framingPoints||[]).map(p=>p.clone());
   const tv = new THREE.Vector3();
   for (const root of (bboard.visible ? [board.group, bboard, lessonGroup] : [board.group, lessonGroup])) {
     root.updateWorldMatrix(true, true);
