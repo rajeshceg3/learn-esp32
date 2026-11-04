@@ -570,3 +570,10 @@ svg{display:block}
  .sidebar.expanded .nav-btn.on::before{width:calc(100% - 2px)}
  .sidebar.expanded .nav-badge{right:7px}
 }
+/* Expanding navigation overlays the drafting page without moving the circuit. */
+@media(min-width:1024px){
+ #app.side-open{grid-template-columns:52px minmax(0,1fr)}
+ .sidebar.expanded{position:absolute;inset:0 auto 0 0;width:180px;z-index:30;box-shadow:4px 0 12px rgba(60,45,20,.12);padding:30px 8px 8px}
+ .sidebar.expanded .side-toggle{width:36px;justify-content:center;padding:6px 0}
+ .sidebar.expanded .nav-btn .nl{text-transform:uppercase}
+}
