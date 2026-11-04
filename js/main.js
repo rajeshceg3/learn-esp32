@@ -743,7 +743,34 @@ for(const [radius,start,length,opacity]of[[19,.1,Math.PI*1.65,.72],[16.5,2.3,Mat
   ring.rotation.x=-Math.PI/2;ring.position.y=.5;focusMarker.add(ring);
 }
 let focusObject=null;
-function clearComponentFocus(){focusObject=null;focusMarker.visible=false;}
+// Original top-down navigator. Uses measured world bounds, not copied artwork.
+const focusMap=document.createElement('canvas');focusMap.id='focusMap';focusMap.width=300;focusMap.height=200;
+focusMap.tabIndex=0;focusMap.setAttribute('role','application');focusMap.setAttribute('aria-label','Circuit map: click to pan. Arrow keys move. Home resets the view.');
+canvas.parentElement.appendChild(focusMap);
+let mapBounds=null,mapLastDraw=0;
+function clearComponentFocus(){focusObject=null;focusMarker.visible=false;focusMap.hidden=true;}
+focusMap.hidden=true;
+function drawFocusMap(){
+  focusMap.hidden=!focusObject||innerWidth<1024;if(focusMap.hidden)return;
+  if(performance.now()-mapLastDraw<100)return;mapLastDraw=performance.now();
+  const ctx=focusMap.getContext('2d'),bounds=new THREE.Box3().setFromObject(board.group).union(new THREE.Box3().setFromObject(bboard)).union(new THREE.Box3().setFromObject(lessonGroup));
+  const size=bounds.getSize(new THREE.Vector3()),scale=Math.min(270/size.x,168/size.z),center=bounds.getCenter(new THREE.Vector3());
+  mapBounds={scale,cx:center.x,cz:center.z};
+  const px=x=>150+(x-center.x)*scale,pz=z=>100+(z-center.z)*scale;
+  ctx.clearRect(0,0,300,200);ctx.fillStyle='#f8f0df';ctx.fillRect(0,0,300,200);
+  ctx.strokeStyle='#dfcfb5';ctx.lineWidth=1;for(let x=0;x<300;x+=20){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,200);ctx.stroke()}for(let y=0;y<200;y+=20){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(300,y);ctx.stroke()}
+  // View frustum intersection with the tabletop makes camera position legible.
+  const groundPlane=new THREE.Plane(new THREE.Vector3(0,1,0),0),ray=new THREE.Raycaster(),corners=[];
+  for(const [x,y]of[[-1,1],[1,1],[1,-1],[-1,-1]]){ray.setFromCamera(new THREE.Vector2(x,y),camera);const hit=ray.ray.intersectPlane(groundPlane,new THREE.Vector3());if(hit)corners.push(hit)}
+  if(corners.length===4){ctx.beginPath();corners.forEach((p,i)=>ctx[i?'lineTo':'moveTo'](px(p.x),pz(p.z)));ctx.closePath();ctx.fillStyle='#20aaa522';ctx.fill();ctx.strokeStyle='#159e99';ctx.lineWidth=2;ctx.stroke()}
+  const footprint=(o,color)=>{const b=new THREE.Box3().setFromObject(o);ctx.fillStyle=color;ctx.strokeStyle='#39415a';ctx.lineWidth=1.5;ctx.fillRect(px(b.min.x),pz(b.min.z),(b.max.x-b.min.x)*scale,(b.max.z-b.min.z)*scale);ctx.strokeRect(px(b.min.x),pz(b.min.z),(b.max.x-b.min.x)*scale,(b.max.z-b.min.z)*scale)};
+  footprint(board.group,'#424f7a');footprint(bboard,'#e5ddca');
+  Object.values(cur.scene.refs).forEach(o=>footprint(o,o===focusObject?'#21aaa4':'#9ca599'));
+  ctx.strokeStyle='#b96343';ctx.lineWidth=2;const tx=px(rig.target.x),tz=pz(rig.target.z);ctx.beginPath();ctx.moveTo(tx-5,tz);ctx.lineTo(tx+5,tz);ctx.moveTo(tx,tz-5);ctx.lineTo(tx,tz+5);ctx.stroke();
+}
+focusMap.addEventListener('pointerdown',e=>{if(!mapBounds)return;e.preventDefault();const r=focusMap.getBoundingClientRect(),m=mapBounds;rig.tTarget.x=m.cx+((e.clientX-r.left)/r.width*300-150)/m.scale;rig.tTarget.z=m.cz+((e.clientY-r.top)/r.height*200-100)/m.scale;idle.t=0;});
+focusMap.addEventListener('keydown',e=>{const d={ArrowLeft:[-8,0],ArrowRight:[8,0],ArrowUp:[0,-8],ArrowDown:[0,8]}[e.key];if(d){e.preventDefault();rig.tTarget.x+=d[0];rig.tTarget.z+=d[1];idle.t=0;}if(e.key==='Home'){e.preventDefault();document.querySelector('.tool-btn[data-k=reset]').click();}});
+
 // Frame an inspected component inside the unobscured part of the stage.
 function focusComponent(object){
   if(!object)return;
@@ -854,6 +881,7 @@ function openSheet(kind, data, anchor) {
   }
 }
 document.addEventListener('pointerdown', e => {
+  if(e.target.closest('#focusMap'))return;
   const sh = $('#sheet');
   if (state.sheet && sh.classList.contains('open') && !sh.contains(e.target) && !e.target.closest('.nav-btn') && !e.target.closest('.toolbar')) { closeSheet(false); }
 });
@@ -908,6 +936,7 @@ function loop(now) {
   if(focusObject){const center=focusObject.getWorldPosition(new THREE.Vector3());focusMarker.position.set(center.x+4,0,center.z);}
   renderer.render(scene, camera);
   placeTags();
+  drawFocusMap();
   requestAnimationFrame(loop);
 }
 function resize() {
