@@ -101,7 +101,12 @@ pot: {
       { at: pin('D34'), label: 'GPIO34 · ADC', i: 'wave', d: 'Analog input: reads 0 to 4095.' },
       { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot', i: 'gear', d: 'Click to turn the knob.' },
       { at: bb(19, 7).add(V(0, 10, 0)), label: 'LED', i: 'bulb', d: 'Brightness follows the knob.' },
+      { at: pin('D25'), label: 'GPIO25 · PWM', i: 'wave', d: 'Dims the LED with fast pulses, 0 to 255.' },
     ];
+    let shownRaw=2048,shownPWM=0;
+    s.tags[0].value=()=>`GPIO34 · ${shownRaw}`;
+    s.tags[3].value=()=>`GPIO25 · PWM ${Math.round(shownPWM/255*100)}% (${shownPWM})`;
+    s.api.potReadout=(raw,pwm)=>{shownRaw=raw;shownPWM=pwm;};
     s.api.level = v => { const l = s.refs.led.userData; l.setLit(v > .02); l.body.material.emissiveIntensity = v * 1.7; };
     s.api.knob = a => s.refs.pot.userData.setAngle(a);
     s.onClick = (w, api) => { if (w === 'pot') api._v = (api._v + .34) % 1.02; };
@@ -111,9 +116,10 @@ pot: {
     return {
       running: false,
       start() { this.running = true; api.serial('Sketch running. Click the knob to turn it.'); },
-      stop() { this.running = false; api.level(0); api.flow('D25', false); },
+      stop() { this.running = false; api.level(0); api.potReadout(Math.round(Math.min(1,api._v)*4095),0);api.flow('D25', false); },
       tick(dt) { if (!this.running) return; const v = Math.min(1, api._v);
-        api.line?.(12); api.knob(-2.2 + v * 4.4); api.level(v); api.flow('D25', v > .02);
+        const raw=Math.round(v*4095),pwm=Math.floor(raw*255/4095);api.potReadout(raw,pwm);
+        api.line?.(12); api.knob(-2.2 + v * 4.4); api.level(pwm/255); api.flow('D25', v > .02);
         acc += dt; if (acc > .8) { acc = 0; api.serial(`analogRead(GPIO34) = ${Math.round(v * 4095)}`); } },
     };
   },
