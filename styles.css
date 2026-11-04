@@ -580,3 +580,6 @@ svg{display:block}
 
 .view-hint{display:none}
 @media(min-width:1024px){.view-hint{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--card);font:600 11px var(--cond);padding:3px 7px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:8}.stage-wrap:has(.toolbar:hover) .view-hint,.stage-wrap:has(.toolbar:focus-within) .view-hint{display:block}}
+/* Pin identities stay beside their names, with descriptions on their own row. */
+@media(max-width:1023px){.pin-row{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:6px 10px}.pin-chip{min-width:0;max-width:100%;overflow-wrap:anywhere}.pin-name{min-width:0;overflow-wrap:anywhere}.pin-desc{grid-column:1/-1;min-width:0;overflow-wrap:anywhere}}
+@media(max-width:360px){.pin-row{grid-template-columns:minmax(0,1fr)}.pin-chip{justify-self:start}.pin-name,.pin-desc{grid-column:1}}
