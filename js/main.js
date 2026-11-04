@@ -352,7 +352,7 @@ function loadLesson(i, keepTab) {
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
   rig.tAz = i === 0 ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
-  lessonGroup.clear();
+  clearComponentFocus();lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
   bboard.visible = LESSONS[i].sim !== 'builtin';
@@ -660,7 +660,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
+  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
@@ -699,6 +699,14 @@ function renderNavs() {
   };
 }
 
+// Original segmented ground marker, shown only for the component focus action.
+const focusMarker=new THREE.Group();focusMarker.visible=false;scene.add(focusMarker);
+for(const [radius,start,length,opacity]of[[19,.1,Math.PI*1.65,.72],[16.5,2.3,Math.PI*1.6,.36]]){
+  const ring=new THREE.Mesh(new THREE.RingGeometry(radius-.65,radius,80,1,start,length),new THREE.MeshBasicMaterial({color:0x20aaa5,transparent:true,opacity,side:THREE.DoubleSide,depthWrite:false}));
+  ring.rotation.x=-Math.PI/2;ring.position.y=.5;focusMarker.add(ring);
+}
+let focusObject=null;
+function clearComponentFocus(){focusObject=null;focusMarker.visible=false;}
 // Frame an inspected component inside the unobscured part of the stage.
 function focusComponent(object){
   if(!object)return;
@@ -717,12 +725,13 @@ function focusComponent(object){
     let need=0;for(const corner of corners){const v=corner.clone().project(probe);need=Math.max(need,Math.abs(v.x)/.68,Math.abs(v.y-ny)/(available/rect.height*.7));}
     if(need<=1.01)break;distance*=need*1.03;
   }
-  rig.tTarget.copy(target);rig.tDist=distance;idle.t=0;
+  rig.tTarget.copy(target);rig.tDist=distance;idle.t=0;focusObject=object;focusMarker.visible=true;
 }
 
 // ---------- sheets ----------
 let sheetOpener=null;
 function closeSheet(restoreFocus=true){
+  clearComponentFocus();
   $('#sheet').classList.remove('open');state.sheet=null;
   if(restoreFocus&&sheetOpener?.isConnected)sheetOpener.focus({preventScroll:true});
   sheetOpener=null;
@@ -859,6 +868,7 @@ function loop(now) {
   if (state.settings.flow && cur.scene) {
     cur.scene.wires.forEach(w => { if (w.dot.visible) { w._t = ((w._t ?? 0) + dt * .9) % 1; w.dot.position.copy(w.curve.getPoint(w._t)); } });
   }
+  if(focusObject){const center=focusObject.getWorldPosition(new THREE.Vector3());focusMarker.position.set(center.x+4,0,center.z);}
   renderer.render(scene, camera);
   placeTags();
   requestAnimationFrame(loop);
