@@ -4,13 +4,14 @@ import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
 import { SCENES, BOARD_POS, BB_POS } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
-import { LANGS, T, applyLang, currentLang } from './i18n.js';
+import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag } from './i18n.js';
+import { createSchematicPanel } from './schematic.js';
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const state = {
   lesson: 0, tab: 'overview', running: false, sim: null, scene: null,
-  settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, lang: 'en' },
+  settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, schematic: false, lang: 'en' },
   done: new Set(), sheet: null, startedAt: 0,
 };
 try { Object.assign(state.settings, JSON.parse(localStorage.getItem('esp32:settings') || '{}'));
@@ -96,12 +97,21 @@ function tone(f) {
 const api = {
   serial: t => log(t), tone,
   setBuiltin: on => { board.builtinLed.material = on ? new THREE.MeshStandardMaterial({ color: 0x5aa0ec, emissive: 0x2a6ae0, emissiveIntensity: 1.8 }) : MAT.blueLed; },
-  tag: t => { const el = $('#runTag'); if (!el) return; if (t) { el.textContent = t; el.style.display = 'flex'; } else el.style.display = 'none'; },
+  tag: t => { const el = $('#runTag'); if (!el) return; if (t) { el.textContent = trTag(t); el.style.display = 'flex'; } else el.style.display = 'none'; },
+  // schematic pin values ride on flow() calls below
   flow: (net, on) => { if (!state.settings.flow) on = false;
-    cur.scene?.wires.forEach(w => { if (w.net === net) w.dot.visible = !!on; }); },
+    cur.scene?.wires.forEach(w => { if (w.net === net) w.dot.visible = !!on; });
+    if (schPanel.isOpen) schPanel.pin(netLabel(net), on ? 'HIGH' : ''); },
 };
 const apiBase = { ...api };
 let cur = { scene: null, sim: null };
+
+// ---------- schematic panel ----------
+const netLabel = n => /^D\d+$/.test(n) ? 'GPIO' + n.slice(1) : n;
+const schPanel = createSchematicPanel(document.getElementById('schematic'), {
+  onClose: () => { state.settings.schematic = false; saveSettings(); applySettings(); },
+  strings: { get title() { return T('schematic'); }, get none() { return T('schematic_none'); } },
+});
 
 // ---------- tags ----------
 const tagsEl = $('#tags');
@@ -111,7 +121,7 @@ function rebuildTags() {
   if (!state.settings.labels) return;
   const list = cur.scene?.tags || [];
   list.forEach(t => {
-    const d = document.createElement('button'); d.className = 'tag'; d.textContent = t.label;
+    const d = document.createElement('button'); d.className = 'tag'; d.textContent = trTag(t.label);
     if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
     tagsEl.appendChild(d); tagDivs.push({ d, t });
   });
@@ -217,6 +227,7 @@ class LessonScene {
 }
 
 function loadLesson(i, keepTab) {
+  schPanel.setLesson(LESSONS[i].id, trLesson(LESSONS[i]).heading);
   $('#panel').classList.remove('open');
   stopSim();
   state.lesson = i;
@@ -242,15 +253,40 @@ function frameScene(snap) {
     .union(new THREE.Box3().setFromObject(bboard))
     .union(new THREE.Box3().setFromObject(lessonGroup));
   if (box.isEmpty()) return;
-  const c = box.getCenter(new THREE.Vector3()), sz = box.getSize(new THREE.Vector3());
+  const c = box.getCenter(new THREE.Vector3());
   const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1, aspect = w / h;
-  const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-  const ca = Math.abs(Math.cos(rig.az)), sa = Math.abs(Math.sin(rig.az));
-  const halfW = (sz.x * ca + sz.z * sa) / 2;
-  const halfH = (sz.y + (sz.x * sa + sz.z * ca) * .45) / 2;
-  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 1.0 : 1.0) + 10;
-  rig.tTarget.set(c.x, aspect < 1 ? Math.min(-2, c.y * .2 - 6) : Math.max(2, c.y * .55), c.z);
-  rig.tDist = THREE.MathUtils.clamp(dist, 120, 700);
+  rig.tTarget.set(c.x, aspect < 1 ? c.y * .9 : Math.max(2, c.y * .55), c.z);
+  // Projective fit: place a probe camera, project every box corner to NDC,
+  // grow distance until the full silhouette clears the viewport minus room
+  // reserved for callout pills at the edges. Verified in pixels, not approximated.
+  // true silhouette bounds: sample world-space vertices of every visible mesh
+  const pts = [];
+  const tv = new THREE.Vector3();
+  for (const root of [board.group, bboard, lessonGroup]) {
+    root.updateWorldMatrix(true, true);
+    root.traverse(o => {
+      if (!o.isMesh || !o.visible || !o.geometry?.attributes?.position) return;
+      const pos = o.geometry.attributes.position;
+      const stride = Math.max(1, Math.floor(pos.count / 500));
+      for (let i = 0; i < pos.count; i += stride) pts.push(tv.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).clone());
+    });
+  }
+  camera.aspect = aspect; camera.updateProjectionMatrix();
+  const tgt = rig.tTarget, sp = Math.sin(rig.tPol), saz = Math.sin(rig.tAz), caz = Math.cos(rig.tAz);
+  const allowX = 1 - Math.min(.2, 74 / w), allowY = 1 - Math.min(.14, 38 / h);
+  let dist = 300;
+  for (let it = 0; it < 6; it++) {
+    camera.position.set(tgt.x + dist * sp * saz, tgt.y + dist * Math.cos(rig.tPol), tgt.z + dist * sp * caz);
+    camera.lookAt(tgt); camera.updateMatrixWorld(true);
+    let mx = 0, my = 0;
+    const v = new THREE.Vector3();
+    for (const p of pts) { v.copy(p).project(camera); mx = Math.max(mx, Math.abs(v.x)); my = Math.max(my, Math.abs(v.y)); }
+    const need = Math.max(mx / allowX, my / allowY);
+    dist *= need;
+    if (Math.abs(need - 1) < .005) break;
+  }
+  dist *= 1.015;
+  rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
 
@@ -275,7 +311,7 @@ function hl(code) {
 // ---------- panel ----------
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
-  const L = LESSONS[state.lesson];
+  const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
   document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
     const wasOpen = $('#panel').classList.contains('open') && state.tab === b.dataset.tab;
@@ -367,7 +403,7 @@ function renderRail() {
   rail.innerHTML = LESSONS.map((L, i) => `
     <button class="lesson-card ${i === state.lesson ? 'on' : ''}" data-i="${i}">
       <img class="thumb" data-thumb="${i}" alt="" />
-      <span class="lt">${L.num}. ${L.title.toUpperCase()}</span>
+      <span class="lt">${L.num}. ${trLesson(L).title.toUpperCase()}</span>
       ${state.done.has(i) ? '<span class="done-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 7"/></svg></span>' : ''}
       <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
     </button>`).join('') + `<span class="rail-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></span>`;
@@ -493,6 +529,7 @@ function openSheet(kind, data) {
       `<div class="set-row"><div><div class="set-name">${T('set_language')}</div><div class="set-desc">${T('set_language_d')}</div></div><span class="sp"></span><select class="select" id="langSel">${LANGS.map(l => `<option value="${l.code}" ${l.code === S.lang ? 'selected' : ''}>${l.name}</option>`).join('')}</select></div>` +
       row('labels', T('set_labels'), T('set_labels_d')) +
       row('flow', T('set_flow'), T('set_flow_d')) +
+      row('schematic', T('set_schematic'), T('set_schematic_d')) +
       row('grid', T('set_grid'), T('set_grid_d')) +
       row('turntable', T('set_turntable'), T('set_turntable_d')) +
       row('sound', T('set_sound'), T('set_sound_d')) +
@@ -507,7 +544,7 @@ function openSheet(kind, data) {
     title.textContent = T('language'); sub.textContent = '';
     body.innerHTML = LANGS.map(l => `<button class="lang-row ${l.code === state.settings.lang ? 'on' : ''}" data-c="${l.code}">
       <span class="lang-code">${l.short || l.code.toUpperCase()}</span>
-      <div><div class="lang-native">${l.name.toUpperCase()}</div><div class="lang-en">${l.en}${l.code !== 'en' ? ' · ' + T('ui_only') : ''}</div></div>
+      <div><div class="lang-native">${l.name.toUpperCase()}</div><div class="lang-en">${l.en}</div></div>
       <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 7"/></svg>
     </button>`).join('');
     body.querySelectorAll('.lang-row').forEach(r => r.onclick = () => setLang(r.dataset.c));
@@ -524,18 +561,26 @@ document.addEventListener('pointerdown', e => {
 
 function applySettings() {
   grid.visible = state.settings.grid;
+  schPanel.setOpen(!!state.settings.schematic);
   rebuildTags();
   if (!state.settings.sound) tone(0);
   document.querySelector('.tool-btn[data-k="waveT"]')?.classList.toggle('on', state.settings.flow);
 }
 
 // ---------- language ----------
-function setLang(code) {
+const localeCache = { en: null };
+async function setLang(code, opts = {}) {
   state.settings.lang = code; saveSettings();
+  if (code !== 'en' && !(code in localeCache)) {
+    try { localeCache[code] = (await import(`./locales/${code}.js`)).default; }
+    catch { localeCache[code] = null; }
+  }
+  setLocaleData(localeCache[code] || null);
   applyLang(code);
-  renderNavs(); renderPanel();
+  renderNavs();
   const b = $('#langBadge'); if (b) b.textContent = code.toUpperCase().slice(0, 2);
-  openSheet('language');
+  loadLesson(state.lesson, true);   // rebuilds panel, rail, callout tags with translated text
+  if (!opts.silent) openSheet('language');
 }
 
 // ---------- clock ----------
@@ -578,6 +623,7 @@ async function boot() {
   const steps = ['Warming up the renderer', 'Etching the PCB', 'Placing components', 'Routing wires', 'Writing lesson cards'];
   for (let i = 0; i < steps.length; i++) { stepEl.textContent = steps[i]; fillEl.style.width = ((i + 1) / (steps.length + 1) * 100) + '%'; await sleep(state.settings.reduceMotion ? 30 : 240); }
   try {
+    if (state.settings.lang && state.settings.lang !== 'en') await setLang(state.settings.lang, { silent: true });
     resize(); renderNavs(); updateProgress(); applySettings(); tickClock(); loadLesson(0); frameScene(true);
     requestAnimationFrame(loop);
     fillEl.style.width = '100%';
