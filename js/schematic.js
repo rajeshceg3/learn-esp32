@@ -1,6 +1,11 @@
 // Learn ESP32 — schematic view: original SVG wiring diagrams generated per lesson.
 // Independent implementation; symbols and layouts are our own artwork.
 
+import { currentLang } from './i18n.js';
+
+const DIAGRAM_UI = {en:['Close','divider'],es:['Cerrar','divisor'],pt:['Fechar','divisor'],fr:['Fermer','diviseur'],de:['Schließen','Spannungsteiler'],it:['Chiudi','partitore'],tr:['Kapat','gerilim bölücü'],id:['Tutup','pembagi tegangan'],zh:['关闭','分压器'],'zh-tw':['關閉','分壓器'],ja:['閉じる','分圧器'],ko:['닫기','분압기'],hi:['बंद करें','वोल्टेज विभाजक'],he:['סגירה','מחלק מתח']};
+const diagramUI = () => DIAGRAM_UI[currentLang()] || DIAGRAM_UI.en;
+
 const T = (x, y, s, cls = '', anchor = 'middle') => `<text class="${cls}" x="${x}" y="${y}" text-anchor="${anchor}">${s}</text>`;
 const W = (pts, cls = '') => `<path class="w ${cls}" d="M${pts.map(p => p.join(' ')).join(' L')}"/>`;
 
@@ -178,10 +183,24 @@ const SCH = {
   },
 };
 
+// Compact module diagrams use aligned pin rows so each connection reads left to right.
+function moduleDiagram(title, pins, labels, note = '') {
+  const top=22, first=58, step=35, bottom=first+(pins.length-1)*step+22;
+  const rows=pins.map((pin,i)=>{
+    const y=first+i*step;
+    return `${T(101,y+4,pin,'pin-t','end')}${W([[108,y],[246,y]])}${T(254,y+4,labels[i],'pin-t','start')}<text class="pinval" data-pin="${pin}" x="172" y="${y-7}"></text>`;
+  }).join('');
+  const h=bottom+(note?43:18);
+  return {svg:`<svg class="sch" viewBox="0 0 380 ${h}" role="img" aria-label="ESP32 · ${title}"><g class="board"><rect class="box" x="18" y="${top}" width="90" height="${bottom-top}" rx="6"/>${T(63,top+15,'ESP32','block-t')}</g><g class="board"><rect class="box" x="246" y="${top+4}" width="112" height="${bottom-top-8}" rx="5"/>${T(302,top+19,title,'block-t')}</g>${rows}${note?T(18,bottom+27,note,'note','start'):''}</svg>`};
+}
+
 // Build the SVG for a lesson id. Returns { svg } or null when the lesson has no circuit.
 export function buildSchematic(id) {
   const spec = SCH[id];
   if (!spec) return null;
+  if(id==='servo')return moduleDiagram('SERVO',['GPIO13','VIN','GND'],['SIG','5V','GND']);
+  if(id==='distance')return moduleDiagram('HC-SR04',['VIN','GPIO5','GPIO18','GND'],['VCC','TRIG','ECHO','GND'],`ECHO: 5 V → 3.3 V · ${diagramUI()[1]}`);
+  if(id==='sound')return{svg:`<svg class="sch" viewBox="0 0 380 120" role="img" aria-label="ESP32 GPIO19 · BZ1 · GND"><g class="board"><rect class="box" x="18" y="24" width="100" height="68" rx="7"/>${T(68,43,'ESP32','block-t')}${T(110,70,'GPIO19','pin-t','end')}</g><text class="pinval" data-pin="GPIO19" x="170" y="58"></text>${W([[118,66],[246,66]])}<g class="sym" transform="translate(276 66)">${SYM.buzzer('BZ1')}</g>${W([[306,66],[340,66],[340,74]])}<g class="sym" transform="translate(340 74)">${SYM.gnd()}</g></svg>`};
   if(id==='blink')return{svg:`<svg class="sch" viewBox="0 0 380 112" role="img" aria-label="ESP32 GPIO26 · 220 Ω · LED · GND"><g class="board"><rect class="box" x="16" y="25" width="82" height="56" rx="7"/>${T(57,43,'ESP32','block-t')}${T(90,66,'GPIO26','pin-t','end')}</g><text class="pinval" data-pin="GPIO26" x="126" y="52"></text>${W([[98,62],[170,62]])}<g class="sym" transform="translate(200 62)">${SYM.resistor('R1','220 Ω')}</g>${W([[230,62],[264,62]])}<g class="sym" transform="translate(294 62)">${SYM.led('D1','LED')}</g>${W([[324,62],[350,62],[350,69]])}<g class="sym" transform="translate(350 69)">${SYM.gnd()}</g></svg>`};
   const P = spec.pads, g = [];
   const pinY = i => (P['p' + i] ? P['p' + i][1] : 62 + i * 42);
@@ -211,6 +230,7 @@ export function createSchematicPanel(root, { onClose, strings } = {}) {
     setOpen(v) { if (v === open) return; open = v; root.classList.toggle('is-on', v); root.style.display = v ? 'flex' : 'none'; if (v) api.render(); },
     setLesson(id, name) { lid = id; lessonEl.textContent = name || ''; if (open) api.render(); },
     render() {
+      root.querySelector('.sch-close').setAttribute('aria-label',diagramUI()[0]);
       headEl.textContent = (strings?.title || 'Schematic').toUpperCase();
       const r = lid && buildSchematic(lid);
       body.innerHTML = r ? r.svg : `<p class="sch-none">${strings?.none || 'No circuit in this lesson.'}</p>`;
