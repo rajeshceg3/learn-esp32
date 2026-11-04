@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Escucha el eco.",
     "Measures distance with sound.": "Mide la distancia con sonido.",
     "Click to move it.": "Haz clic para moverlo.",
-    "Plays tones with ledcTone.": "Toca notas con ledcTone.",
+    "Plays tones with ledcWriteTone.": "Toca notas con ledcWriteTone.",
     "Turns pulses into sound.": "Convierte pulsos en sonido.",
     "Each key plays a note.": "Cada tecla toca una nota.",
     "PWM sets the motor speed.": "PWM fija la velocidad del motor.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Hacer un sonido', heading: 'Hacer un sonido',
       lede: 'Un zumbador piezoeléctrico hace clic cada vez que su pin cambia. Cámbialo rápido y los clics se funden en una nota: el temporizador LEDC del ESP32 lo hace por ti.',
-      features: ['<code>ledcTone()</code> toca una frecuencia', 'Duración en milisegundos', 'Elige una melodía abajo'],
+      features: ['<code>ledcWriteTone()</code> toca una frecuencia', 'Duración en milisegundos', 'Elige una melodía abajo'],
       pinout: [['Zumbador +', 'Onda cuadrada desde un canal LEDC.'], ['Zumbador −', 'El otro terminal.']],
       example: [
         'El La central es 440 Hz: el pin cambia 440 veces por segundo.',
-        '<code>ledcTone(BUZZER, 262)</code> toca el Do central hasta que lo pares.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> toca el Do central hasta que lo pares.',
         'Notas cortas con pausas entre ellas forman una melodía.',
       ],
       specs: [['Rango', '31 Hz – 65 kHz'], ['Do central', '262 Hz'], ['Corriente', '≈ 15 mA a 3,3 V'], ['Tipo', 'Piezo pasivo']],

@@ -194,7 +194,7 @@ sound: {
   build(s) {
     const bz = C.buzzer(); bz.position.copy(bb(15, 2)); s.add(bz, 'buzzer');
     s.wires.push(wireTo(pin('D19'), bb(11, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(19, 3), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D19'), label: 'GPIO19', i: 'bolt', d: 'Plays tones with ledcTone.' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
+    s.tags = [ { at: pin('D19'), label: 'GPIO19', i: 'bolt', d: 'Plays tones with ledcWriteTone.' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
   },
   sim: api => {
     const seq = [[262, 'C'], [330, 'E'], [392, 'G'], [0, 'rest']]; let i = -1, wait = 0;
@@ -204,7 +204,7 @@ sound: {
       stop() { this.running = false; api.tone(0); },
       tick(dt) { if (!this.running) return; wait -= dt * 1000;
         if (wait <= 0) { i = (i + 1) % seq.length; const [f, n] = seq[i];
-          api.line?.(8+i); api.tone(f); api.serial(f ? `ledcTone(GPIO19, ${f})  // ${n}` : 'ledcTone(GPIO19, 0)  // rest');
+          api.line?.(8+i); api.tone(f); api.serial(f ? `ledcWriteTone(GPIO19, ${f})  // ${n}` : 'ledcWriteTone(GPIO19, 0)  // rest');
           wait = f ? 400 : 600; } },
     };
   },
@@ -226,7 +226,7 @@ piano: {
   sim: api => ({
     running: false,
     start() { this.running = true; api.serial('Tap the coloured buttons to play a note.'); },
-    stop() { this.running = false; api.tone(0); api.pressKey(-1, false); },
+    stop() { this.running = false; clearTimeout(this._t); api.tone(0); api.pressKey(-1, false); },
     note(i) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
       api.line?.(13); api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);
       clearTimeout(this._t); this._t = setTimeout(() => { api.pressKey(-1, false); api.tone(0); }, 280); },

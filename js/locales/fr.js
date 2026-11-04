@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Écoute l'écho.",
     "Measures distance with sound.": "Mesure la distance avec le son.",
     "Click to move it.": "Clique pour le déplacer.",
-    "Plays tones with ledcTone.": "Joue des notes avec ledcTone.",
+    "Plays tones with ledcWriteTone.": "Joue des notes avec ledcWriteTone.",
     "Turns pulses into sound.": "Transforme les impulsions en son.",
     "Each key plays a note.": "Chaque touche joue une note.",
     "PWM sets the motor speed.": "PWM règle la vitesse du moteur.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Faire un son', heading: 'Faire un son',
       lede: 'Un buzzer piézo clique à chaque bascule de sa broche. Basculez vite et les clics se fondent en une note — le timer LEDC de l’ESP32 fait la bascule pour vous.',
-      features: ['<code>ledcTone()</code> joue une fréquence', 'Durée en millisecondes', 'Choisissez une mélodie ci-dessous'],
+      features: ['<code>ledcWriteTone()</code> joue une fréquence', 'Durée en millisecondes', 'Choisissez une mélodie ci-dessous'],
       pinout: [['Buzzer +', 'Onde carrée depuis un canal LEDC.'], ['Buzzer −', 'L’autre borne.']],
       example: [
         'Le La du diapason est 440 Hz : la broche bascule 440 fois par seconde.',
-        '<code>ledcTone(BUZZER, 262)</code> joue le Do central jusqu’à l’arrêt.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> joue le Do central jusqu’à l’arrêt.',
         'Des notes courtes séparées de silences font une mélodie.',
       ],
       specs: [['Plage', '31 Hz – 65 kHz'], ['Do central', '262 Hz'], ['Courant', '≈ 15 mA sous 3,3 V'], ['Type', 'Piézo passif']],

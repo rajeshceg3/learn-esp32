@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "監聽回聲。",
     "Measures distance with sound.": "用聲音測量距離。",
     "Click to move it.": "點擊移動它。",
-    "Plays tones with ledcTone.": "用 ledcTone 播放音調。",
+    "Plays tones with ledcWriteTone.": "用 ledcWriteTone 播放音調。",
     "Turns pulses into sound.": "把脈衝變成聲音。",
     "Each key plays a note.": "每個按鍵彈奏一個音符。",
     "PWM sets the motor speed.": "PWM 決定馬達轉速。",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: '發出聲音', heading: '發出聲音',
       lede: '壓電蜂鳴器在腳位每次翻轉時發出喀噠聲。快速翻轉，這些喀噠聲就融合成一個音調——ESP32 的 LEDC 計時器幫你完成。',
-      features: ['<code>ledcTone()</code> 播放頻率', '時長以毫秒計', '在下方選擇旋律'],
+      features: ['<code>ledcWriteTone()</code> 播放頻率', '時長以毫秒計', '在下方選擇旋律'],
       pinout: [['蜂鳴器 +', '來自 LEDC 通道的方波。'], ['蜂鳴器 −', '另一端子。']],
       example: [
         '標準音高 A 是 440 Hz：腳位每秒翻轉 440 次。',
-        '<code>ledcTone(BUZZER, 262)</code> 播放中央 C，直到你停止。',
+        '<code>ledcWriteTone(BUZZER, 262)</code> 播放中央 C，直到你停止。',
         '短促的音符加上停頓，就成了一首歌。',
       ],
       specs: [['範圍', '31 Hz – 65 kHz'], ['中央 C', '262 Hz'], ['電流', '3.3 V 時約 15 mA'], ['類型', '無源壓電']],

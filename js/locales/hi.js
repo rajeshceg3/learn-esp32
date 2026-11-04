@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "गूंज सुनता है।",
     "Measures distance with sound.": "आवाज़ से दूरी मापता है।",
     "Click to move it.": "इसे हिलाने के लिए क्लिक करें।",
-    "Plays tones with ledcTone.": "ledcTone से स्वर बजाता है।",
+    "Plays tones with ledcWriteTone.": "ledcWriteTone से स्वर बजाता है।",
     "Turns pulses into sound.": "पल्स को आवाज़ में बदलता है।",
     "Each key plays a note.": "हर कुंजी एक सुर बजाती है।",
     "PWM sets the motor speed.": "PWM मोटर की गति तय करता है।",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'आवाज़ बनाएँ', heading: 'आवाज़ बनाएँ',
       lede: 'पीज़ो बज़र हर बार पिन पलटने पर क्लिक करता है। तेज़ी से पलटें और क्लिक एक स्वर में घुल जाती हैं — ESP32 का LEDC टाइमर यह करता है।',
-      features: ['<code>ledcTone()</code> से फ़्रीक्वेंसी बजाएँ', 'अवधि मिलीसेकंड में', 'नीचे धुन चुनें'],
+      features: ['<code>ledcWriteTone()</code> से फ़्रीक्वेंसी बजाएँ', 'अवधि मिलीसेकंड में', 'नीचे धुन चुनें'],
       pinout: [['बज़र +', 'LEDC चैनल से स्क्वेयर वेव।'], ['बज़र −', 'दूसरा टर्मिनल।']],
       example: [
         'स्टैंडर्ड पिच A 440 Hz है: पिन प्रति सेकंड 440 बार पलटती है।',
-        '<code>ledcTone(BUZZER, 262)</code> मिडिल C तब तक बजाता है जब तक आप रोक न दें।',
+        '<code>ledcWriteTone(BUZZER, 262)</code> मिडिल C तब तक बजाता है जब तक आप रोक न दें।',
         'छोटे-छोटे नोट्स और बीच का ठहराव मिलकर गाना बनते हैं।',
       ],
       specs: [['रेंज', '31 Hz – 65 kHz'], ['मिडिल C', '262 Hz'], ['करंट', '3.3 V पर लगभग 15 mA'], ['प्रकार', 'पैसिव पीज़ो']],

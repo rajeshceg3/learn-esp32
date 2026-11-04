@@ -367,7 +367,7 @@ function hl(code) {
     code = code
       .replace(/("[^"]*")/g, '<span class="tok-str">$1</span>')
       .replace(/\b(void|const|int|float|long|bool|for|if|else|return|true|false|include)\b/g, '<span class="tok-kw">$1</span>')
-      .replace(/\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|ledcWrite|ledcAttach|ledcTone|touchRead|pulseIn|Serial|println|print|begin|delay|delayMicroseconds|map|setup|loop|Wire)\b/g, '<span class="tok-fn">$1</span>')
+      .replace(/\b(pinMode|digitalWrite|digitalRead|analogRead|analogWrite|ledcWrite|ledcAttach|ledcWriteTone|touchRead|pulseIn|Serial|println|print|begin|delay|delayMicroseconds|map|setup|loop|Wire)\b/g, '<span class="tok-fn">$1</span>')
       .replace(/(?<![\w#>])(\d+\.?\d*)/g, '<span class="tok-num">$1</span>')
       .replace(/\b([A-Z_][A-Z0-9_]{2,})\b/g, '<span class="tok-num">$1</span>');
     if (com) code += '<span class="tok-com">' + com + '</span>';

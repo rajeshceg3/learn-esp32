@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Yankıyı dinler.",
     "Measures distance with sound.": "Sesle mesafe ölçer.",
     "Click to move it.": "Hareket ettirmek için tıkla.",
-    "Plays tones with ledcTone.": "ledcTone ile ton çalar.",
+    "Plays tones with ledcWriteTone.": "ledcWriteTone ile ton çalar.",
     "Turns pulses into sound.": "Darbeleri sese çevirir.",
     "Each key plays a note.": "Her tuş bir nota çalar.",
     "PWM sets the motor speed.": "PWM motor hızını ayarlar.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Ses çıkar', heading: 'Ses çıkar',
       lede: 'Piezo buzzer, pini her değiştiğinde tıklar. Hızlı değiştir ve tıklamalar bir notaya dönüşür — ESP32’nin LEDC zamanlayıcısı değiştirmeyi senin için yapar.',
-      features: ['<code>ledcTone()</code> bir frekans çalar', 'Milisaniye cinsinden süre', 'Aşağıdan bir melodi seç'],
+      features: ['<code>ledcWriteTone()</code> bir frekans çalar', 'Milisaniye cinsinden süre', 'Aşağıdan bir melodi seç'],
       pinout: [['Buzzer +', 'Bir LEDC kanalından kare dalga.'], ['Buzzer −', 'Diğer uç.']],
       example: [
         'Konzert La’sı 440 Hz’dir: pin saniyede 440 kez değişir.',
-        '<code>ledcTone(BUZZER, 262)</code>, sen durdurana kadar orta Do çalar.',
+        '<code>ledcWriteTone(BUZZER, 262)</code>, sen durdurana kadar orta Do çalar.',
         'Aralarında boşluklar olan kısa notalar bir melodi yapar.',
       ],
       specs: [['Aralık', '31 Hz – 65 kHz'], ['Orta Do', '262 Hz'], ['Akım', '3,3 V’da ≈ 15 mA'], ['Tip', 'Pasif piezo']],

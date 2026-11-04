@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Escuta o eco.",
     "Measures distance with sound.": "Mede a distância com som.",
     "Click to move it.": "Clica para o mover.",
-    "Plays tones with ledcTone.": "Toca notas com ledcTone.",
+    "Plays tones with ledcWriteTone.": "Toca notas com ledcWriteTone.",
     "Turns pulses into sound.": "Transforma pulsos em som.",
     "Each key plays a note.": "Cada tecla toca uma nota.",
     "PWM sets the motor speed.": "PWM define a velocidade do motor.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Fazer um som', heading: 'Fazer um som',
       lede: 'Um buzzer piezo faz um clique toda vez que seu pino muda. Mude rápido e os cliques viram uma nota — o temporizador LEDC do ESP32 faz isso por você.',
-      features: ['<code>ledcTone()</code> toca uma frequência', 'Duração em milissegundos', 'Escolha uma melodia abaixo'],
+      features: ['<code>ledcWriteTone()</code> toca uma frequência', 'Duração em milissegundos', 'Escolha uma melodia abaixo'],
       pinout: [['Buzzer +', 'Onda quadrada de um canal LEDC.'], ['Buzzer −', 'O outro terminal.']],
       example: [
         'O Lá central é 440 Hz: o pino muda 440 vezes por segundo.',
-        '<code>ledcTone(BUZZER, 262)</code> toca o Dó central até você parar.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> toca o Dó central até você parar.',
         'Notas curtas com pausas entre elas formam uma melodia.',
       ],
       specs: [['Faixa', '31 Hz – 65 kHz'], ['Dó central', '262 Hz'], ['Corrente', '≈ 15 mA em 3,3 V'], ['Tipo', 'Piezo passivo']],

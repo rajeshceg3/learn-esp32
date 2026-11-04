@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Lauscht auf das Echo.",
     "Measures distance with sound.": "Misst Entfernung mit Schall.",
     "Click to move it.": "Klicken, um es zu bewegen.",
-    "Plays tones with ledcTone.": "Spielt Töne mit ledcTone.",
+    "Plays tones with ledcWriteTone.": "Spielt Töne mit ledcWriteTone.",
     "Turns pulses into sound.": "Wandelt Impulse in Ton um.",
     "Each key plays a note.": "Jede Taste spielt eine Note.",
     "PWM sets the motor speed.": "PWM bestimmt die Motordrehzahl.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Einen Ton erzeugen', heading: 'Einen Ton erzeugen',
       lede: 'Ein Piezo-Summer klickt bei jedem Umschalten seines Pins. Schalte schnell, und die Klicks verschwimmen zu einer Note — der LEDC-Timer des ESP32 übernimmt das Umschalten.',
-      features: ['<code>ledcTone()</code> spielt eine Frequenz', 'Dauer in Millisekunden', 'Wähle unten eine Melodie'],
+      features: ['<code>ledcWriteTone()</code> spielt eine Frequenz', 'Dauer in Millisekunden', 'Wähle unten eine Melodie'],
       pinout: [['Summer +', 'Rechteckwelle von einem LEDC-Kanal.'], ['Summer −', 'Der andere Anschluss.']],
       example: [
         'Der Kammerton A ist 440 Hz: Der Pin schaltet 440-mal pro Sekunde um.',
-        '<code>ledcTone(BUZZER, 262)</code> spielt das mittlere C, bis du es stoppst.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> spielt das mittlere C, bis du es stoppst.',
         'Kurze Noten mit Pausen dazwischen ergeben eine Melodie.',
       ],
       specs: [['Bereich', '31 Hz – 65 kHz'], ['Mittleres C', '262 Hz'], ['Strom', '≈ 15 mA bei 3,3 V'], ['Typ', 'Passiver Piezo']],

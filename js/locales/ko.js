@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "메아리를 듣습니다.",
     "Measures distance with sound.": "소리로 거리를 측정합니다.",
     "Click to move it.": "클릭해서 움직이기.",
-    "Plays tones with ledcTone.": "ledcTone으로 음을 재생합니다.",
+    "Plays tones with ledcWriteTone.": "ledcWriteTone으로 음을 재생합니다.",
     "Turns pulses into sound.": "펄스를 소리로 바꿉니다.",
     "Each key plays a note.": "각 건반이 하나의 음을 냅니다.",
     "PWM sets the motor speed.": "PWM이 모터 속도를 정합니다.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: '소리 내기', heading: '소리 내기',
       lede: '피에조 부저는 핀이 바뀔 때마다 딸깍 소리를 냅니다. 빠르게 바꾸면 그 소리가 하나의 음으로 녹아듭니다 — ESP32의 LEDC 타이머가 해줍니다.',
-      features: ['<code>ledcTone()</code>으로 주파수 재생', '길이는 밀리초 단위', '아래에서 멜로디 선택'],
+      features: ['<code>ledcWriteTone()</code>으로 주파수 재생', '길이는 밀리초 단위', '아래에서 멜로디 선택'],
       pinout: [['부저 +', 'LEDC 채널의 구형파.'], ['부저 −', '반대쪽 단자.']],
       example: [
         '표준 음높이 A는 440 Hz입니다: 핀이 초당 440번 바뀝니다.',
-        '<code>ledcTone(BUZZER, 262)</code>는 멈출 때까지 가운데 C를 연주합니다.',
+        '<code>ledcWriteTone(BUZZER, 262)</code>는 멈출 때까지 가운데 C를 연주합니다.',
         '짧은 음표에 쉼표를 넣으면 노래가 됩니다.',
       ],
       specs: [['범위', '31 Hz – 65 kHz'], ['가운데 C', '262 Hz'], ['전류', '3.3 V에서 약 15 mA'], ['유형', '수동 피에조']],

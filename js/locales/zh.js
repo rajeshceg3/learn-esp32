@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "监听回声。",
     "Measures distance with sound.": "用声音测量距离。",
     "Click to move it.": "点击移动它。",
-    "Plays tones with ledcTone.": "用 ledcTone 播放音调。",
+    "Plays tones with ledcWriteTone.": "用 ledcWriteTone 播放音调。",
     "Turns pulses into sound.": "把脉冲变成声音。",
     "Each key plays a note.": "每个按键弹奏一个音符。",
     "PWM sets the motor speed.": "PWM 决定电机转速。",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: '发出声音', heading: '发出声音',
       lede: '压电蜂鸣器在引脚每次翻转时发出咔哒声。快速翻转，这些咔哒声就融合成一个音调——ESP32 的 LEDC 定时器帮你完成。',
-      features: ['<code>ledcTone()</code> 播放频率', '时长以毫秒计', '在下方选择旋律'],
+      features: ['<code>ledcWriteTone()</code> 播放频率', '时长以毫秒计', '在下方选择旋律'],
       pinout: [['蜂鸣器 +', '来自 LEDC 通道的方波。'], ['蜂鸣器 −', '另一端子。']],
       example: [
         '标准音高 A 是 440 Hz：引脚每秒翻转 440 次。',
-        '<code>ledcTone(BUZZER, 262)</code> 播放中央 C，直到你停止。',
+        '<code>ledcWriteTone(BUZZER, 262)</code> 播放中央 C，直到你停止。',
         '短促的音符加上停顿，就成了一首歌。',
       ],
       specs: [['范围', '31 Hz – 65 kHz'], ['中央 C', '262 Hz'], ['电流', '3.3 V 时约 15 mA'], ['类型', '无源压电']],

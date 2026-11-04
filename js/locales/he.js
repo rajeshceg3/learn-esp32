@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "מקשיב להד.",
     "Measures distance with sound.": "מודד מרחק באמצעות צליל.",
     "Click to move it.": "לחיצה כדי להזיז אותו.",
-    "Plays tones with ledcTone.": "מנגן צלילים עם ledcTone.",
+    "Plays tones with ledcWriteTone.": "מנגן צלילים עם ledcWriteTone.",
     "Turns pulses into sound.": "הופך פולסים לצליל.",
     "Each key plays a note.": "כל קליד מנגן תו.",
     "PWM sets the motor speed.": "PWM קובע את מהירות המנוע.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'יצירת צליל', heading: 'יצירת צליל',
       lede: 'זמזם פיאזו מקליק בכל פעם שהפין מתהפך. הפכו מהר והקליקים נמסים לצליל — טיימר ה-LEDC של ESP32 עושה זאת בשבילכם.',
-      features: ['<code>ledcTone()</code> מנגן תדר', 'משך במילישניות', 'בחרו מנגינה למטה'],
+      features: ['<code>ledcWriteTone()</code> מנגן תדר', 'משך במילישניות', 'בחרו מנגינה למטה'],
       pinout: [['זמזם +', 'גל מרובע מערוץ LEDC.'], ['זמזם −', 'המסוף השני.']],
       example: [
         'ה-A הסטנדרטי הוא 440 הרץ: הפין מתהפך 440 פעמים בשנייה.',
-        '<code>ledcTone(BUZZER, 262)</code> מנגן C אמצעי עד שתעצרו.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> מנגן C אמצעי עד שתעצרו.',
         'תווים קצרים עם הפסקות ביניהם יוצרים שיר.',
       ],
       specs: [['טווח', '31 הרץ – 65 קילו-הרץ'], ['C אמצעי', '262 הרץ'], ['זרם', '≈ 15 מיליאמפר ב-3.3 וולט'], ['סוג', 'פיאזו פסיבי']],

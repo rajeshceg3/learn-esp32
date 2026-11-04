@@ -211,11 +211,11 @@ void loop() {
 {
   id: 'sound', num: 8, title: 'Make a sound', heading: 'Make a sound',
   lede: 'A piezo buzzer clicks every time its pin flips. Flip it fast and the clicks blur into a note — the ESP32’s LEDC timer does the flipping for you.',
-  features: [['bulb', '<code>ledcTone()</code> plays a frequency'], ['clock', 'Duration in milliseconds'], ['hand', 'Pick a melody below']],
+  features: [['bulb', '<code>ledcWriteTone()</code> plays a frequency'], ['clock', 'Duration in milliseconds'], ['hand', 'Pick a melody below']],
   pinout: [['GPIO19', 'Buzzer +', 'Square wave from an LEDC channel.', '#2a56a3'], ['GND', 'Buzzer −', 'The other terminal.', '#2f3547']],
   example: [
     'Concert A is 440 Hz: the pin flips 440 times a second.',
-    '<code>ledcTone(BUZZER, 262)</code> plays middle C until you stop it.',
+    '<code>ledcWriteTone(BUZZER, 262)</code> plays middle C until you stop it.',
     'Short notes with gaps between them make a tune.',
   ],
   specs: [['Range', '31 Hz – 65 kHz'], ['Middle C', '262 Hz'], ['Current', '≈ 15 mA at 3.3 V'], ['Type', 'Passive piezo']],
@@ -227,10 +227,10 @@ void setup() {
 }
 
 void loop() {
-  ledcTone(BUZZER, 262); delay(400);  // C
-  ledcTone(BUZZER, 330); delay(400);  // E
-  ledcTone(BUZZER, 392); delay(400);  // G
-  ledcTone(BUZZER, 0);   delay(600);  // rest
+  ledcWriteTone(BUZZER, 262); delay(400);  // C
+  ledcWriteTone(BUZZER, 330); delay(400);  // E
+  ledcWriteTone(BUZZER, 392); delay(400);  // G
+  ledcWriteTone(BUZZER, 0);   delay(600);  // rest
 }`,
   sim: 'sound',
 },
@@ -257,12 +257,15 @@ void setup() {
 }
 
 void loop() {
-  for (int i = 0; i < 8; i++)
+  int frequency = 0;
+  for (int i = 0; i < 8; i++) {
     if (digitalRead(KEYS[i]) == LOW) {
-      ledcTone(BUZZER, NOTES[i]);
-      delay(200);
-      ledcTone(BUZZER, 0);
+      frequency = NOTES[i];
+      break;  // first pressed key wins
     }
+  }
+  ledcWriteTone(BUZZER, frequency);  // 0 silences the buzzer
+  delay(10);
 }`,
   sim: 'piano',
 },

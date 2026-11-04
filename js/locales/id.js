@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "Mendengarkan gema.",
     "Measures distance with sound.": "Mengukur jarak dengan suara.",
     "Click to move it.": "Klik untuk menggerakkannya.",
-    "Plays tones with ledcTone.": "Memainkan nada dengan ledcTone.",
+    "Plays tones with ledcWriteTone.": "Memainkan nada dengan ledcWriteTone.",
     "Turns pulses into sound.": "Mengubah pulsa menjadi suara.",
     "Each key plays a note.": "Setiap tuts memainkan satu nada.",
     "PWM sets the motor speed.": "PWM mengatur kecepatan motor.",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: 'Buat bunyi', heading: 'Buat bunyi',
       lede: 'Buzzer piezo berbunyi klik setiap pin-nya berubah. Ubah dengan cepat dan klik-klik itu melebur jadi nada — timer LEDC ESP32 yang melakukannya untukmu.',
-      features: ['<code>ledcTone()</code> memainkan frekuensi', 'Durasi dalam milidetik', 'Pilih melodi di bawah'],
+      features: ['<code>ledcWriteTone()</code> memainkan frekuensi', 'Durasi dalam milidetik', 'Pilih melodi di bawah'],
       pinout: [['Buzzer +', 'Gelombang persegi dari kanal LEDC.'], ['Buzzer −', 'Terminal satunya.']],
       example: [
         'Nada A standar adalah 440 Hz: pin berubah 440 kali per detik.',
-        '<code>ledcTone(BUZZER, 262)</code> memainkan C tengah sampai kau hentikan.',
+        '<code>ledcWriteTone(BUZZER, 262)</code> memainkan C tengah sampai kau hentikan.',
         'Nada-nada pendek dengan jeda di antaranya membentuk lagu.',
       ],
       specs: [['Rentang', '31 Hz – 65 kHz'], ['C tengah', '262 Hz'], ['Arus', '≈ 15 mA pada 3,3 V'], ['Jenis', 'Piezo pasif']],

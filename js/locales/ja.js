@@ -41,7 +41,7 @@ export default {
     "Listens for the echo.": "反射波を待ち受けます。",
     "Measures distance with sound.": "音で距離を測ります。",
     "Click to move it.": "クリックで動かします。",
-    "Plays tones with ledcTone.": "ledcToneで音を鳴らします。",
+    "Plays tones with ledcWriteTone.": "ledcWriteToneで音を鳴らします。",
     "Turns pulses into sound.": "パルスを音に変えます。",
     "Each key plays a note.": "各キーが1音を鳴らします。",
     "PWM sets the motor speed.": "PWMがモーター速度を決めます。",
@@ -159,11 +159,11 @@ export default {
     sound: {
       title: '音を出す', heading: '音を出す',
       lede: '圧電ブザーはピンが反転するたびにカチッと鳴る。高速で反転させると、その音が溶け合ってトーンになる——ESP32 の LEDC タイマーがやってくれる。',
-      features: ['<code>ledcTone()</code> で周波数を再生', '長さはミリ秒で', '下でメロディを選択'],
+      features: ['<code>ledcWriteTone()</code> で周波数を再生', '長さはミリ秒で', '下でメロディを選択'],
       pinout: [['ブザー +', 'LEDC チャンネルからの方形波。'], ['ブザー −', 'もう一方の端子。']],
       example: [
         '標準ピッチの A は 440 Hz：ピンが 1 秒間に 440 回反転する。',
-        '<code>ledcTone(BUZZER, 262)</code> は止めるまで中央 C を鳴らす。',
+        '<code>ledcWriteTone(BUZZER, 262)</code> は止めるまで中央 C を鳴らす。',
         '短い音符に間を挟むと、曲になる。',
       ],
       specs: [['範囲', '31 Hz – 65 kHz'], ['中央 C', '262 Hz'], ['電流', '3.3 V で約 15 mA'], ['タイプ', '受動圧電']],
