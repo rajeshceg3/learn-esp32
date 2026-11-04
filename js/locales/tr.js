@@ -96,11 +96,11 @@ export default {
       features: ['<code>digitalWrite()</code> ile dijital çıkış', 'Diğer değerleri denemek için dirence tıkla', 'Renk ve tempo için LED’e tıkla'],
       pinout: [['LED anodu', 'Direnç üzerinden LED’in uzun bacağına.'], ['LED katodu', 'Kısa bacak toprağa döner.']],
       example: [
-        'Bir GPIO pini güvenle yaklaşık 12 mA verir — dirençli bir LED için bol bol yeter.',
+        'Nominal 3,3 V çıkış, yaklaşık 1,9 V kırmızı LED ve 220 Ω ile: I ≈ (3,3 - 1,9) / 220 = 6,4 mA. Devre tahminidir, GPIO sınırı değildir.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> 3,3 V verir; direnç kalanı üstlenir ve akımı ayarlar.',
         'Alıştırma: 900 ms açık ve 200 ms kapalı seçmek için vurgulanan iki <code>delay()</code> değerine tıkla. Kod güncel değerleri gösterir; simülasyon ve kopya aynı değerleri kullanır.',
       ],
-      specs: [['İleri gerilim', 'Kırmızı ≈ 1,9 V · mavi ≈ 3,0 V'], ['Direnç', '220 Ω – 1 kΩ'], ['Pin akımı', 'Pin başına ~12 mA’in altında kal'], ['Mutlak azami', 'Herhangi bir GPIO’da 3,6 V']],
+      specs: [['İleri gerilim', 'Kırmızı ≈ 1,9 V · mavi ≈ 3,0 V'], ['Direnç', '220 Ω – 1 kΩ'], ['Tahmini kırmızı LED akımı', '3,3 V / 220 Ω için ≈ 6,4 mA'], ['GPIO mantığı', '3,3 V; 5 V doğrudan bağlanmaz']],
     },
     button: {
       title: 'Butona bas', heading: 'Butona bas',

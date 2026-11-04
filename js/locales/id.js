@@ -96,11 +96,11 @@ export default {
       features: ['Keluaran digital dengan <code>digitalWrite()</code>', 'Klik resistor untuk mencoba nilai lain', 'Klik LED untuk mengubah warna dan tempo'],
       pinout: [['Anoda LED', 'Lewat resistor ke kaki panjang LED.'], ['Katoda LED', 'Kaki pendek kembali ke ground.']],
       example: [
-        'Pin GPIO aman menyalurkan sekitar 12 mA — lebih dari cukup untuk LED dengan resistor.',
+        'Dengan keluaran nominal 3,3 V, LED merah sekitar 1,9 V dan 220 Ω: I ≈ (3,3 - 1,9) / 220 = 6,4 mA. Ini perkiraan rangkaian, bukan batas GPIO.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> mengeluarkan 3,3 V; resistor menyerap sisanya dan mengatur arus.',
         'Latihan: klik kedua nilai <code>delay()</code> yang disorot untuk memilih 900 ms nyala dan 200 ms mati. Kode menampilkan nilai saat ini, yang juga dipakai simulasi dan salinan.',
       ],
-      specs: [['Tegangan maju', 'Merah ≈ 1,9 V · biru ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Arus pin', 'Jaga di bawah ~12 mA per pin'], ['Maksimum absolut', '3,6 V di GPIO mana pun']],
+      specs: [['Tegangan maju', 'Merah ≈ 1,9 V · biru ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Perkiraan arus LED merah', '≈ 6,4 mA pada 3,3 V / 220 Ω'], ['Logika GPIO', '3,3 V; jangan sambungkan 5 V langsung']],
     },
     button: {
       title: 'Tekan tombol', heading: 'Tekan tombol',

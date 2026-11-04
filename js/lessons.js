@@ -47,11 +47,11 @@ void loop() {
   features: [['pins', 'Digital output with <code>digitalWrite()</code>'], ['res', 'Click the resistor to try other values'], ['clock', 'Click the LED to change its colour and timing']],
   pinout: [['GPIO26', 'LED anode', 'Through the resistor to the LED’s long leg.', '#2a56a3'], ['GND', 'LED cathode', 'The short leg returns to ground.', '#2f3547']],
   example: [
-    'A GPIO pin sources up to about 12 mA safely — plenty for an LED through a resistor.',
+    'With a nominal 3.3 V output, a red LED at about 1.9 V and 220 Ω gives roughly 6.4 mA: I = (3.3 - 1.9) / 220. This is a circuit estimate, not a GPIO rating.',
     '<code>digitalWrite(LED_PIN, HIGH)</code> drives 3.3 V; the resistor drops the rest and sets the current.',
     'Timing exercise: click the highlighted <code>delay()</code> values to try 900 ms on and 200 ms off. The code shows the current values; the simulation and copied code use them.',
   ],
-  specs: [['Forward voltage', 'Red ≈ 1.9 V · blue ≈ 3.0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Pin current', 'Keep under ~12 mA per pin'], ['Absolute max', '3.6 V on any GPIO']],
+  specs: [['Forward voltage', 'Red ≈ 1.9 V · blue ≈ 3.0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Estimated red LED current', '≈ 6.4 mA at 3.3 V / 220 Ω'], ['GPIO logic', '3.3 V; never connect 5 V directly']],
   code:
 `const int LED_PIN = 26;
 

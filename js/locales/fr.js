@@ -96,11 +96,11 @@ export default {
       features: ['Sortie numérique avec <code>digitalWrite()</code>', 'Cliquez sur la résistance pour tester d’autres valeurs', 'Cliquez sur la LED pour changer couleur et rythme'],
       pinout: [['Anode de la LED', 'Par la résistance vers la patte longue de la LED.'], ['Cathode de la LED', 'La patte courte revient à la masse.']],
       example: [
-        'Une broche GPIO fournit environ 12 mA en sécurité — largement assez pour une LED avec résistance.',
+        'Avec une sortie nominale de 3,3 V, une LED rouge à environ 1,9 V et 220 Ω : I ≈ (3,3 - 1,9) / 220 = 6,4 mA. Estimation du circuit, pas une limite GPIO.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> sort 3,3 V ; la résistance absorbe le reste et fixe le courant.',
         'Exercice : cliquez sur les deux valeurs de <code>delay()</code> en surbrillance pour choisir 900 ms allumée et 200 ms éteinte. Le code affiche les valeurs actuelles, utilisées par la simulation et la copie.',
       ],
-      specs: [['Tension directe', 'Rouge ≈ 1,9 V · bleue ≈ 3,0 V'], ['Résistance', '220 Ω – 1 kΩ'], ['Courant par broche', 'Restez sous ~12 mA par broche'], ['Maximum absolu', '3,6 V sur toute GPIO']],
+      specs: [['Tension directe', 'Rouge ≈ 1,9 V · bleue ≈ 3,0 V'], ['Résistance', '220 Ω – 1 kΩ'], ['Courant rouge estimé', '≈ 6,4 mA à 3,3 V / 220 Ω'], ['Logique GPIO', '3,3 V ; jamais de connexion directe à 5 V']],
     },
     button: {
       title: 'Appuyer sur un bouton', heading: 'Appuyer sur un bouton',

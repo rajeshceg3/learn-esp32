@@ -96,11 +96,11 @@ export default {
       features: ['Saída digital com <code>digitalWrite()</code>', 'Clique no resistor para tentar outros valores', 'Clique no LED para mudar cor e ritmo'],
       pinout: [['Ânodo do LED', 'Pelo resistor até o terminal longo do LED.'], ['Cátodo do LED', 'O terminal curto volta ao terra.']],
       example: [
-        'Um pino GPIO fornece cerca de 12 mA com segurança — de sobra para um LED com resistor.',
+        'Com saída nominal de 3,3 V, LED vermelho de cerca de 1,9 V e 220 Ω: I ≈ (3,3 - 1,9) / 220 = 6,4 mA. É uma estimativa do circuito, não um limite GPIO.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> entrega 3,3 V; o resistor absorve o resto e define a corrente.',
         'Exercício: clique nos dois valores destacados de <code>delay()</code> para escolher 900 ms ligado e 200 ms desligado. O código mostra os valores atuais, usados também pela simulação e pela cópia.',
       ],
-      specs: [['Tensão direta', 'Vermelho ≈ 1,9 V · azul ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Corrente por pino', 'Mantenha abaixo de ~12 mA por pino'], ['Máximo absoluto', '3,6 V em qualquer GPIO']],
+      specs: [['Tensão direta', 'Vermelho ≈ 1,9 V · azul ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Corrente vermelha estimada', '≈ 6,4 mA a 3,3 V / 220 Ω'], ['Lógica GPIO', '3,3 V; nunca ligar 5 V diretamente']],
     },
     button: {
       title: 'Apertar um botão', heading: 'Apertar um botão',
