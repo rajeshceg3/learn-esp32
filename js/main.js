@@ -165,7 +165,11 @@ function placeTags() {
     let cx, cy;
     if (wide) {
       cx = ax + (ax < r.width * .52 ? -(w / 2 + 32) : (w / 2 + 32));
-      cy = ay - h / 2 - 40;
+      cy = ay - h / 2 - 80;
+      if (t.label === 'RESISTOR') { cx=r.width*.86;cy=r.height*.83; }
+      else if(t.label==='LED') { cx=r.width*.83;cy=r.height*.21; }
+      else if(t.label==='GND') { cx=r.width*.15;cy=r.height*.20; }
+      else if(t.label==='GPIO26') { cx=r.width*.48;cy=r.height*.17; }
       if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
     } else {
       // Attach a large pin marker to the physical part, with its compact label beside it.
@@ -665,13 +669,13 @@ function openSheet(kind, data, anchor) {
     const parentTop = sh.offsetParent ? sh.offsetParent.getBoundingClientRect().top : 0;
     const minTopVp = Math.max(12, parentTop + 8);
     const topVp = anchor ? anchor.getBoundingClientRect().top - 6 : minTopVp;
-    sh.style.maxHeight = (innerHeight - minTopVp - 12) + 'px';
+    sh.style.maxHeight = Math.min(456,innerHeight - minTopVp - 12) + 'px';
     sh.style.top = (Math.max(minTopVp, topVp) - parentTop) + 'px';
     requestAnimationFrame(() => {
       const hh = sh.offsetHeight;
       const finalTopVp = Math.max(minTopVp, Math.min(topVp, innerHeight - hh - 12));
       sh.style.top = (finalTopVp - parentTop) + 'px';
-      sh.style.maxHeight = (innerHeight - finalTopVp - 12) + 'px';
+      sh.style.maxHeight = Math.min(456,innerHeight - finalTopVp - 12) + 'px';
     });
   }
 }

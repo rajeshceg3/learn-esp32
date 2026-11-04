@@ -523,3 +523,14 @@ svg{display:block}
 @media(max-width:1023px){.bottomnav .nav-btn:nth-child(-n+4){color:#2b3d62}.bottomnav .nav-btn[data-k=home] svg{fill:currentColor;stroke:none}.bottomnav .nav-btn[data-k=lessons] svg,.bottomnav .nav-btn[data-k=comp] svg{stroke-width:1.8}.bottomnav .nav-btn[data-k=play] svg path{fill:currentColor}}
 
 @media(max-width:1023px){.bottomnav .nav-btn.on{border-radius:12px;background:#d4ccbf}.bottomnav .nav-btn.on::after{content:"";position:absolute;bottom:-8px;width:26px;height:3px;border-radius:2px;background:var(--teal)}.bottomnav .nav-btn.on svg{fill:none}.bottomnav .nav-btn.on[data-k=home] svg{fill:currentColor}.bottomnav .nav-btn.on[data-k=play] svg path{fill:currentColor}}
+/* Compact laptop popovers and consistent information-card height. */
+@media(min-width:1024px){
+ .sheet{width:245px;border-radius:9px;max-height:456px}
+ .sheet-head{padding:10px 13px 8px}.sheet-title{font-size:13px}.sheet-body{padding:4px 13px 10px}
+ .comp-row{padding:7px 0;gap:8px}.comp-name{font-size:11.5px}.comp-desc{font-size:11.5px;line-height:1.3}
+ .set-row{padding:8px 0;gap:8px}.set-name{font-size:11.5px}.set-desc{font-size:11.5px;line-height:1.3}
+ .set-row .select{max-width:110px;padding:4px 8px;font-size:11px}.switch{width:31px;height:18px}.switch:after{width:14px;height:14px}.switch.on:after{transform:translateX(13px)}
+ .tag:not(.mini){width:190px;max-width:190px;padding:10px 12px;box-shadow:none;border-radius:5px}
+ .tag-tx b{font-size:12px}.tag-tx i{font-size:12px;line-height:1.25}
+}
+@media(min-width:1024px){.switch::after{top:2px;left:2px;transform:none}.switch.on::after{left:15px;transform:none}}
