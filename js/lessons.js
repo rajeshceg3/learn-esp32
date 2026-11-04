@@ -296,29 +296,28 @@ void loop() {
 },
 {
   id: 'temp', num: 11, title: 'Sense heat', heading: 'Sense heat',
-  lede: 'The TMP36 turns temperature into a voltage: 0.5 V at 0 °C and 10 mV more for every degree. The ADC reads it, and a little maths gives degrees.',
-  features: [['wave', 'Analog voltage into GPIO32'], ['clock', 'Calibrate against your room'], ['hand', 'Click the dryer to cycle scripted temperatures']],
-  pinout: [['GPIO32', 'TMP36 out', '10 mV per °C plus a 500 mV offset.', '#1aa3a1'], ['3V3', 'Sensor supply', 'Low noise analog supply.', '#d64a3a'], ['GND', 'Ground', 'Third leg to ground.', '#2f3547']],
-  example: [
-    'Read the pin, scale to volts: <code>v = raw * 3.3 / 4095</code>.',
-    'Then <code>tempC = (v − 0.5) * 100</code> — the offset and slope from the datasheet.',
-    'The ESP32 also has a built-in temperature readout for the chip itself.',
-  ],
-  specs: [['Range', '−40 to +125 °C'], ['Accuracy', '±2 °C typical'], ['Slope', '10 mV / °C'], ['Offset', '500 mV at 0 °C']],
+  lede: 'The TMP36 turns temperature into voltage. Switch on the dryer and use a cooling fan above 30 °C: a small thermostat.',
+  features: [['wave', 'GPIO32 reads calibrated millivolts'], ['hand', 'Click HEAT to switch the dryer on or off'], ['gear', 'GPIO27 switches the fan above 30 °C']],
+  pinout: [['GPIO32','TMP36 out','10 mV per °C plus a 500 mV offset.','#1aa3a1'],['3V3','Sensor supply','Power the TMP36 from 3.3 V.','#d64a3a'],['GND','Common ground','Join sensor, transistor emitter and supply grounds.','#2f3547'],['GPIO27','Fan transistor base','Use a 1 kΩ base resistor. Never power a fan from a GPIO.','#e8913a'],['VIN','5 V fan supply','Use a suitable low-current fan and transistor. Flyback diode across fan, cathode to positive.','#d64a3a']],
+  example: ['<code>analogReadMilliVolts(32)</code> reads calibrated millivolts on Arduino-ESP32.','<code>(millivolts - 500) / 10.0</code> converts TMP36 voltage to °C.','Above 30 °C, <code>analogWrite(27, 255)</code> switches the fan through the transistor. Otherwise it is off.','The scripted simulation heats and cools around the limit. The displayed editor is not executed.'],
+  specs: [['Range','−40 to +125 °C'],['Accuracy','±2 °C typical'],['Slope','10 mV / °C'],['Fan threshold','30 °C']],
   code:
 `const int SENSOR = 32;
+const int FAN = 27;  // via resistor and transistor
 
 void setup() {
   Serial.begin(115200);
+  pinMode(FAN, OUTPUT);
 }
 
 void loop() {
-  int raw = analogRead(SENSOR);
-  float volts = raw * 3.3 / 4095.0;
-  float tempC = (volts - 0.5) * 100.0;
-  Serial.print(tempC);
-  Serial.println(" C");
-  delay(500);
+  float millivolts = analogReadMilliVolts(SENSOR);
+  float tempC = (millivolts - 500) / 10.0;
+  Serial.println(tempC);
+
+  if (tempC > 30) analogWrite(FAN, 255);
+  else analogWrite(FAN, 0);
+  delay(200);
 }`,
   sim: 'temp',
 },

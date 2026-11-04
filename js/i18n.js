@@ -60,6 +60,8 @@ export function trCompDesc(en) { return (LSTR && LSTR.compDesc && LSTR.compDesc[
 export function trLesson(L) {
   const t = LSTR && LSTR.lessons && LSTR.lessons[L.id];
   if (!t) return L;
+  // The revised thermostat content falls back to current English until locale review.
+  if(L.id==='temp')return {...L,title:t.title||L.title,heading:t.heading||L.heading};
   const m = { ...L, ...t };
   if (t.features) m.features = L.features.map((f, i) => [f[0], (t.features[i] ?? f[1])]);
   if (t.pinout) m.pinout = L.pinout.map((r, i) => [r[0], t.pinout[i]?.[0] ?? r[1], t.pinout[i]?.[1] ?? r[2], r[3]]);

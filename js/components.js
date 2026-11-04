@@ -193,6 +193,16 @@ export function npn() {
   return g;
 }
 // Original handheld dryer: broad barrel, vented rear, tapered nozzle and angled grip.
+export function coolingFan() {
+  const g=new THREE.Group();const dark=MAT.plastic;
+  g.add(ink(box(18,2.5,12,dark,0,1.25,0)));g.add(ink(box(3,9,4,dark,0,6,0)));
+  const rotor=new THREE.Group();rotor.position.set(0,17,0);g.add(rotor);
+  for(let i=0;i<7;i++){const a=i*Math.PI*2/7;const blade=ink(box(3.2,9,.6,new THREE.MeshStandardMaterial({color:0x4b9b9b}),0,5,0));blade.rotation.z=a;blade.position.set(-Math.sin(a)*4,Math.cos(a)*4,0);rotor.add(blade);}
+  const hub=cyl(2,2,1.5,MAT.red,0,0,0,18);hub.rotation.x=Math.PI/2;rotor.add(hub);
+  for(const z of[-1.4,1.6]){const ring=new THREE.Mesh(new THREE.TorusGeometry(11,.65,8,40),MAT.metalDark);ring.position.set(0,17,z);g.add(ink(ring));}
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;const spoke=cyl(.2,.2,21,MAT.metal,0,17,1.8,6);spoke.rotation.z=a;g.add(spoke);}
+  g.userData.tick=(dt,on)=>{if(on)rotor.rotation.z+=dt*22;};return g;
+}
 export function heatGun() {
   const g=new THREE.Group();
   const teal=new THREE.MeshStandardMaterial({color:0x66b6ad,roughness:.45});
