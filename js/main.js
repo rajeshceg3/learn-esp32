@@ -313,7 +313,7 @@ function frameScene(snap) {
     dist *= need;
     if (Math.abs(need - 1) < .005) break;
   }
-  dist *= 1.015;
+  dist *= .985; // slight tighten from 1.015: reference fills the stage a bit more; near-plane perspective makes larger cuts clip
   if (!bboard.visible && aspect < 1) dist *= .86; // board-only lesson on portrait: fill the frame like the reference
   rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
