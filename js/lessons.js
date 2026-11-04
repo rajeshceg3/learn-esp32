@@ -422,30 +422,27 @@ void loop() {
   sim: 'plant',
 },
 {
-  id: 'force', num: 15, title: 'Feel the force', heading: 'Feel the force',
-  lede: 'A force-sensing resistor is a thin pad whose resistance falls from millions of ohms to a few hundred as you press it. Squeeze, and the ESP32 knows.',
-  features: [['wave', 'Divider reading on GPIO35'], ['bulb', 'LED bar shows the squeeze'], ['hand', 'Click and hold the pad to press']],
-  pinout: [['GPIO35', 'FSR divider', 'Press harder, read higher.', '#1aa3a1'], ['GPIO25 · 26 · 33', 'LED bar', 'Three LEDs show the level.', '#2a56a3'], ['3V3 · GND', 'Divider ends', 'FSR on top, 10 kΩ below.', '#d64a3a']],
-  example: [
-    'Like the light sensor, the FSR forms a divider with a fixed 10 kΩ resistor.',
-    'The reading isn’t linear, but for “is someone pressing” it’s more than enough.',
-    'Thresholds split the range into bands — one per LED.',
-  ],
-  specs: [['Force range', '0.2 – 20 N'], ['Resistance', '> 1 MΩ open · ≈ 300 Ω pressed'], ['Fixed resistor', '10 kΩ'], ['Response', '< 10 ms']],
+  id: 'force', num:15, title:'Feel the force', heading:'Test your strength',
+  lede:'An FSR changes resistance under pressure. A voltage divider feeds GPIO35, a servo moves the meter needle, and a piezo sounds above the mark.',
+  features:[['wave','GPIO35 reads the FSR divider'],['gear','GPIO13 moves the servo needle'],['hand','Click PRESS PAD to cycle scripted pressure levels']],
+  pinout:[['GPIO35','FSR divider','FSR to 3V3,10 kΩ resistor from signal to GND.','#1aa3a1'],['GPIO13','Servo signal','50 Hz pulses; servo power from a suitable5 V supply.','#e8913a'],['GPIO19','Piezo buzzer','Sounds above75% of the ADC range.','#6a4fa3'],['3V3 · VIN · GND','Supplies','FSR on3.3 V; servo on5 V. Join all grounds.','#d64a3a']],
+  example:['The10 kΩ resistor pulls the divider down. Pressing lowers FSR resistance, raising the voltage.','<code>analogRead(35)</code> gives0–4095 on the classic ESP32. This is a relative reading, not calibrated grams.','At50 Hz and12-bit resolution,205–410 counts give about1–2 ms servo pulses.','The scripted simulation cycles five pressure levels. The editor code is not executed.'],
+  specs:[['ADC','0–4095'],['Divider','10 kΩ'],['Servo signal','GPIO13 ·50 Hz'],['Bell threshold','3071 /4095']],
   code:
-`const int FSR = 35;
-const int BAR[] = {25, 26, 33};
+`const int FSR = 35, SERVO = 13, BELL = 19;
 
 void setup() {
-  for (int b : BAR) pinMode(b, OUTPUT);
+  analogReadResolution(12);
+  ledcAttach(SERVO, 50, 12);
+  ledcAttach(BELL, 2000, 8);
 }
 
 void loop() {
-  int force = analogRead(FSR);
-  digitalWrite(BAR[0], force > 600);
-  digitalWrite(BAR[1], force > 1600);
-  digitalWrite(BAR[2], force > 2600);
-  delay(50);
+  int pressure = analogRead(FSR);
+  int duty = map(pressure, 0, 4095, 205, 410);
+  ledcWrite(SERVO, duty);
+  ledcWriteTone(BELL, pressure > 3071 ? 880 : 0);
+  delay(20);
 }`,
   sim: 'force',
 },

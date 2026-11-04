@@ -347,24 +347,22 @@ plant: {
   },
 },
 force: {
-  build(s) {
-    const f = C.fsr(); f.position.copy(bb(13, 2)); s.add(f, 'fsr');
-    const leds = [0x3fbf6a, 0xf2c23a, 0xe8392e].map((c, i) => { const l = C.led5mm(c); l.position.copy(bb(18 + i * 2, 7)); s.add(l, 'bar' + i); return l; });
-    s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 13, 'D35'), wireTo(pin('D25'), bb(17, 6), WIRE.orange, 13, 'D25'), wireTo(pin('D26'), bb(19, 6), WIRE.yellow, 13, 'D26'), wireTo(pin('D33'), bb(21, 6), WIRE.red, 13, 'D33'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D35'), label: 'FSR · GPIO35', i: 'wave', d: 'Reads pressure on the pad.' }, { at: bb(13, 2).add(V(0, 6, 0)), label: 'PRESS PAD', click: 'fsr', i: 'hand', d: 'Click to press.' }, { at: bb(20, 7).add(V(0, 11, 0)), label: 'LED BAR', i: 'bulb', d: 'More force lights more bars.' } ];
-    s.api.bar = n => leds.forEach((l, i) => l.userData.setLit(i < n));
-    s.onClick = (w, api) => { if (w === 'fsr') api._f = ((api._f ?? 0) + 1) % 4; };
+  build(s){
+    const f=C.fsr();f.position.set(48,0,29);s.add(f,'fsr');
+    const meter=C.strengthMeter();meter.position.set(44,0,-25);s.add(meter,'meter');
+    const weights=C.weights();weights.position.set(76,0,18);weights.rotation.y=-.7;s.add(weights,'weights');
+    const r=C.resistor(10000);r.position.copy(bb(14,2));s.add(r,'resistor');
+    const bz=C.buzzer();bz.position.copy(bb(9,2));s.add(bz,'buzzer');
+    s.wires.push(wireTo(pin('D35'),V(46,1,19),WIRE.green,13,'D35'),wireTo(pin('3V3'),V(50,1,19),WIRE.red,15,'3V3'),wireTo(V(46,1,19),bb(13,2),WIRE.green,10),wireTo(bb(15,2),pin('GND'),WIRE.navy,12,'GND'),wireTo(pin('D13'),V(44,3,-24),WIRE.orange,16,'D13'),wireTo(pin('VIN'),V(47,3,-24),WIRE.red,17,'VIN'),wireTo(pin('GND'),V(41,3,-24),WIRE.navy,18,'GND'),wireTo(pin('D19'),bb(8,2),WIRE.purple,13,'D19'),wireTo(pin('GND'),bb(10,2),WIRE.navy,12,'GND'));
+    s.tags=[{at:V(44,34,-25),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(39,1,39),label:'PRESS PAD',click:'fsr',i:'hand',d:'Click to cycle pressure levels.'}];
+    s.api.forceMeter=(v)=>{s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
+    s.onClick=(w,api)=>{if(w==='fsr')api._f=((api._f??0)+1)%5;};
   },
-  sim: api => {
-    api._f = 0; let acc = 0;
-    return {
-      running: false,
-      start() { this.running = true; api.serial('Press the pad (click it) and watch the bar.'); },
-      stop() { this.running = false; api.bar(0); },
-      tick(dt) { if (!this.running) return; api.line?.(10+Math.min(2,api._f)); api.bar(api._f);
-        acc += dt; if (acc > .9) { acc = 0; api.serial(`force = ${api._f * 850}`); } },
-    };
-  },
+  sim:api=>{api._f=0;let acc=0,last=-1;return{running:false,
+    start(){this.running=true;api.serial('Scripted strength meter. Click PRESS PAD to cycle pressure.');},
+    stop(){this.running=false;api.forceMeter(0);api.tone(0);},
+    tick(dt){if(!this.running)return;const v=api._f/4;api.forceMeter(v);api.line?.(13);if(api._f!==last){last=api._f;api.tone(v>=.75?880:0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${Math.round(v*4095)} · bell ${v>=.75?'ON':'OFF'}`);}}
+  };},
 },
 project: {
   build(s) {

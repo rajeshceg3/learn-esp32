@@ -316,10 +316,23 @@ export function soilProbe() {
  const g=new THREE.Group();g.add(ink(box(5,25,1,MAT.chip,0,8,0)));g.add(box(3.6,7,1.3,MAT.plastic,0,19,0));g.add(box(2.2,3,1.6,MAT.metalDark,0,20,0));
  for(const x of[-1,1])g.add(box(.3,14,.2,MAT.metal,x,4,.65));return g;
 }
+export function strengthMeter(){
+ const g=new THREE.Group();g.add(ink(box(40,29,3,MAT.plastic,0,19,0)));g.add(ink(box(43,2,10,MAT.cream,0,3,0)));
+ const cv=document.createElement('canvas');cv.width=400;cv.height=280;const c=cv.getContext('2d');c.fillStyle='#e8dec9';c.fillRect(0,0,400,280);
+ const ox=200,oy=224,r=145;for(const [a,b,color]of [[Math.PI,Math.PI*1.36,'#559466'],[Math.PI*1.36,Math.PI*1.75,'#d2aa38'],[Math.PI*1.75,Math.PI*2,'#bd5140']]){c.strokeStyle=color;c.lineWidth=31;c.beginPath();c.arc(ox,oy,r,a,b);c.stroke();}
+ c.fillStyle='#253147';c.font='bold 18px monospace';c.textAlign='center';for(let i=0;i<5;i++){const a=Math.PI+i*Math.PI/4;c.fillText(String(i*1024),ox+Math.cos(a)*109,oy+Math.sin(a)*109);}
+ c.font='bold 15px monospace';c.fillText('STRENGTH',200,28);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+ const face=new THREE.Mesh(new THREE.PlaneGeometry(37,26),new THREE.MeshBasicMaterial({map:tex}));face.position.set(0,19,1.6);g.add(face);
+ const needle=new THREE.Group();needle.position.set(0,11,2);g.add(needle);needle.add(ink(box(14,.8,.5,MAT.red,-6.5,0,0)));const hub=cyl(1.5,1.5,.7,MAT.metal,0,0,0,16);hub.rotation.x=Math.PI/2;needle.add(hub);
+ const bell=cyl(2.2,3.1,3,new THREE.MeshStandardMaterial({color:0xd1ad48,metalness:.6,roughness:.3}),15,29,3,18);g.add(ink(bell));
+ g.userData.setLevel=v=>{needle.rotation.z=-Math.PI*Math.max(0,Math.min(1,v));};return g;
+}
+export function weights(){const g=new THREE.Group(),gold=new THREE.MeshStandardMaterial({color:0xc5a04a,roughness:.3,metalness:.5});[3,4.2,5.5,7].forEach((r,i)=>{const x=i*12;g.add(ink(cyl(r,r+1,r*1.2,gold,x,r*.6,0,24)));g.add(ink(cyl(r*.55,r*.55,r*.6,gold,x,r*1.4,0,20)));g.add(cyl(r+1.4,r+1.4,.6,new THREE.MeshStandardMaterial({color:0x3b7569}),x,.4,0,24));});return g;}
 export function fsr() {
   const g = new THREE.Group();
   const pad = cyl(7, 7, .8, new THREE.MeshStandardMaterial({ color: 0x35323e, roughness: .6 }), 0, 1.2, 0); g.add(pad);
   g.add(box(4, .5, 14, new THREE.MeshStandardMaterial({ color: 0x9c8f7c }), 0, 1, -10));
+  for(let r=1;r<6.7;r+=.45){const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.07,4,48),MAT.metalDark);ring.rotation.x=-Math.PI/2;ring.position.y=1.65;g.add(ring);}
   g.userData.setPress = p => { pad.scale.setScalar(1 - p * .06); };
   return g;
 }
