@@ -588,3 +588,6 @@ svg{display:block}
 .console-grip::after{content:"";position:absolute;width:24px;height:2px;background:var(--line);left:calc(50% - 12px);top:1px;border-radius:2px}
 
 @media(min-width:1024px){.schematic{width:340px;padding:8px 10px 10px;top:6px}.sch-head h3{font-size:13px}.sch-lesson{font-size:11px}}
+
+/* Circuit geometry and pin identifiers stay left-to-right inside RTL interfaces. */
+.sch{direction:ltr}

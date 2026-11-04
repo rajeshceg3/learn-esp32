@@ -6,6 +6,30 @@ import { currentLang } from './i18n.js';
 const DIAGRAM_UI = {en:['Close','divider'],es:['Cerrar','divisor'],pt:['Fechar','divisor'],fr:['Fermer','diviseur'],de:['Schließen','Spannungsteiler'],it:['Chiudi','partitore'],tr:['Kapat','gerilim bölücü'],id:['Tutup','pembagi tegangan'],zh:['关闭','分压器'],'zh-tw':['關閉','分壓器'],ja:['閉じる','分圧器'],ko:['닫기','분압기'],hi:['बंद करें','वोल्टेज विभाजक'],he:['סגירה','מחלק מתח']};
 const diagramUI = () => DIAGRAM_UI[currentLang()] || DIAGRAM_UI.en;
 
+const NOTE_TEXT = {
+ en:['SW1 uses the internal pull-up; pressed reads LOW.','Wiper voltage 0–3.3 V → ADC 0–4095.','One PWM channel per colour leg.'],
+ es:['SW1 usa la resistencia interna; pulsado lee LOW.','Cursor: 0–3,3 V → ADC 0–4095.','Un canal PWM por cada color.'],
+ pt:['SW1 usa o pull-up interno; pressionado lê LOW.','Cursor: 0–3,3 V → ADC 0–4095.','Um canal PWM por cor.'],
+ fr:['SW1 utilise le pull-up interne ; appuyé = LOW.','Curseur : 0–3,3 V → ADC 0–4095.','Un canal PWM par couleur.'],
+ de:['SW1 nutzt den internen Pull-up; gedrückt = LOW.','Schleifer: 0–3,3 V → ADC 0–4095.','Ein PWM-Kanal pro Farbe.'],
+ it:['SW1 usa il pull-up interno; premuto = LOW.','Cursore: 0–3,3 V → ADC 0–4095.','Un canale PWM per colore.'],
+ tr:['SW1 dahili pull-up kullanır; basılınca LOW.','Sürgü: 0–3,3 V → ADC 0–4095.','Her renk için bir PWM kanalı.'],
+ id:['SW1 memakai pull-up internal; ditekan = LOW.','Penggeser: 0–3,3 V → ADC 0–4095.','Satu kanal PWM untuk tiap warna.'],
+ zh:['SW1 使用内部上拉；按下时为 LOW。','滑动端：0–3.3 V → ADC 0–4095。','每种颜色使用一个 PWM 通道。'],
+ 'zh-tw':['SW1 使用內部上拉；按下時為 LOW。','滑動端：0–3.3 V → ADC 0–4095。','每種顏色使用一個 PWM 通道。'],
+ ja:['SW1 は内部プルアップを使用。押すと LOW。','可動端：0–3.3 V → ADC 0–4095。','各色に PWM チャンネルを1つ使用。'],
+ ko:['SW1은 내부 풀업 사용. 누르면 LOW.','와이퍼: 0–3.3 V → ADC 0–4095.','색상마다 PWM 채널 하나 사용.'],
+ hi:['SW1 आंतरिक पुल-अप का उपयोग करता है; दबाने पर LOW।','वाइपर: 0–3.3 V → ADC 0–4095।','हर रंग के लिए एक PWM चैनल।'],
+ he:['SW1 משתמש בנגד משיכה פנימי; בלחיצה LOW.','זחלן: 0–3.3 V → ADC 0–4095.','ערוץ PWM אחד לכל צבע.'],
+};
+const noteFor = (id, fallback) => { const i=['button','pot','rgb'].indexOf(id);return i<0?fallback:(NOTE_TEXT[currentLang()]||NOTE_TEXT.en)[i]; };
+// Separate text rows keep longer translated notes inside the diagram viewBox.
+function noteRows(text, x, y) {
+ const rows=[];let line='';for(const word of text.split(' ')){if((line+' '+word).length>43&&line){rows.push(line);line=word;}else line+=(line?' ':'')+word;}if(line)rows.push(line);
+ const rtl=currentLang()==='he';
+ return {svg:rows.map((row,i)=>`<text class="note" x="${rtl?360:x}" y="${y+i*15}" text-anchor="start" direction="${rtl?'rtl':'ltr'}" unicode-bidi="plaintext">${row}</text>`).join(''),height:rows.length*15+9};
+}
+
 const T = (x, y, s, cls = '', anchor = 'middle') => `<text class="${cls}" x="${x}" y="${y}" text-anchor="${anchor}">${s}</text>`;
 const W = (pts, cls = '') => `<path class="w ${cls}" d="M${pts.map(p => p.join(' ')).join(' L')}"/>`;
 
@@ -215,7 +239,7 @@ export function buildSchematic(id) {
   spec.wires.forEach(wl => g.push(W(wl.map(e => typeof e === 'string' ? P[e] : e))));
   (Array.isArray(spec.gndAt?.[0]) ? spec.gndAt : [spec.gndAt]).filter(Boolean).forEach(([x, y]) => g.push(`<g transform="translate(${x} ${y})">${SYM.gnd()}</g>`));
   let h = bot + 20;
-  if (spec.note) { g.push(T(20, h + 4, spec.note, 'note', 'start')); h += 24; }
+  if (spec.note) { const note=noteRows(noteFor(id,spec.note),20,h+4);g.push(note.svg);h+=note.height; }
   return { svg: `<svg class="sch" viewBox="0 0 380 ${h}" preserveAspectRatio="xMidYMin meet">${g.join('')}</svg>` };
 }
 
