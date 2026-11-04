@@ -2,6 +2,7 @@
 import * as THREE from 'three';
 import { MAT, box, cyl, pinLocal } from './scene.js';
 import * as C from './components.js';
+import {POT_HELP} from './i18n.js';
 
 export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
@@ -99,7 +100,7 @@ pot: {
     s.wires.push(wireTo(pin('D34'), bb(13, 5), WIRE.green, 14, 'D34'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'), wireTo(pin('D25'), bb(16, 7), WIRE.orange, 14, 'D25'));
     s.tags = [
       { at: pin('D34'), label: 'GPIO34 · ADC', i: 'wave', d: 'Analog input: reads 0 to 4095.' },
-      { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot', drag: true, i: 'gear', d: 'Click to turn the knob.' },
+      { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot', drag: true, i: 'gear', d: POT_HELP.en },
       { at: bb(19, 7).add(V(0, 10, 0)), label: 'LED', i: 'bulb', d: 'Brightness follows the knob.' },
       { at: pin('D25'), label: 'GPIO25 · PWM', i: 'wave', d: 'Dims the LED with fast pulses, 0 to 255.' },
     ];
@@ -112,7 +113,7 @@ pot: {
     let dragStartValue=.5;
     s.tagDragStart=api=>{dragStartValue=api._v;};
     s.tagDrag=(dx,api)=>{api._v=Math.max(0,Math.min(1,dragStartValue+dx/120));api.knob(-2.2+api._v*4.4);};
-    s.beginDrag=ray=>{if(!ray.intersectObject(s.refs.pot,true).length)return false;dragStartValue=s.apiValue??.5;return true;};
+    s.beginDrag=(ray,e,canvas,camera)=>{const center=s.refs.pot.getWorldPosition(new THREE.Vector3()).add(V(0,10,0)).project(camera),r=canvas.getBoundingClientRect();const near=Math.hypot(e.clientX-(r.left+(center.x*.5+.5)*r.width),e.clientY-(r.top+(-center.y*.5+.5)*r.height))<=22;if(!near&&!ray.intersectObject(s.refs.pot,true).length)return false;dragStartValue=s.apiValue??.5;return true;};
     s.dragTo=(delta,api)=>{api._v=Math.max(0,Math.min(1,dragStartValue+delta.x/25));api.knob(-2.2+api._v*4.4);};
     s.onClick = (w, api) => { if (w === 'pot') {api._v = (api._v + .34) % 1.02;api.knob(-2.2+api._v*4.4);} };
     s.api.potValue=v=>{s.apiValue=v;};
@@ -121,7 +122,7 @@ pot: {
     api._v = .5;api.knob(0); let acc = 0;
     return {
       running: false,
-      start() { this.running = true; api.serial('Sketch running. Click the knob to turn it.'); },
+      start() { this.running = true; api.serial(POT_HELP.en); },
       stop() { this.running = false; api.level(0); api.potReadout(Math.round(Math.min(1,api._v)*4095),0);api.flow('D25', false); },
       tick(dt) {const v = Math.min(1, api._v);api.potValue(v);if(!this.running){api.potReadout(Math.round(v*4095),0);return;}
         const raw=Math.round(v*4095),pwm=Math.floor(raw*255/4095);api.potReadout(raw,pwm);
