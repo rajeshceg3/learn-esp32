@@ -233,6 +233,7 @@ function placeTags() {
       const p={'SOIL · GPIO34':[.2,.34],'I²C · 21/22':[.2,.65],'OLED':[.6,.34],'PLANT':[.55,.65],'WATER':[.85,.65]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
+    if(!wide&&state.lesson===14&&t.label==='PRESS PAD')cy=ay+36;
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart

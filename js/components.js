@@ -333,7 +333,14 @@ export function fsr() {
   const pad = cyl(7, 7, .8, new THREE.MeshStandardMaterial({ color: 0x35323e, roughness: .6 }), 0, 1.2, 0); g.add(pad);
   g.add(box(4, .5, 14, new THREE.MeshStandardMaterial({ color: 0x9c8f7c }), 0, 1, -10));
   for(let r=1;r<6.7;r+=.45){const ring=new THREE.Mesh(new THREE.TorusGeometry(r,.07,4,48),MAT.metalDark);ring.rotation.x=-Math.PI/2;ring.position.y=1.65;g.add(ring);}
-  g.userData.setPress = p => { pad.scale.setScalar(1 - p * .06); };
+  // Original finger and pressure rings show the held interaction, not a physical sensor reading.
+  const feedback=new THREE.Group();g.add(feedback);feedback.visible=false;
+  const skin=new THREE.MeshStandardMaterial({color:0xe8b68d,roughness:.65});
+  const finger=new THREE.Mesh(new THREE.CapsuleGeometry(2.6,13,6,12),skin);finger.position.set(6,9,0);finger.rotation.z=-.7;feedback.add(ink(finger));
+  const nail=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),new THREE.MeshStandardMaterial({color:0xf4d9bc,roughness:.45}));nail.scale.set(1.7,.45,2);nail.position.set(1.5,3.1,1.4);feedback.add(nail);
+  const halos=[];for(const radius of[9,12]){const material=new THREE.MeshBasicMaterial({color:0x25aaa7,transparent:true,opacity:.5,depthWrite:false});const ring=new THREE.Mesh(new THREE.TorusGeometry(radius,.2,6,64),material);ring.rotation.x=-Math.PI/2;ring.position.y=1.9;feedback.add(ring);halos.push(ring);}
+  g.userData.setPress = p => { pad.scale.setScalar(1 - p * .06);feedback.visible=p>.01;finger.position.y=9-p;for(const ring of halos){ring.scale.setScalar(.9+p*.15);ring.material.opacity=.2+p*.5;} };
+
   return g;
 }
 export function trafficLight() {
