@@ -202,7 +202,7 @@ export default {
     temp: {
       title: 'Sentir el calor', heading: 'Sentir el calor',
       lede: "El TMP36 convierte la temperatura en tensión. Enciende el secador y usa un ventilador por encima de 30 °C: un pequeño termostato.",
-      features: ["GPIO32 lee milivoltios calibrados", "Haz clic en HEAT para encender o apagar el secador", "GPIO27 activa el ventilador por encima de 30 °C"],
+      features: ["GPIO32 lee milivoltios calibrados", "Abre HEAT para distancia y encendido, o arrastra el secador", "GPIO27 activa el ventilador por encima de 30 °C"],
       pinout: [['Salida TMP36', '10 mV por °C más un offset de 500 mV.'], ['Alimentación', 'Alimentación analógica de bajo ruido.'], ['Tierra', 'Tercer terminal a tierra.'], ["Base del transistor del ventilador", "Resistencia de base de 1 kΩ. Nunca alimentes el ventilador desde un GPIO."], ["Alimentación de 5 V del ventilador", "Usa un ventilador de bajo consumo y un transistor adecuado. Diodo de rueda libre: cátodo al positivo. Masa común."]],
       example: ["<code>analogReadMilliVolts(32)</code> lee milivoltios calibrados en Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> convierte los milivoltios del TMP36 a °C.", "Por encima de 30 °C, GPIO27 activa el ventilador mediante el transistor; si no, lo apaga.", "La simulación programada calienta y enfría alrededor del límite. No ejecuta el código del editor."],
       specs: [['Rango', '−40 a +125 °C'], ['Precisión', '±2 °C típica'], ['Pendiente', '10 mV / °C'], ['Offset', '500 mV a 0 °C']],

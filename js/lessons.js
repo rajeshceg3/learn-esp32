@@ -300,7 +300,7 @@ void loop() {
 {
   id: 'temp', num: 11, title: 'Sense heat', heading: 'Sense heat',
   lede: 'The TMP36 turns temperature into voltage. Switch on the dryer and use a cooling fan above 30 °C: a small thermostat.',
-  features: [['wave', 'GPIO32 reads calibrated millivolts'], ['hand', 'Click HEAT to switch the dryer on or off'], ['gear', 'GPIO27 switches the fan above 30 °C']],
+  features: [['wave', 'GPIO32 reads calibrated millivolts'], ['hand', 'Open HEAT for power and distance, or drag the dryer'], ['gear', 'GPIO27 switches the fan above 30 °C']],
   pinout: [['GPIO32','TMP36 out','10 mV per °C plus a 500 mV offset.','#1aa3a1'],['3V3','Sensor supply','Power the TMP36 from 3.3 V.','#d64a3a'],['GND','Common ground','Join sensor, transistor emitter and supply grounds.','#2f3547'],['GPIO27','Fan transistor base','Use a 1 kΩ base resistor. Never power a fan from a GPIO.','#e8913a'],['VIN','5 V fan supply','Use a suitable low-current fan and transistor. Flyback diode across fan, cathode to positive.','#d64a3a']],
   example: ['<code>analogReadMilliVolts(32)</code> reads calibrated millivolts on Arduino-ESP32.','<code>(millivolts - 500) / 10.0</code> converts TMP36 voltage to °C.','Above 30 °C, <code>analogWrite(27, 255)</code> switches the fan through the transistor. Otherwise it is off.','The scripted simulation heats and cools around the limit. The displayed editor is not executed.'],
   specs: [['Range','−40 to +125 °C'],['Accuracy','±2 °C typical'],['Slope','10 mV / °C'],['Fan threshold','30 °C']],

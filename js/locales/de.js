@@ -202,7 +202,7 @@ export default {
     temp: {
       title: 'Wärme messen', heading: 'Wärme messen',
       lede: "Der TMP36 wandelt Temperatur in Spannung um. Schalte den Föhn ein und über 30 °C einen Lüfter dazu: ein kleiner Thermostat.",
-      features: ["GPIO32 liest kalibrierte Millivolt", "Klicke HEAT, um den Föhn ein- oder auszuschalten", "GPIO27 schaltet den Lüfter über 30 °C ein"],
+      features: ["GPIO32 liest kalibrierte Millivolt", "HEAT für Abstand und Schalter öffnen oder Föhn ziehen", "GPIO27 schaltet den Lüfter über 30 °C ein"],
       pinout: [['TMP36-Ausgang', '10 mV pro °C plus 500 mV Offset.'], ['Versorgung', 'Rauscharme Analogversorgung.'], ['Masse', 'Drittes Bein an Masse.'], ["Basis des Lüftertransistors", "1 kΩ Basiswiderstand. Den Lüfter nie aus einem GPIO versorgen."], ["5-V-Lüfterversorgung", "Stromarmen Lüfter und passenden Transistor verwenden. Freilaufdiode: Kathode an Plus. Gemeinsame Masse."]],
       example: ["<code>analogReadMilliVolts(32)</code> liest kalibrierte Millivolt mit Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> wandelt die TMP36-Millivolt in °C um.", "Über 30 °C schaltet GPIO27 den Lüfter über den Transistor ein, sonst aus.", "Die vorgegebene Simulation heizt und kühlt am Grenzwert. Sie führt den Editorcode nicht aus."],
       specs: [['Bereich', '−40 bis +125 °C'], ['Genauigkeit', '±2 °C typisch'], ['Steigung', '10 mV / °C'], ['Offset', '500 mV bei 0 °C']],

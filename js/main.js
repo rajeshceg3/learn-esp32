@@ -175,7 +175,7 @@ function rebuildTags() {
       d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);d.addEventListener('blur',end);
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
       d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
-    } else if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
+    } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector);else cur.scene.onClick?.(t.click, api);});
     tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
@@ -314,7 +314,7 @@ function pickAt(e) {
       let o = hits[0].object;
       while (o && !o.userData._clickId && o.parent) o = o.parent === cur.scene.root ? null : o.parent;
       const id = o?.userData?._clickId;
-      if (id) { cur.scene.onClick?.(id, api); return; }
+      if (id) {const inspector=cur.scene.inspect?.(id);if(inspector)openSheet(inspector);else cur.scene.onClick?.(id, api); return; }
     }
   }
   const hits = ray.intersectObjects(Object.values(board.parts), false);
@@ -343,6 +343,7 @@ class LessonScene {
 function loadLesson(i, keepTab) {
   schPanel.setLesson(LESSONS[i].id, trLesson(LESSONS[i]).heading);
   $('#panel').classList.remove('open');
+  $('#sheet').classList.remove('open');state.sheet=null;
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
   rig.tAz = i === 0 ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
@@ -698,6 +699,7 @@ function openSheet(kind, data, anchor) {
   const sh = $('#sheet'), title = $('#sheetTitle'), sub = $('#sheetSub'), body = $('#sheetBody');
   if (state.sheet === kind && !data) { sh.classList.remove('open'); state.sheet = null; return; }
   state.sheet = kind;
+  if(innerWidth<1024){sh.style.top='auto';sh.style.maxHeight='calc(100dvh - 100px)';}
   if (kind === 'components') {
     title.textContent = T('components'); sub.textContent = `12 ${T('in_view')}`;
     const comps = [
@@ -742,6 +744,11 @@ function openSheet(kind, data, anchor) {
       <svg class="lang-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M4 12l5 5L20 7"/></svg>
     </button>`).join('');
     body.querySelectorAll('.lang-row').forEach(r => r.onclick = () => setLang(r.dataset.c));
+  } else if (kind === 'thermal') {
+    title.textContent='HAIRDRYER';sub.textContent='Scripted heat source';
+    body.innerHTML=`<div class="comp-desc">Drag it closer to the sensor or farther away, or switch it off.</div><label class="set-row" for="heatDistance"><span>Distance</span><output id="heatDistanceValue">${Math.round(api._heatDistance)} cm</output></label><input id="heatDistance" type="range" min="5" max="40" step="1" value="${Math.round(api._heatDistance)}" style="width:100%;accent-color:var(--teal)"><label class="set-row" for="heatPower"><span>Hairdryer switched on</span><input id="heatPower" type="checkbox" role="switch" ${api._heat?'checked':''}></label>`;
+    body.querySelector('#heatDistance').oninput=e=>{api.setHeatDistance(e.target.value,api);body.querySelector('#heatDistanceValue').textContent=e.target.value+' cm';};
+    body.querySelector('#heatPower').onchange=e=>{api._heat=e.target.checked;};
   } else if (kind === 'component' && data) {
     title.textContent = data.title.toUpperCase(); sub.textContent = '';
     body.innerHTML = `<div class="comp-row"><span class="comp-ic">${ICON.chip}</span><div><div class="comp-desc">${data.desc}</div></div></div>`;
