@@ -1,11 +1,12 @@
 // Learn ESP32 - app shell. Original code.
-// Build: rail-toolbar-direction-20261104
+// Build: runtime-locales-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
 import { SCENES, BOARD_POS, BB_POS } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
 import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
+import { translateRuntime } from './runtime-i18n.js';
 import { createSchematicPanel } from './schematic.js';
 
 const $ = s => document.querySelector(s);
@@ -96,7 +97,7 @@ function tone(f) {
 
 // api shared with sims
 const api = {
-  serial: t => log(t), tone,
+  serial: t => log(translateRuntime(t,currentLang())), tone,
   setBuiltin: on => { board.builtinLed.material = on ? new THREE.MeshStandardMaterial({ color: 0x5aa0ec, emissive: 0x2a6ae0, emissiveIntensity: 1.8 }) : MAT.blueLed; },
   line: n => {
     state.activeLine = n;
