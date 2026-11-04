@@ -91,7 +91,7 @@ export default {
       example: [
         'Un pin GPIO fornisce in sicurezza circa 12 mA — più che sufficienti per un LED con resistore.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> porta 3,3 V; il resistore assorbe il resto e fissa la corrente.',
-        'I valori di <code>delay()</code> danno il ritmo. Prova 900 ms acceso, 200 ms spento.',
+        'Esercizio: fai clic sui due valori evidenziati di <code>delay()</code> per scegliere 900 ms acceso e 200 ms spento. Il codice mostra i valori attuali, usati anche dalla simulazione e dalla copia.',
       ],
       specs: [['Tensione diretta', 'Rosso ≈ 1,9 V · blu ≈ 3,0 V'], ['Resistore', '220 Ω – 1 kΩ'], ['Corrente per pin', 'Resta sotto ~12 mA per pin'], ['Massimo assoluto', '3,6 V su ogni GPIO']],
     },

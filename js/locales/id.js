@@ -91,7 +91,7 @@ export default {
       example: [
         'Pin GPIO aman menyalurkan sekitar 12 mA — lebih dari cukup untuk LED dengan resistor.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> mengeluarkan 3,3 V; resistor menyerap sisanya dan mengatur arus.',
-        'Nilai <code>delay()</code> menentukan irama. Coba 900 ms nyala, 200 ms mati.',
+        'Latihan: klik kedua nilai <code>delay()</code> yang disorot untuk memilih 900 ms nyala dan 200 ms mati. Kode menampilkan nilai saat ini, yang juga dipakai simulasi dan salinan.',
       ],
       specs: [['Tegangan maju', 'Merah ≈ 1,9 V · biru ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Arus pin', 'Jaga di bawah ~12 mA per pin'], ['Maksimum absolut', '3,6 V di GPIO mana pun']],
     },

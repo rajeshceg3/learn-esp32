@@ -410,3 +410,4 @@ svg{display:block}
 @media(max-width:1023px){.nav-btn svg{width:23px;height:23px;stroke-width:2.2}.nav-btn.on svg{fill:var(--navy)}.progress-pill{flex-wrap:wrap}.progress-pill .progress-bar{order:4;flex:1;width:140px}.progress-pill .progress-count{order:5}}
 @media(max-width:1023px){.sheet{left:10px;right:10px;bottom:18px;max-height:90%;border:1px solid var(--line);border-radius:13px}.sheet-body{padding:6px 16px 14px}.comp-row{border-bottom:0;padding-top:8px;padding-bottom:8px}.comp-name{font-size:15px}.comp-desc{font-size:14px}}
 @media(max-width:1023px){.sheet:not(.open){visibility:hidden}.sheet.open{visibility:visible}}
+.lesson-card .thumb{object-fit:contain;background:transparent}

@@ -49,7 +49,7 @@ void loop() {
   example: [
     'A GPIO pin sources up to about 12 mA safely — plenty for an LED through a resistor.',
     '<code>digitalWrite(LED_PIN, HIGH)</code> drives 3.3 V; the resistor drops the rest and sets the current.',
-    'The <code>delay()</code> values set the rhythm. Try 900 ms on, 200 ms off.',
+    'Timing exercise: click the two highlighted <code>delay()</code> values below to choose 900 ms on and 200 ms off. The current values are shown in the code; the simulation and copied code use those values.',
   ],
   specs: [['Forward voltage', 'Red ≈ 1.9 V · blue ≈ 3.0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Pin current', 'Keep under ~12 mA per pin'], ['Absolute max', '3.6 V on any GPIO']],
   code:

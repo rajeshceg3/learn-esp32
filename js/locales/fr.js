@@ -91,7 +91,7 @@ export default {
       example: [
         'Une broche GPIO fournit environ 12 mA en sécurité — largement assez pour une LED avec résistance.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> sort 3,3 V ; la résistance absorbe le reste et fixe le courant.',
-        'Les valeurs de <code>delay()</code> donnent le rythme. Essayez 900 ms allumée, 200 ms éteinte.',
+        'Exercice : cliquez sur les deux valeurs de <code>delay()</code> en surbrillance pour choisir 900 ms allumée et 200 ms éteinte. Le code affiche les valeurs actuelles, utilisées par la simulation et la copie.',
       ],
       specs: [['Tension directe', 'Rouge ≈ 1,9 V · bleue ≈ 3,0 V'], ['Résistance', '220 Ω – 1 kΩ'], ['Courant par broche', 'Restez sous ~12 mA par broche'], ['Maximum absolu', '3,6 V sur toute GPIO']],
     },

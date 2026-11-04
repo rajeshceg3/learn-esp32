@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: run-continuity-i18n-controls-20261104
+// Build: timing-exercise-thumbnails-inspector-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -218,7 +218,7 @@ canvas.addEventListener('pointermove', e => {
   hoverPart = part || null;
   const hp = $('#partTag');
   if (part && state.settings.labels) {
-    hp.textContent = part.label; hp.style.display = 'flex';
+    hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
 });
@@ -251,9 +251,13 @@ function pickAt(e) {
 // ---------- part info popover ----------
 const partTag = document.createElement('div'); partTag.className = 'tag mini live'; partTag.id = 'partTag'; partTag.style.display = 'none'; partTag.style.pointerEvents = 'none';
 tagsEl.appendChild(partTag);
-function openPartInfo(part) {
-  openSheet('component', { title: part.label, desc: part.desc });
+function localizedPart(part) {
+  const byId={module:'ESP32-WROOM-32',usb:'Micro-USB port',en:'EN button',boot:'BOOT button',uart:'USB-UART bridge',reg:'3.3 V regulator',bled:'Built-in LED',pled:'Power LED',gpioT:'GPIO pins',gpioB:'GPIO pins'};
+  const descById={module:'The 240 MHz dual-core module that runs your code, with Wi-Fi and Bluetooth.',usb:'Uploads sketches and powers the board from your computer.',en:'Restarts your sketch from the top.',boot:'Hold while pressing EN to enter upload mode.',uart:'Turns USB into serial so your computer can talk to the chip.',reg:'Steps the 5 V USB supply down to a steady 3.3 V.',bled:'Wired to GPIO2 — blinks with LED_BUILTIN.',pled:'Lit whenever the board has power.',gpioT:'30 pins: digital in/out, analog in, touch, PWM, I²C, SPI.',gpioB:'30 pins: digital in/out, analog in, touch, PWM, I²C, SPI.'};
+  return {title:trCompName(byId[part.id]||part.label),desc:trCompDesc(descById[part.id]||part.desc)};
 }
+function openPartInfo(part) { openSheet('component', localizedPart(part)); }
+
 
 // ---------- scene container ----------
 class LessonScene {
@@ -450,7 +454,7 @@ let thumbRenderer = null;
 function thumbFor(i) {
   if (!thumbRenderer) {
     thumbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    thumbRenderer.setSize(300, 128);
+    thumbRenderer.setSize(192, 192);
   }
   const ts = new THREE.Scene();
   ts.add(new THREE.HemisphereLight(0xfff4e0, 0xcbb894, 1.2));
@@ -462,7 +466,8 @@ function thumbFor(i) {
   m.traverse(o => { if(o.isMesh && o.geometry) { const edge = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,55),new THREE.LineBasicMaterial({color:0x19243c}));o.add(edge); } });
   ts.add(m);
   const bb6 = new THREE.Box3().setFromObject(m); const c6 = bb6.getCenter(new THREE.Vector3()); const sz = bb6.getSize(new THREE.Vector3()).length();
-  const cam = new THREE.PerspectiveCamera(26, 300 / 128, 1, 2000);
+  const extent = sz * .46;
+  const cam = new THREE.OrthographicCamera(-extent, extent, extent, -extent, .1, 2000);
   cam.position.set(c6.x + sz * .7, c6.y + sz * .75, c6.z + sz * .9); cam.lookAt(c6);
   thumbRenderer.render(ts, cam);
   const url = thumbRenderer.domElement.toDataURL();

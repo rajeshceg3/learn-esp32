@@ -91,7 +91,7 @@ export default {
       example: [
         'Bir GPIO pini güvenle yaklaşık 12 mA verir — dirençli bir LED için bol bol yeter.',
         '<code>digitalWrite(LED_PIN, HIGH)</code> 3,3 V verir; direnç kalanı üstlenir ve akımı ayarlar.',
-        '<code>delay()</code> değerleri ritmi belirler. 900 ms açık, 200 ms kapalı dene.',
+        'Alıştırma: 900 ms açık ve 200 ms kapalı seçmek için vurgulanan iki <code>delay()</code> değerine tıkla. Kod güncel değerleri gösterir; simülasyon ve kopya aynı değerleri kullanır.',
       ],
       specs: [['İleri gerilim', 'Kırmızı ≈ 1,9 V · mavi ≈ 3,0 V'], ['Direnç', '220 Ω – 1 kΩ'], ['Pin akımı', 'Pin başına ~12 mA’in altında kal'], ['Mutlak azami', 'Herhangi bir GPIO’da 3,6 V']],
     },
