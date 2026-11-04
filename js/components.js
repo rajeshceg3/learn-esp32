@@ -320,7 +320,7 @@ export function strengthMeter(){
  const g=new THREE.Group();g.add(ink(box(40,29,3,MAT.plastic,0,19,0)));g.add(ink(box(43,2,10,MAT.cream,0,3,0)));
  const cv=document.createElement('canvas');cv.width=400;cv.height=280;const c=cv.getContext('2d');c.fillStyle='#e8dec9';c.fillRect(0,0,400,280);
  const ox=200,oy=224,r=145;for(const [a,b,color]of [[Math.PI,Math.PI*1.36,'#559466'],[Math.PI*1.36,Math.PI*1.75,'#d2aa38'],[Math.PI*1.75,Math.PI*2,'#bd5140']]){c.strokeStyle=color;c.lineWidth=31;c.beginPath();c.arc(ox,oy,r,a,b);c.stroke();}
- c.fillStyle='#253147';c.font='bold 18px monospace';c.textAlign='center';for(let i=0;i<5;i++){const a=Math.PI+i*Math.PI/4;c.fillText(String(i*1024),ox+Math.cos(a)*109,oy+Math.sin(a)*109);}
+ c.fillStyle='#253147';c.font='bold 18px monospace';c.textAlign='center';for(let i=0;i<5;i++){const a=Math.PI+i*Math.PI/4;c.fillText(String(Math.round(i*4095/4)),ox+Math.cos(a)*109,oy+Math.sin(a)*109);}
  c.font='bold 15px monospace';c.fillText('STRENGTH',200,28);const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
  const face=new THREE.Mesh(new THREE.PlaneGeometry(37,26),new THREE.MeshBasicMaterial({map:tex}));face.position.set(0,19,1.6);g.add(face);
  const needle=new THREE.Group();needle.position.set(0,11,2);g.add(needle);needle.add(ink(box(14,.8,.5,MAT.red,-6.5,0,0)));const hub=cyl(1.5,1.5,.7,MAT.metal,0,0,0,16);hub.rotation.x=Math.PI/2;needle.add(hub);
