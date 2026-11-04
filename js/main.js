@@ -496,21 +496,38 @@ function thumbFor(i) {
   if(thumbCache.has(i))return thumbCache.get(i);
   if (!thumbRenderer) {
     thumbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-    thumbRenderer.setSize(192, 192);
+    thumbRenderer.setSize(192, 128);
   }
   const ts = new THREE.Scene();
   ts.add(new THREE.HemisphereLight(0xfff4e0, 0xcbb894, 1.2));
   const d = new THREE.DirectionalLight(0xfff0dd, 2); d.position.set(30, 60, 40); ts.add(d);
-  const hero = { board: null, blink: 'led', button: 'btn', pot: 'pot', rgb: 'rgb', light: 'ldr', distance: 'us', sound: 'bz', piano: 'keys', motor: 'motor', temp: 'tmp', servo: 'servo', stepper: 'stepper', plant: 'plant', force: 'fsr', project: 'tl' }[LESSONS[i].id];
-  let m;
-  if (LESSONS[i].id === 'board') { const b = buildBoard(); m = b.group; m.scale.setScalar(.8); }
-  else m = { led: C.led5mm(0xe8392e), btn: C.pushButton(), pot: C.potentiometer(), rgb: C.rgbLed(), ldr: C.ldr(), us: C.ultrasonic(), bz: C.buzzer(), keys: C.pianoKeys(8), motor: C.dcMotor(), tmp: C.tmp36(), servo: C.servo(), stepper: C.stepper(), plant: (() => { const p = new THREE.Group(); p.add(cyl(8, 6.4, 9, new THREE.MeshStandardMaterial({ color: 0xb96b45 }), 0, 4.5, 0)); const l = new THREE.Mesh(new THREE.SphereGeometry(3.4, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4d9a51 })); l.scale.set(1, 2.2, .5); l.position.y = 13; p.add(l); return p; })(), fsr: C.fsr(), tl: C.trafficLight() }[hero];
-  m.traverse(o => { if(o.isMesh && o.geometry) { const edge = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,55),new THREE.LineBasicMaterial({color:0x19243c}));o.add(edge); } });
+  // Rail previews show the complete lesson circuit, not an isolated component.
+  // Reuse our own scene builders so the preview follows the lesson's actual wiring.
+  const m = new THREE.Group();
+  const previewBoard = buildBoard().group;
+  previewBoard.position.copy(BOARD_POS); m.add(previewBoard);
+  if (LESSONS[i].sim !== 'builtin') {
+    const breadboard = C.breadboard(); breadboard.position.copy(BB_POS); m.add(breadboard);
+    const previewLesson = new LessonScene();
+    SCENES[LESSONS[i].sim].build(previewLesson);
+    m.add(previewLesson.root);
+    previewLesson.wires.forEach(w => m.add(w.mesh));
+  }
   ts.add(m);
-  const bb6 = new THREE.Box3().setFromObject(m); const c6 = bb6.getCenter(new THREE.Vector3()); const sz = bb6.getSize(new THREE.Vector3()).length();
-  const extent = sz * .46;
-  const cam = new THREE.OrthographicCamera(-extent, extent, extent, -extent, .1, 2000);
-  cam.position.set(c6.x + sz * .7, c6.y + sz * .75, c6.z + sz * .9); cam.lookAt(c6);
+  const bounds = new THREE.Box3().setFromObject(m);
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = bounds.getSize(new THREE.Vector3()).length();
+  const cam = new THREE.OrthographicCamera(-radius, radius, radius, -radius, .1, 2000);
+  cam.position.set(center.x + radius * .65, center.y + radius * .85, center.z + radius);
+  cam.lookAt(center);cam.updateMatrixWorld(true);
+  // Fit projected bounds in the square source without clipping tall components.
+  let extentX = 0, extentY = 0;
+  for (const x of [bounds.min.x,bounds.max.x]) for(const y of [bounds.min.y,bounds.max.y]) for(const z of [bounds.min.z,bounds.max.z]) {
+    const v = new THREE.Vector3(x,y,z).applyMatrix4(cam.matrixWorldInverse);
+    extentX = Math.max(extentX,Math.abs(v.x));extentY = Math.max(extentY,Math.abs(v.y));
+  }
+  const extent = Math.max(extentX / 1.5, extentY) * 1.06;
+  cam.left=-extent*1.5;cam.right=extent*1.5;cam.top=extent;cam.bottom=-extent;cam.updateProjectionMatrix();
   thumbRenderer.render(ts, cam);
   const url = thumbRenderer.domElement.toDataURL();
   m.traverse(o => { o.geometry?.dispose?.(); });
