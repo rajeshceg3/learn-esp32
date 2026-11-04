@@ -8,7 +8,7 @@ export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
 export const WIRE = { red: 0xd64a3a, navy: 0x2f3547, orange: 0xe8913a, green: 0x3fbf6a, yellow: 0xe8c53a, purple: 0x6a4fa3, white: 0xf2efe6, teal: 0x1aa3a1 };
 export function setLessonLayout(id) {
-  const compact = id === 'blink';
+  const compact = ['blink','button','rgb','sound'].includes(id);
   BOARD_POS.set(compact ? -28 : -38, 0, compact ? 16 : 25);
   BB_POS.set(compact ? 29 : 38, 0, compact ? -6 : 0);
 }
@@ -75,7 +75,7 @@ button: {
   build(s) {
     const btn = C.pushButton(); btn.position.copy(bb(14, 1)); s.add(btn, 'button');
     const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(18, 7)); s.add(led, 'led');
-    s.wires.push(wireTo(pin('D27'), bb(12, 1), WIRE.green, 14, 'D27'), wireTo(pin('D26'), bb(15, 7), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
+    s.wires.push(wireTo(pin('D27'), bb(12, 1), WIRE.green, 20, 'D27'), wireTo(pin('D26'), bb(15, 7), WIRE.orange, 23, 'D26'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D27'), label: 'GPIO27 · IN', i: 'bolt', d: 'Reads LOW while the button is held.' },
       { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button', i: 'hand', d: 'Click to press and hold.' },
@@ -148,8 +148,8 @@ pot: {
 rgb: {
   build(s) {
     const rgb = C.rgbLed(); rgb.position.copy(bb(15, 2)); s.add(rgb, 'rgb');
-    [['D25', 11, WIRE.red], ['D26', 12, WIRE.green], ['D33', 13, 0x4d7de8]].forEach(([p, cr, c]) => s.wires.push(wireTo(pin(p), bb(cr, 2), c, 14, p)));
-    s.wires.push(wireTo(pin('GND'), bb(18, 3), WIRE.navy, 12, 'GND'));
+    [['D25', 11, WIRE.red], ['D26', 12, WIRE.green], ['D33', 13, 0x4d7de8]].forEach(([p, cr, c]) => s.wires.push(wireTo(pin(p), bb(cr, 2), c, 22, p)));
+    s.wires.push(wireTo(pin('GND'), bb(18, 3), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D25'), label: 'R·G·B = 25·26·33', i: 'pins', d: 'Three outputs mix one colour.' },
       { at: bb(15, 2).add(V(0, 10, 0)), label: 'RGB LED', click: 'rgb', i: 'bulb', d: 'Click to try the next palette colour.' },
@@ -220,7 +220,7 @@ distance: {
 sound: {
   build(s) {
     const bz = C.buzzer(); bz.position.copy(bb(15, 2)); s.add(bz, 'buzzer');
-    s.wires.push(wireTo(pin('D19'), bb(11, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(19, 3), WIRE.navy, 12, 'GND'));
+    s.wires.push(wireTo(pin('D19'), bb(11, 2), WIRE.purple, 22, 'D19'), wireTo(pin('GND'), bb(19, 3), WIRE.navy, 19, 'GND'));
     s.tags = [ { at: pin('D19'), label: 'GPIO19', i: 'bolt', d: 'Plays tones with ledcWriteTone.' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
   },
   sim: api => {

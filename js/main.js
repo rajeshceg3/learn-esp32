@@ -241,6 +241,7 @@ function placeTags() {
       // Attach a large pin marker to the physical part, with its compact label beside it.
       const right = ax + w + 14 < r.width - 6;
       cx = ax + (right ? 1 : -1) * (w / 2 + 10); cy = ay - 1;
+      if(state.lesson===1 && t.label==='RESISTOR'){cx=ax;cy=ay+42;}
       if(state.lesson===8){
         const p={'KEY INPUTS':[.23,.34],'BUZZER':[.77,.34],'GND RAIL':[.23,.65],'8 KEYS - HOLD TO PLAY':[.7,.76]}[t.label];
         if(p){cx=r.width*p[0];cy=r.height*p[1]}
@@ -421,7 +422,7 @@ function loadLesson(i, keepTab) {
   const def = SCENES[LESSONS[i].sim];
   setLessonLayout(LESSONS[i].id);
   board.group.position.copy(BOARD_POS);
-  const cols = LESSONS[i].id === 'blink' ? 18 : 24;
+  const cols = ['blink','button','rgb','sound'].includes(LESSONS[i].id) ? 18 : 24;
   bboard.visible = false;
   if (!breadboardViews[cols]) {
     breadboardViews[cols] = C.breadboard(cols);
