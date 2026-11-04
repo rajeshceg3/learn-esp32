@@ -253,9 +253,25 @@ export function trafficLight() {
 }
 export function toyCar() {
   const g = new THREE.Group();
-  g.add(box(18, 5, 10, MAT.red, 0, 4.5, 0));
-  g.add(box(10, 4, 9, new THREE.MeshStandardMaterial({ color: 0xd8443a, roughness: .35 }), -1, 8.8, 0));
-  [[-6, -5.4], [6, -5.4], [-6, 5.4], [6, 5.4]].forEach(([x, z]) => { const w = cyl(2.6, 2.6, 2, MAT.rubber, x, 2.6, z); w.rotation.x = Math.PI / 2; g.add(w); });
+  const red=new THREE.MeshStandardMaterial({color:0xe14e43,roughness:.38});
+  const profile=new THREE.Shape();profile.moveTo(-9,2.8);profile.lineTo(9,2.8);profile.lineTo(9,5.3);profile.quadraticCurveTo(9,6,7.5,6);profile.lineTo(4.8,6.3);profile.lineTo(2.7,10);profile.quadraticCurveTo(2.3,10.7,1.3,10.7);profile.lineTo(-3.1,10.7);profile.quadraticCurveTo(-3.8,10.7,-4.1,10);profile.lineTo(-6,6.4);profile.lineTo(-8.4,6);profile.quadraticCurveTo(-9,5.8,-9,5);profile.closePath();
+  const body=new THREE.Mesh(new THREE.ExtrudeGeometry(profile,{depth:9,bevelEnabled:true,bevelSegments:2,steps:1,bevelSize:.35,bevelThickness:.35}),red);body.position.z=-4.5;g.add(ink(body));
+  for(const z of[-4.88,4.88]){
+    const side=new THREE.Shape();side.moveTo(-5.1,6.7);side.lineTo(3.8,6.7);side.lineTo(2.15,9.8);side.lineTo(-3.5,9.8);side.closePath();
+    const pane=new THREE.Mesh(new THREE.ShapeGeometry(side),new THREE.MeshStandardMaterial({color:0x9badae,roughness:.3,side:THREE.DoubleSide}));pane.position.z=z;g.add(pane);
+    g.add(box(.45,3, .18,red,-.1,8.2,z));g.add(box(1.25,.22,.18,MAT.metalDark,-2.5,6,z));
+  }
+  for(const [xt,yt,xb,yb] of[[2.95,9.8,4.45,7.1],[-4.25,9.8,-5.65,7.1]]){
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([xt,yt,-3.7,xb,yb,-3.7,xb,yb,3.7,xt,yt,-3.7,xb,yb,3.7,xt,yt,3.7],3));geo.computeVertexNormals();
+    const window=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x9badae,roughness:.27,side:THREE.DoubleSide}));g.add(window);
+  }
+  for(const x of[-9.35,9.35])g.add(ink(box(.6,.8,8.2,MAT.metalDark,x,3.2,0)));
+  for(const z of[-3,3]){g.add(box(.16,1,1.6,MAT.white,9.4,4.8,z));g.add(box(.16,.8,1.4,MAT.red,-9.4,4.8,z));}
+  for(const [x,z] of[[-6,-5.1],[6,-5.1],[-6,5.1],[6,5.1]]){
+    const w=ink(cyl(2.6,2.6,1.5,MAT.rubber,x,2.6,z));w.rotation.x=Math.PI/2;g.add(w);
+    const hub=cyl(1.25,1.25,.15,MAT.metalDark,x,2.6,z+Math.sign(z)*.83,16);hub.rotation.x=Math.PI/2;g.add(hub);
+    const cap=cyl(.5,.5,.18,MAT.metal,x,2.6,z+Math.sign(z)*.94,12);cap.rotation.x=Math.PI/2;g.add(cap);
+  }
   return g;
 }
 export function pianoKeys(n = 8) {
