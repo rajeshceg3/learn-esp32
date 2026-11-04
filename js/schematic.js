@@ -360,6 +360,24 @@ function moduleDiagram(title, pins, labels, note = '') {
   return {svg:`<svg class="sch" viewBox="0 0 380 ${h}" role="img" aria-label="ESP32 · ${title}"><g class="board"><rect class="box" x="18" y="${top}" width="90" height="${bottom-top}" rx="6"/>${T(63,top+15,'ESP32','block-t')}</g><g class="board"><rect class="box" x="246" y="${top+4}" width="112" height="${bottom-top-8}" rx="5"/>${T(302,top+19,title,'block-t')}</g>${rows}${note?T(18,bottom+27,note,'note','start'):''}</svg>`};
 }
 
+// HC-SR04 ECHO is 5 V logic: R1/R2 reduce it to about 3 V before GPIO18.
+// Both lessons use this circuit; the project adds three current-limited LEDs.
+function ultrasonicDiagram(project=false) {
+ const note=noteRows(`ECHO: 5 V → 3.0 V · R1 10 kΩ / R2 15 kΩ`,18,project?486:294);
+ const bottom=project?458:274;
+ const row=(pin,label,y)=>`${T(104,y+4,pin,'pin-t','end')}${W([[112,y],[300,y]])}${T(308,y+4,label,'pin-t','start')}`;
+ const leds=project?[['GPIO25','D1 · R',322],['GPIO26','D2 · Y',380],['GPIO33','D3 · G',438]].map(([pin,label,y],i)=>`${T(104,y+4,pin,'pin-t','end')}${W([[112,y],[170,y]])}<g class="sym" transform="translate(200 ${y})">${SYM.resistor(`R${i+3} · 220 Ω`,'')}</g>${W([[230,y],[300,y]])}<g class="sym" transform="translate(330 ${y})">${SYM.led(label,'')}</g>${W([[360,y],[390,y],[390,464]])}`).join(''):'';
+ return {svg:`<svg class="sch" viewBox="0 0 430 ${project?520:328}" role="img" aria-label="ESP32 HC-SR04 with 10 kilohm and 15 kilohm ECHO voltage divider${project?' and three series-resistor LEDs':''}"><g class="board"><rect class="box" x="18" y="30" width="94" height="${bottom-30}" rx="6"/>${T(65,48,'ESP32','block-t')}<rect class="box" x="300" y="38" width="112" height="236" rx="5"/>${T(356,55,'HC-SR04','block-t')}</g>${row('VIN · 5V','VCC',78)}${row('GPIO5','TRIG',116)}${T(104,164,'GPIO18','pin-t','end')}${T(308,164,'ECHO','pin-t','start')}${W([[112,160],[240,160]])}<circle class="solid" cx="210" cy="160" r="2.8"/><g class="sym" transform="translate(270 160)">${SYM.resistor('','')}</g>${T(270,140,'R1 · 10 kΩ','val')}${W([[210,160],[210,174]])}<g class="sym" transform="translate(210 204) rotate(90)">${SYM.resistor('','')}</g>${T(239,208,'R2 · 15 kΩ','val','start')}${W([[210,234],[210,242]])}<g class="sym" transform="translate(210 242)">${SYM.gnd()}</g>${row('GND','GND',260)}${project?'':`<text class="pinval" data-pin="GPIO18" x="150" y="151"></text>`}${leds}${project?`${W([[390,464],[390,432]])}<g class="sym" transform="translate(390 474)">${SYM.gnd()}</g>`:''}${note.svg}</svg>`};
+}
+
+// Low-side NPN driver. The flyback diode cathode is on the positive supply.
+function driverDiagram(thermal=false) {
+ const d=thermal?150:0, bottom=thermal?474:324;
+ const note=noteRows(noteFor(thermal?'temp':'motor',SCH[thermal?'temp':'motor'].note),18,bottom+28);
+ const sensor=thermal?`<rect class="box" x="300" y="38" width="112" height="124" rx="5"/>${T(356,55,'TMP36','block-t')}${[['3V3','VS',70],['GPIO32','OUT',105],['GND','GND',140]].map(([pin,label,y])=>`${T(104,y+4,pin,'pin-t','end')}${W([[112,y],[300,y]])}${T(308,y+4,label,'pin-t','start')}`).join('')}`:'';
+ return {svg:`<svg class="sch" viewBox="0 0 430 ${bottom+46+note.height}" role="img" aria-label="ESP32 ${thermal?'TMP36 and fan':'motor'} with NPN transistor, base resistor and flyback diode"><g class="board"><rect class="box" x="18" y="30" width="94" height="${bottom-30}" rx="6"/>${T(65,48,'ESP32','block-t')}${sensor}</g>${T(104,104+d,'VIN · 5V','pin-t','end')}${W([[112,100+d],[350,100+d]])}<circle class="solid" cx="280" cy="${100+d}" r="2.8"/><g class="sym" transform="translate(280 ${130+d}) rotate(90)">${SYM.motor('')}</g>${T(249,134+d,thermal?'FAN':'M1','val','end')}${W([[280,160+d],[350,160+d]])}<circle class="solid" cx="280" cy="${160+d}" r="2.8"/>${W([[350,100+d],[350,106+d]])}<g class="sym" transform="translate(350 ${130+d}) rotate(-90)">${SYM.diode('')}</g>${W([[350,154+d],[350,160+d]])}${T(378,124+d,'D1','val')}${T(378,140+d,'K ↑','pin-t')}${W([[280,160+d],[280,230+d]])}<g class="sym" transform="translate(254 ${244+d})">${SYM.npn()}</g>${T(306,236+d,'Q1','val')}${T(306,251+d,'2N2222','pin-t')}${T(104,248+d,'GPIO27','pin-t','end')}${W([[112,244+d],[166,244+d]])}<g class="sym" transform="translate(196 ${244+d})">${SYM.resistor('R1 · 1 kΩ','')}</g>${W([[226,244+d],[228,244+d]])}${W([[280,258+d],[280,300+d],[112,300+d]])}${T(104,304+d,'GND','pin-t','end')}<g class="sym" transform="translate(280 ${300+d})">${SYM.gnd()}</g>${note.svg}</svg>`};
+}
+
 // Build the SVG for a lesson id. Returns { svg } or null when the lesson has no circuit.
 export function buildSchematic(id) {
   const spec = SCH[id];
@@ -378,8 +396,10 @@ export function buildSchematic(id) {
     const wires=rows.map(([pin,label,y])=>`${T(108,y+4,pin,'pin-t','end')}${W([[116,y],[248,y]])}${T(256,y+4,label,'pin-t','start')}${pin==='GPIO34'?`<text class="pinval" data-pin="GPIO34" x="174" y="${y-8}"></text>`:''}`).join('');
     return {svg:`<svg class="sch" viewBox="0 0 380 ${364+note.height}" role="img" aria-label="ESP32: soil probe and OLED share 3V3 and GND"><g class="board"><rect class="box" x="18" y="30" width="98" height="294" rx="6"/>${T(67,48,'ESP32','block-t')}<rect class="box" x="248" y="38" width="114" height="116" rx="5"/>${T(305,55,'SOIL','block-t')}<rect class="box" x="248" y="178" width="114" height="146" rx="5"/>${T(305,195,'OLED','block-t')}</g>${wires}${note.svg}</svg>`};
   }
+  if(id==='motor'||id==='temp')return driverDiagram(id==='temp');
+  if(id==='project')return ultrasonicDiagram(true);
   if(id==='servo')return moduleDiagram('SERVO',['GPIO13','VIN','GND'],['SIG','5V','GND']);
-  if(id==='distance')return moduleDiagram('HC-SR04',['VIN','GPIO5','GPIO18','GND'],['VCC','TRIG','ECHO','GND'],`ECHO: 5 V → 3.3 V · ${diagramUI()[1]}`);
+  if(id==='distance')return ultrasonicDiagram();
   if(id==='sound')return{svg:`<svg class="sch" viewBox="0 0 380 120" role="img" aria-label="ESP32 GPIO19 · BZ1 · GND"><g class="board"><rect class="box" x="18" y="24" width="100" height="68" rx="7"/>${T(68,43,'ESP32','block-t')}${T(110,70,'GPIO19','pin-t','end')}</g><text class="pinval" data-pin="GPIO19" x="170" y="58"></text>${W([[118,66],[246,66]])}<g class="sym" transform="translate(276 66)">${SYM.buzzer('BZ1')}</g>${W([[306,66],[340,66],[340,74]])}<g class="sym" transform="translate(340 74)">${SYM.gnd()}</g></svg>`};
   if(id==='blink')return{svg:`<svg class="sch" viewBox="0 0 380 112" role="img" aria-label="ESP32 GPIO26 · 220 Ω · LED · GND"><g class="board"><rect class="box" x="16" y="25" width="82" height="56" rx="7"/>${T(57,43,'ESP32','block-t')}${T(90,66,'GPIO26','pin-t','end')}</g><text class="pinval" data-pin="GPIO26" x="126" y="52"></text>${W([[98,62],[170,62]])}<g class="sym" transform="translate(200 62)">${SYM.resistor('R1','220 Ω')}</g>${W([[230,62],[264,62]])}<g class="sym" transform="translate(294 62)">${SYM.led('D1','LED')}</g>${W([[324,62],[350,62],[350,69]])}<g class="sym" transform="translate(350 69)">${SYM.gnd()}</g></svg>`};
   const P = spec.pads, g = [];
