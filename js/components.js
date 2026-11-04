@@ -176,11 +176,24 @@ export function tmp36() {
 }
 export function servo() {
   const g = new THREE.Group();
-  g.add(box(23, 12, 12, new THREE.MeshStandardMaterial({ color: 0x2a56a3, roughness: .5 }), 0, 6, 0));
-  g.add(cyl(4, 4, 3, MAT.plastic, -6, 13.5, 0));
-  const arm = box(14, 1.4, 2.6, MAT.white, 0, 0, 0);
-  const armG = new THREE.Group(); armG.add(arm); arm.position.x = 5;
-  armG.position.set(-6, 15.6, 0); g.add(armG);
+  const blue=new THREE.MeshStandardMaterial({color:0x2a56a3,roughness:.45});
+  g.add(ink(box(23,17,12,blue,0,8.5,0)));
+  g.add(ink(box(23.3,2.2,12.3,blue,0,17.8,0)));
+  // Mounting ears and circular holes are actual open geometry, not painted dots.
+  for(const x of[-14.2,14.2]) {
+    const tab=new THREE.Shape();tab.moveTo(-3.5,-5);tab.lineTo(3.5,-5);tab.lineTo(3.5,5);tab.lineTo(-3.5,5);tab.closePath();
+    const hole=new THREE.Path();hole.absarc(0,0,1.2,0,Math.PI*2,true);tab.holes.push(hole);
+    const ear=new THREE.Mesh(new THREE.ExtrudeGeometry(tab,{depth:1.6,bevelEnabled:false}),blue);ear.rotation.x=-Math.PI/2;ear.position.set(x,13,0);g.add(ink(ear));
+  }
+  g.add(ink(cyl(4.5,4.5,2.5,blue,-6,20,0)));
+  const armG=new THREE.Group();armG.position.set(-6,22,0);g.add(armG);
+  const horn=new THREE.Shape();horn.moveTo(-3,-2.4);horn.lineTo(13,-1.8);horn.quadraticCurveTo(15,0,13,1.8);horn.lineTo(-3,2.4);horn.quadraticCurveTo(-5,0,-3,-2.4);
+  for(const x of[4,7.5,11]){const hole=new THREE.Path();hole.absarc(x,0,.65,0,Math.PI*2,true);horn.holes.push(hole);}
+  const arm=new THREE.Mesh(new THREE.ExtrudeGeometry(horn,{depth:1.2,bevelEnabled:false}),MAT.white);arm.rotation.x=-Math.PI/2;armG.add(ink(arm));
+  armG.add(cyl(1.1,1.1,.6,MAT.metal,-1,1.5,0,12));
+  const cv=document.createElement('canvas');cv.width=128;cv.height=72;const c=cv.getContext('2d');c.fillStyle='#204887';c.fillRect(0,0,128,72);c.fillStyle='#f2efe6';c.textAlign='center';c.font='bold 25px sans-serif';c.fillText('SG90',64,30);c.font='13px sans-serif';c.fillText('MICRO SERVO',64,53);
+  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+  const label=new THREE.Mesh(new THREE.PlaneGeometry(15,8.5),new THREE.MeshBasicMaterial({map:tex}));label.position.set(0,8.5,6.03);g.add(label);
   g.userData.setAngle = a => { armG.rotation.y = a; };
   return g;
 }
