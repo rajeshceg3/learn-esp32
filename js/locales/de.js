@@ -1,12 +1,15 @@
 // German — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "TASTENEINGÄNGE",
+    "GND RAIL": "GND-SCHIENE",
+
     'LAMP': 'LAMPE',
     'BUILT-IN LED': 'ONBOARD-LED', 'RESISTOR': 'WIDERSTAND', 'BUTTON': 'TASTER', 'POT': 'POTI',
     'BUZZER': 'SUMMER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'NACHTLICHT',
     'LED BAR': 'LED-LEISTE', 'RGB LED': 'RGB-LED', 'PRESS PAD': 'DRUCKPAD', 'TORCH': 'TASCHENLAMPE',
     'OBSTACLE': 'HINDERNIS', 'CAR': 'AUTO', 'PLANT': 'PFLANZE', 'TRAFFIC LIGHT': 'AMPEL',
-    '8 KEYS - TAP TO PLAY': '8 TASTEN — TIPPEN ZUM SPIELEN', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 TASTEN - HALTEN ZUM SPIELEN', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB-PORT",
     "MICROCONTROLLER": "MIKROCONTROLLER",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "Gemeinsame Masse für alle acht Tasten.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH bis zum Drücken.",
+
     "Uploads code and powers the board.": "Lädt Code hoch und versorgt das Board mit Strom.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: Dual-Core 240 MHz mit WLAN und Bluetooth.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "Digitale Ein-/Ausgänge, PWM, Touch, I²C und SPI.",

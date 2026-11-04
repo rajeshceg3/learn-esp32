@@ -1,12 +1,15 @@
 // Indonesian — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "INPUT TOMBOL",
+    "GND RAIL": "JALUR GND",
+
     'LAMP': 'LAMPU',
     'BUILT-IN LED': 'LED INTERNAL', 'RESISTOR': 'RESISTOR', 'BUTTON': 'TOMBOL', 'POT': 'POTENSIOMETER',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'LAMPU TIDUR',
     'LED BAR': 'BARISAN LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'BANTALAN TEKAN', 'TORCH': 'SENTER',
     'OBSTACLE': 'PENGHALANG', 'CAR': 'MOBIL', 'PLANT': 'TANAMAN', 'TRAFFIC LIGHT': 'LAMPU LALU LINTAS',
-    '8 KEYS - TAP TO PLAY': '8 TOMBOL — KETUK UNTUK MAIN', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 TOMBOL - TAHAN UNTUK MAIN', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "PORT USB",
     "MICROCONTROLLER": "MIKROKONTROLER",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "Satu ground bersama untuk delapan tombol.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH hingga ditekan.",
+
     "Uploads code and powers the board.": "Mengunggah kode dan memberi daya pada papan.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: dual-core 240 MHz dengan Wi-Fi dan Bluetooth.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "I/O digital, PWM, sentuh, I²C dan SPI.",

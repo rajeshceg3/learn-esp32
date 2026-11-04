@@ -217,7 +217,12 @@ piano: {
     const inputs=['D32','D33','D25','D26','D27','D14','D13','D4'];
     inputs.forEach((name,i)=>s.wires.push(wireTo(pin(name),V(46+i*7-24.5,9,1.7),[WIRE.red,WIRE.orange,WIRE.yellow,WIRE.green,WIRE.teal,WIRE.purple,WIRE.navy,WIRE.purple][i],16+i*.8,name)));
     s.wires.push(wireTo(pin('GND'),V(21.5,8.5,9.4),WIRE.navy,20,'GND'));
-    s.tags = [ { at: V(46, 16, 5), label: '8 KEYS - TAP TO PLAY', click: 'keys', i: 'hand', d: 'Hold a key to play; release to stop.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
+    s.tags = [
+      { at: V(46,16,5), label: '8 KEYS - HOLD TO PLAY', i:'hand',d:'Hold a key to play; release to stop.' },
+      { at:bb(6,2).add(V(0,9,0)),label:'BUZZER',i:'wave',d:'Turns pulses into sound.' },
+      { at:pin('D32'),label:'KEY INPUTS',i:'pins',d:'GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.' },
+      { at:V(21.5,8.5,9.4),label:'GND RAIL',i:'plug',d:'One common ground for all eight keys.' }
+    ];
     s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
     s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
       const i = Math.round((lp.x + 24.5) / 7);

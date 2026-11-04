@@ -1,12 +1,15 @@
 // Japanese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "キー入力",
+    "GND RAIL": "GNDレール",
+
     'LAMP': 'ランプ',
     'BUILT-IN LED': '内蔵 LED', 'RESISTOR': '抵抗', 'BUTTON': 'ボタン', 'POT': '可変抵抗',
     'BUZZER': 'ブザー', 'MOTOR': 'モーター', 'SERVO': 'サーボ', 'NIGHT LIGHT': '常夜灯',
     'LED BAR': 'LED バー', 'RGB LED': 'RGB LED', 'PRESS PAD': 'プレスパッド', 'TORCH': '懐中電灯',
     'OBSTACLE': '障害物', 'CAR': 'クルマ', 'PLANT': '植物', 'TRAFFIC LIGHT': '信号機',
-    '8 KEYS - TAP TO PLAY': '8 鍵 — タップして演奏', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 鍵 - 長押しで演奏', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USBポート",
     "MICROCONTROLLER": "マイコン",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "8つのキーに共通のGND。",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: 押されるまでHIGH。",
+
     "Uploads code and powers the board.": "コードを書き込み、ボードに電源を供給します。",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32：Wi-FiとBluetooth内蔵の240 MHzデュアルコア。",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "デジタル入出力、PWM、タッチ、I²C、SPI。",

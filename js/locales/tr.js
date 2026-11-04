@@ -1,12 +1,15 @@
 // Turkish — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "TUŞ GİRİŞLERİ",
+    "GND RAIL": "GND HATTI",
+
     'LAMP': 'LAMBA',
     'BUILT-IN LED': 'YERLEŞİK LED', 'RESISTOR': 'DİRENÇ', 'BUTTON': 'BUTON', 'POT': 'POTANSİYOMETRE',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'GECE LAMBASI',
     'LED BAR': 'LED ÇUBUĞU', 'RGB LED': 'RGB LED', 'PRESS PAD': 'BASINÇ PEDİ', 'TORCH': 'EL FENERİ',
     'OBSTACLE': 'ENGEL', 'CAR': 'ARABA', 'PLANT': 'BİTKİ', 'TRAFFIC LIGHT': 'TRAFİK IŞIĞI',
-    '8 KEYS - TAP TO PLAY': '8 TUŞ — ÇALMAK İÇİN DOKUN', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 TUŞ - ÇALMAK İÇİN BASILI TUT', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB BAĞLANTI NOKTASI",
     "MICROCONTROLLER": "MİKRODENETLEYİCİ",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "Sekiz tuş için ortak toprak.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: Basılana kadar HIGH.",
+
     "Uploads code and powers the board.": "Kodu yükler ve karta güç verir.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: Wi-Fi ve Bluetooth'lu 240 MHz çift çekirdek.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "Dijital giriş/çıkış, PWM, dokunmatik, I²C ve SPI.",

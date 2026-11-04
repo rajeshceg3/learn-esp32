@@ -1,12 +1,15 @@
 // French — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "ENTRÉES DES TOUCHES",
+    "GND RAIL": "RAIL GND",
+
     'LAMP': 'LAMPE',
     'BUILT-IN LED': 'LED INTÉGRÉE', 'RESISTOR': 'RÉSISTANCE', 'BUTTON': 'BOUTON', 'POT': 'POTENTIOMÈTRE',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTEUR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'VEILLEUSE',
     'LED BAR': 'BARRE DE LEDS', 'RGB LED': 'LED RVB', 'PRESS PAD': 'PAD DE PRESSION', 'TORCH': 'LAMPE TORCHE',
     'OBSTACLE': 'OBSTACLE', 'CAR': 'VOITURE', 'PLANT': 'PLANTE', 'TRAFFIC LIGHT': 'FEU TRICOLORE',
-    '8 KEYS - TAP TO PLAY': '8 TOUCHES — TAPER POUR JOUER', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 TOUCHES - MAINTENEZ POUR JOUER', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "PORT USB",
     "MICROCONTROLLER": "MICROCONTRÔLEUR",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "Une masse commune aux huit touches.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH tant que la touche est relâchée.",
+
     "Uploads code and powers the board.": "Téléverse le code et alimente la carte.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32 : double cœur 240 MHz avec Wi-Fi et Bluetooth.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "Entrées/sorties numériques, PWM, tactile, I²C et SPI.",

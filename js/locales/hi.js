@@ -1,12 +1,15 @@
 // Hindi — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "कुंजी इनपुट",
+    "GND RAIL": "GND रेल",
+
     'LAMP': 'लैंप',
     'BUILT-IN LED': 'बिल्ट-इन LED', 'RESISTOR': 'रेज़िस्टर', 'BUTTON': 'बटन', 'POT': 'पोटेंशियोमीटर',
     'BUZZER': 'बज़र', 'MOTOR': 'मोटर', 'SERVO': 'सर्वो', 'NIGHT LIGHT': 'नाइट लाइट',
     'LED BAR': 'LED बार', 'RGB LED': 'RGB LED', 'PRESS PAD': 'प्रेस पैड', 'TORCH': 'टॉर्च',
     'OBSTACLE': 'रुकावट', 'CAR': 'कार', 'PLANT': 'पौधा', 'TRAFFIC LIGHT': 'ट्रैफ़िक लाइट',
-    '8 KEYS - TAP TO PLAY': '8 कुंजियाँ — बजाने के लिए टैप करें', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 कुंजियाँ - बजाने के लिए दबाए रखें', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB पोर्ट",
     "MICROCONTROLLER": "माइक्रोकंट्रोलर",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "आठों कुंजियों के लिए एक साझा ग्राउंड।",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: दबाने तक HIGH।",
+
     "Uploads code and powers the board.": "कोड अपलोड करता है और बोर्ड को पावर देता है।",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: Wi-Fi और ब्लूटूथ सहित 240 MHz ड्युअल-कोर।",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "डिजिटल इन/आउट, PWM, टच, I²C और SPI।",

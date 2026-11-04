@@ -211,11 +211,19 @@ function placeTags() {
         const p={'USB PORT':[.16,.20],'MICROCONTROLLER':[.50,.17],'GPIO PINS':[.82,.23],'EN · BOOT':[.16,.74],'BUILT-IN LED':[.50,.80],'ADC PINS':[.83,.76]}[t.label];
         if(p){cx=r.width*p[0];cy=r.height*p[1]}
       }
+      if(state.lesson===8){
+        const p={'8 KEYS - HOLD TO PLAY':[.83,.81],'BUZZER':[.83,.19],'KEY INPUTS':[.18,.81],'GND RAIL':[.49,.19]}[t.label];
+        if(p){cx=r.width*p[0];cy=r.height*p[1]}
+      }
       if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
     } else {
       // Attach a large pin marker to the physical part, with its compact label beside it.
       const right = ax + w + 14 < r.width - 6;
       cx = ax + (right ? 1 : -1) * (w / 2 + 10); cy = ay - 1;
+      if(state.lesson===8){
+        const p={'KEY INPUTS':[.23,.34],'BUZZER':[.77,.34],'GND RAIL':[.23,.65],'8 KEYS - HOLD TO PLAY':[.7,.65]}[t.label];
+        if(p){cx=r.width*p[0];cy=r.height*p[1]}
+      }
     }
     d._x = cx; d._y = cy;
   });

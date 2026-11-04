@@ -1,12 +1,15 @@
 // Korean — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "건반 입력",
+    "GND RAIL": "GND 레일",
+
     'LAMP': '램프',
     'BUILT-IN LED': '내장 LED', 'RESISTOR': '저항', 'BUTTON': '버튼', 'POT': '가변저항',
     'BUZZER': '부저', 'MOTOR': '모터', 'SERVO': '서보', 'NIGHT LIGHT': '무드등',
     'LED BAR': 'LED 바', 'RGB LED': 'RGB LED', 'PRESS PAD': '압력 패드', 'TORCH': '손전등',
     'OBSTACLE': '장애물', 'CAR': '자동차', 'PLANT': '식물', 'TRAFFIC LIGHT': '신호등',
-    '8 KEYS - TAP TO PLAY': '8 건반 — 탭하여 연주', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 건반 - 길게 눌러 연주', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB 포트",
     "MICROCONTROLLER": "마이크로컨트롤러",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "여덟 건반의 공통 접지.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: 누르기 전까지 HIGH.",
+
     "Uploads code and powers the board.": "코드를 업로드하고 보드에 전원을 공급합니다.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: Wi-Fi와 블루투스를 내장한 240 MHz 듀얼 코어.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "디지털 입출력, PWM, 터치, I²C, SPI.",

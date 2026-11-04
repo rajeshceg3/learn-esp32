@@ -1,12 +1,15 @@
 // Hebrew — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "כניסות קלידים",
+    "GND RAIL": "פס GND",
+
     'LAMP': 'מנורה',
     'BUILT-IN LED': 'LED מובנה', 'RESISTOR': 'נגד', 'BUTTON': 'כפתור', 'POT': 'פוטנציומטר',
     'BUZZER': 'זמזם', 'MOTOR': 'מנוע', 'SERVO': 'סרוו', 'NIGHT LIGHT': 'אור לילה',
     'LED BAR': 'שורת LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'משטח לחיצה', 'TORCH': 'פנס',
     'OBSTACLE': 'מכשול', 'CAR': 'מכונית', 'PLANT': 'צמח', 'TRAFFIC LIGHT': 'רמזור',
-    '8 KEYS - TAP TO PLAY': '8 קלידים — הקישו לנגן', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - HOLD TO PLAY': '8 קלידים - החזיקו לנגינה', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "חיבור USB",
     "MICROCONTROLLER": "בקר",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "הארקה משותפת לכל שמונת הקלידים.",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH עד ללחיצה.",
+
     "Uploads code and powers the board.": "מעלה קוד ומפעיל את הלוח.",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32: מעבד כפול-ליבה 240 MHz עם Wi-Fi ו-Bluetooth.",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "כניסות/יציאות דיגיטליות, PWM, מגע, I²C ו-SPI.",

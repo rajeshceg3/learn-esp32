@@ -1,12 +1,15 @@
 // Simplified Chinese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    "KEY INPUTS": "琴键输入",
+    "GND RAIL": "GND 电源轨",
+
     'LAMP': '台灯',
     'BUILT-IN LED': '板载 LED', 'RESISTOR': '电阻', 'BUTTON': '按钮', 'POT': '电位器',
     'BUZZER': '蜂鸣器', 'MOTOR': '电机', 'SERVO': '舵机', 'NIGHT LIGHT': '夜灯',
     'LED BAR': 'LED 灯条', 'RGB LED': 'RGB LED', 'PRESS PAD': '按压垫', 'TORCH': '手电筒',
     'OBSTACLE': '障碍物', 'CAR': '汽车', 'PLANT': '植物', 'TRAFFIC LIGHT': '红绿灯',
-    '8 KEYS - TAP TO PLAY': '8 个琴键 — 点击弹奏', 'HIGH': '高', 'LOW': '低',
+    '8 KEYS - HOLD TO PLAY': '8 个琴键 - 按住弹奏', 'HIGH': '高', 'LOW': '低',
 
     "USB PORT": "USB 接口",
     "MICROCONTROLLER": "微控制器",
@@ -15,6 +18,9 @@ export default {
     "EN \u00b7 BOOT": "EN · BOOT",
   },
   tagDesc: {
+    "One common ground for all eight keys.": "八个琴键共用接地。",
+    "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: HIGH until pressed.": "GPIO32, 33, 25, 26, 27, 14, 13, 4. INPUT_PULLUP: 按下前为 HIGH。",
+
     "Uploads code and powers the board.": "上传代码并为开发板供电。",
     "ESP32-WROOM-32: dual-core 240 MHz with Wi-Fi and Bluetooth.": "ESP32-WROOM-32：240 MHz 双核，内置 Wi-Fi 和蓝牙。",
     "Digital in/out, PWM, touch, I\u00b2C and SPI.": "数字输入/输出、PWM、触摸、I²C 和 SPI。",
