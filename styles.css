@@ -353,3 +353,33 @@ svg{display:block}
 .rail-wrap .lesson-rail{flex:1;min-width:0}
 .rail-nav{flex:none;width:26px;height:44px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--faint);display:flex;align-items:center;justify-content:center;cursor:pointer}
 .rail-nav:hover{color:var(--teal);border-color:var(--teal)}
+/* Measured desktop shell: header, full-width lesson rail, compact view toolbar. */
+@media(min-width:1024px){
+  .topbar{min-height:94px;padding:14px 24px 12px 80px}
+  .brand-logo{width:70px;height:42px}
+  .brand-name{font-size:30px;letter-spacing:.15em}
+  .brand-tag{font-size:13px;letter-spacing:.24em}
+  .sidebar{grid-column:1;grid-row:1/3;z-index:3;padding-top:30px}
+  .sidebar .nav-btn{min-height:60px}
+  .sidebar .nav-btn[data-k=expand]{margin-bottom:12px}
+  .main{grid-template-columns:minmax(0,1fr) 400px}
+  .panel{grid-row:1;margin-top:4px}
+  .lessons-sec{grid-column:1/3;margin:0 56px 16px 24px;border:0;border-radius:0;background:transparent}
+  .lessons-title{padding:6px 0;font-size:14px}
+  .lesson-rail{padding:2px 0 8px;gap:10px}
+  .lesson-card{width:220px;height:74px;border-radius:7px}
+  .lesson-card:first-child{width:260px}
+  .lesson-card .thumb{width:62px;height:60px;background:transparent}
+  .lesson-card:first-child .thumb{width:96px}
+  .lesson-card .lt{font-size:13px}
+  .toolbar{height:36px;padding:3px 8px;border-radius:9px;gap:3px;bottom:12px}
+  .tool-btn{width:29px;height:28px;border-radius:5px}
+  .tool-btn svg{width:16px;height:16px}
+  .tabbar{padding-top:4px}
+}
+.code-pre{position:relative}
+.sheet-body{min-height:0}
+.sheet-head{flex-shrink:0}
+@media(min-width:1024px){
+ .topbar{grid-row:1;grid-column:2;padding-left:24px}
+}

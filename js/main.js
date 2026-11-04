@@ -97,7 +97,12 @@ function tone(f) {
 const api = {
   serial: t => log(t), tone,
   setBuiltin: on => { board.builtinLed.material = on ? new THREE.MeshStandardMaterial({ color: 0x5aa0ec, emissive: 0x2a6ae0, emissiveIntensity: 1.8 }) : MAT.blueLed; },
-  line: n => { document.querySelectorAll('#panelBody .code-line').forEach((el, i) => el.classList.toggle('active', i + 1 === n)); },
+  line: n => {
+    document.querySelectorAll('#panelBody .code-line').forEach((el, i) => {
+      const active = i + 1 === n; el.classList.toggle('active', active);
+      if (active) { const pre = el.closest('.code-pre'); if (pre && (el.offsetTop < pre.scrollTop || el.offsetTop + el.offsetHeight > pre.scrollTop + pre.clientHeight)) pre.scrollTop = el.offsetTop - pre.offsetTop - pre.clientHeight / 2; }
+    });
+  },
   tag: t => { const el = $('#runTag'); if (!el) return; if (t) { el.textContent = trTag(t); el.style.display = 'flex'; } else el.style.display = 'none'; },
   // schematic pin values ride on flow() calls below
   flow: (net, on) => { if (!state.settings.flow) on = false;
@@ -259,6 +264,7 @@ function loadLesson(i, keepTab) {
   $('#panel').classList.remove('open');
   stopSim();
   state.lesson = i;
+  rig.tAz = i === 0 ? 1.0 : -.62;
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -446,8 +452,8 @@ function renderRail() {
     </button>`).join('');
   rail.querySelectorAll('.lesson-card').forEach(c => c.onclick = () => loadLesson(+c.dataset.i));
   // explicit prev/next tap arrows like the reference rail
-  $('#railPrev').onclick = () => loadLesson((state.lesson + LESSONS.length - 1) % LESSONS.length);
-  $('#railNext').onclick = () => loadLesson((state.lesson + 1) % LESSONS.length);
+  $('#railPrev').onclick = () => rail.scrollBy({left: -rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
+  $('#railNext').onclick = () => rail.scrollBy({left: rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
   requestAnimationFrame(() => rail.querySelector('.lesson-card.on')?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' }));
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
@@ -503,7 +509,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${a}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = 1.0; rig.tPol = 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : -.62; rig.tPol = 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);

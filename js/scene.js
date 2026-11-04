@@ -128,7 +128,7 @@ export function buildBoard() {
   reg(pcb, 'board', 'ESP32 DevKit V1', 'A 30-pin development board built around the ESP32-WROOM-32 module.');
   A('board', 0, 3, 0);
 
-  const top = BOARD.T; // top surface y
+  const top = BOARD.T * 2 + .08; // components sit above the actual extruded PCB top
 
   // WROOM module: pcb + metal can with antenna
   const mod = new THREE.Group();
@@ -202,5 +202,5 @@ export function buildBoard() {
 // world position of a header pin (after board transform), board-local coords
 export function pinLocal(name) {
   const p = PINS[name]; if (!p) throw new Error('unknown pin ' + name);
-  return new THREE.Vector3(p[0], BOARD.T + 3.6, p[1]);
+  return new THREE.Vector3(p[0], BOARD.T * 2 + 3.6, p[1]);
 }
