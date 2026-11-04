@@ -600,15 +600,15 @@ function openSheet(kind, data, anchor) {
   }
   sh.classList.add('open');
   if (innerWidth >= 1024) {
-    // .sheet is absolutely positioned inside <main>: convert viewport coords to parent coords
+    // Keep popovers inside both the viewport and the clipped main container.
     const parentTop = sh.offsetParent ? sh.offsetParent.getBoundingClientRect().top : 0;
-    const topVp = anchor ? anchor.getBoundingClientRect().top - 6 : 100;
-    sh.style.top = Math.max(12 - parentTop, topVp - parentTop) + 'px';
-    sh.style.maxHeight = 'none';
-    requestAnimationFrame(() => { // clamp so the whole popover, reset button included, stays in view
+    const minTopVp = Math.max(12, parentTop + 8);
+    const topVp = anchor ? anchor.getBoundingClientRect().top - 6 : minTopVp;
+    sh.style.maxHeight = (innerHeight - minTopVp - 12) + 'px';
+    sh.style.top = (Math.max(minTopVp, topVp) - parentTop) + 'px';
+    requestAnimationFrame(() => {
       const hh = sh.offsetHeight;
-      const maxTopVp = Math.max(12, innerHeight - hh - 12);
-      const finalTopVp = Math.min(Math.max(12, topVp), maxTopVp);
+      const finalTopVp = Math.max(minTopVp, Math.min(topVp, innerHeight - hh - 12));
       sh.style.top = (finalTopVp - parentTop) + 'px';
       sh.style.maxHeight = (innerHeight - finalTopVp - 12) + 'px';
     });
