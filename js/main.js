@@ -866,7 +866,7 @@ function openSheet(kind, data, anchor) {
       row('reduceMotion', T('set_motion'), T('set_motion_d')) +
       `<button class="danger-btn" id="resetProgress">${T('reset_progress')}</button>`;
     body.querySelectorAll('.switch').forEach(sw => sw.onclick = () => {
-      const k = sw.dataset.k; S[k] = !S[k]; sw.classList.toggle('on', S[k]); saveSettings(); applySettings();
+      const k = sw.dataset.k; S[k] = !S[k]; sw.classList.toggle('on', S[k]); sw.setAttribute('aria-checked',String(S[k])); saveSettings(); applySettings();
     });
     body.querySelector('#langSel').onchange = e => { setLang(e.target.value); };
     body.querySelector('#resetProgress').onclick = () => { state.done.clear(); saveSettings(); updateProgress(); renderRail(); log(T('progress_reset'), 'sys'); };
