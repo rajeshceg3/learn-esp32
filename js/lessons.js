@@ -14,8 +14,8 @@ export const BOARD_SPECS = [
 export const LESSONS = [
 {
   id: 'board', num: 1, title: 'Meet the board', heading: 'ESP32 DevKit',
-  lede: 'The ESP32 DevKit is a small board built around the ESP32-WROOM-32 module — a 240 MHz dual-core chip with Wi-Fi and Bluetooth built in. It is friendly to beginners and strong enough for real connected products.',
-  features: [['chip', 'Dual-core 240 MHz with Wi-Fi &amp; Bluetooth'], ['bulb', 'Huge community, works with the Arduino IDE'], ['gear', 'Used in learning, hobby builds and<br />shipped products']],
+  lede: 'The ESP32 DevKit pairs a dual-core processor with Wi-Fi and Bluetooth. Start with simple circuits, then build connected projects.',
+  features: [['chip', 'Dual-core 240 MHz processor'], ['bulb', 'Works with the Arduino IDE'], ['gear', 'Used in learning, hobby builds and<br />connected products']],
   pinout: [
     ['GPIO 25–27, 12–14', 'Digital I/O', 'Read buttons, drive LEDs. All support PWM via ledc.', '#2a56a3'],
     ['GPIO 32–39', 'Analog in', '12-bit readings, 0–4095 for 0–3.3 V. Input only.', '#1aa3a1'],
