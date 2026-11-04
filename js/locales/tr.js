@@ -100,7 +100,7 @@ export default {
         '<code>digitalWrite(LED_PIN, HIGH)</code> 3,3 V verir; direnç kalanı üstlenir ve akımı ayarlar.',
         'Alıştırma: 900 ms açık ve 200 ms kapalı seçmek için vurgulanan iki <code>delay()</code> değerine tıkla. Kod güncel değerleri gösterir; simülasyon ve kopya aynı değerleri kullanır.',
       ],
-      specs: [['İleri gerilim', 'Kırmızı ≈ 1,9 V · mavi ≈ 3,0 V'], ['Direnç', '220 Ω – 1 kΩ'], ['Tahmini kırmızı LED akımı', '3,3 V / 220 Ω için ≈ 6,4 mA'], ['GPIO mantığı', '3,3 V; 5 V doğrudan bağlanmaz']],
+      specs: [['İleri gerilim', 'Kırmızı ≈ 1,9 V · mavi ≈ 3,0 V'], ['Direnç', '220 Ω – 1 kΩ'], ['Tahmini kırmızı LED akımı', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['GPIO mantığı', '3,3 V; 5 V doğrudan bağlanmaz']],
     },
     button: {
       title: 'Butona bas', heading: 'Butona bas',

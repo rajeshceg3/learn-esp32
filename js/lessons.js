@@ -51,7 +51,7 @@ void loop() {
     '<code>digitalWrite(LED_PIN, HIGH)</code> drives 3.3 V; the resistor drops the rest and sets the current.',
     'Timing exercise: click the highlighted <code>delay()</code> values to try 900 ms on and 200 ms off. The code shows the current values; the simulation and copied code use them.',
   ],
-  specs: [['Forward voltage', 'Red ≈ 1.9 V · blue ≈ 3.0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Estimated red LED current', '≈ 6.4 mA at 3.3 V / 220 Ω'], ['GPIO logic', '3.3 V; never connect 5 V directly']],
+  specs: [['Forward voltage', 'Red ≈ 1.9 V · blue ≈ 3.0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Estimated red LED current', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['GPIO logic', '3.3 V; never connect 5 V directly']],
   code:
 `const int LED_PIN = 26;
 

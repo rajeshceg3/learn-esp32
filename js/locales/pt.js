@@ -100,7 +100,7 @@ export default {
         '<code>digitalWrite(LED_PIN, HIGH)</code> entrega 3,3 V; o resistor absorve o resto e define a corrente.',
         'Exercício: clique nos dois valores destacados de <code>delay()</code> para escolher 900 ms ligado e 200 ms desligado. O código mostra os valores atuais, usados também pela simulação e pela cópia.',
       ],
-      specs: [['Tensão direta', 'Vermelho ≈ 1,9 V · azul ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Corrente vermelha estimada', '≈ 6,4 mA a 3,3 V / 220 Ω'], ['Lógica GPIO', '3,3 V; nunca ligar 5 V diretamente']],
+      specs: [['Tensão direta', 'Vermelho ≈ 1,9 V · azul ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Corrente vermelha estimada', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['Lógica GPIO', '3,3 V; nunca ligar 5 V diretamente']],
     },
     button: {
       title: 'Apertar um botão', heading: 'Apertar um botão',

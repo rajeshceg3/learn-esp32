@@ -100,7 +100,7 @@ export default {
         '<code>digitalWrite(LED_PIN, HIGH)</code> gibt 3,3 V aus; der Widerstand nimmt den Rest und setzt den Strom.',
         'Übung: Klicke auf die beiden markierten <code>delay()</code>-Werte, um 900 ms an und 200 ms aus zu wählen. Der Code zeigt die aktuellen Werte; Simulation und Kopie verwenden dieselben Werte.',
       ],
-      specs: [['Flussspannung', 'Rot ≈ 1,9 V · blau ≈ 3,0 V'], ['Widerstand', '220 Ω – 1 kΩ'], ['Geschätzter LED-Strom', '≈ 6,4 mA bei 3,3 V / 220 Ω'], ['GPIO-Logik', '3,3 V; niemals 5 V direkt anschließen']],
+      specs: [['Flussspannung', 'Rot ≈ 1,9 V · blau ≈ 3,0 V'], ['Widerstand', '220 Ω – 1 kΩ'], ['Geschätzter LED-Strom', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['GPIO-Logik', '3,3 V; niemals 5 V direkt anschließen']],
     },
     button: {
       title: 'Einen Taster drücken', heading: 'Einen Taster drücken',

@@ -100,7 +100,7 @@ export default {
         '<code>digitalWrite(LED_PIN, HIGH)</code> sort 3,3 V ; la résistance absorbe le reste et fixe le courant.',
         'Exercice : cliquez sur les deux valeurs de <code>delay()</code> en surbrillance pour choisir 900 ms allumée et 200 ms éteinte. Le code affiche les valeurs actuelles, utilisées par la simulation et la copie.',
       ],
-      specs: [['Tension directe', 'Rouge ≈ 1,9 V · bleue ≈ 3,0 V'], ['Résistance', '220 Ω – 1 kΩ'], ['Courant rouge estimé', '≈ 6,4 mA à 3,3 V / 220 Ω'], ['Logique GPIO', '3,3 V ; jamais de connexion directe à 5 V']],
+      specs: [['Tension directe', 'Rouge ≈ 1,9 V · bleue ≈ 3,0 V'], ['Résistance', '220 Ω – 1 kΩ'], ['Courant rouge estimé', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['Logique GPIO', '3,3 V ; jamais de connexion directe à 5 V']],
     },
     button: {
       title: 'Appuyer sur un bouton', heading: 'Appuyer sur un bouton',

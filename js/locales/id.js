@@ -100,7 +100,7 @@ export default {
         '<code>digitalWrite(LED_PIN, HIGH)</code> mengeluarkan 3,3 V; resistor menyerap sisanya dan mengatur arus.',
         'Latihan: klik kedua nilai <code>delay()</code> yang disorot untuk memilih 900 ms nyala dan 200 ms mati. Kode menampilkan nilai saat ini, yang juga dipakai simulasi dan salinan.',
       ],
-      specs: [['Tegangan maju', 'Merah ≈ 1,9 V · biru ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Perkiraan arus LED merah', '≈ 6,4 mA pada 3,3 V / 220 Ω'], ['Logika GPIO', '3,3 V; jangan sambungkan 5 V langsung']],
+      specs: [['Tegangan maju', 'Merah ≈ 1,9 V · biru ≈ 3,0 V'], ['Resistor', '220 Ω – 1 kΩ'], ['Perkiraan arus LED merah', '(3.3 - 1.9) / 220 ≈ 6.4 mA'], ['Logika GPIO', '3,3 V; jangan sambungkan 5 V langsung']],
     },
     button: {
       title: 'Tekan tombol', heading: 'Tekan tombol',
