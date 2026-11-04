@@ -72,9 +72,17 @@ canvas.addEventListener('pointermove', e => {
 });
 canvas.addEventListener('pointerup', e => { if (drag && drag.moved < 6) pickAt(e); drag = null; });
 canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); idle.t = 0; }, { passive: false });
+canvas.addEventListener('pointercancel',()=>{drag=null;});
 addEventListener('keydown', e => {
-  if (e.key === 'q' || e.key === 'Q') { rig.tAz += .3; idle.t = 0; }
-  if (e.key === 'e' || e.key === 'E') { rig.tAz -= .3; idle.t = 0; }
+  if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
+  const key=e.key.toLowerCase();
+  if(key==='q'){rig.tAz+=.3;idle.t=0;}
+  if(key==='e'){rig.tAz-=.3;idle.t=0;}
+  if(['w','a','s','d'].includes(key)){
+    const dx=key==='a'?-12:key==='d'?12:0,dy=key==='w'?-12:key==='s'?12:0;
+    const sc=rig.dist/700,ca=Math.cos(rig.az),sa=Math.sin(rig.az);
+    rig.tTarget.x-=(dx*ca-dy*sa)*sc;rig.tTarget.z-=(-dx*sa-dy*ca)*sc;idle.t=0;e.preventDefault();
+  }
 });
 
 // ---------- board + lesson scene ----------
@@ -594,6 +602,7 @@ toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
 
 // ---------- navs ----------
 function renderNavs() {
+  $('#viewHint').textContent=T('view_hint');
   const toolKeys=['turn_left','turn_right','zoom_out','zoom_in','reset_view','flow','schematic']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],

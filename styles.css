@@ -577,3 +577,6 @@ svg{display:block}
  .sidebar.expanded .side-toggle{width:36px;justify-content:center;padding:6px 0}
  .sidebar.expanded .nav-btn .nl{text-transform:uppercase}
 }
+
+.view-hint{display:none}
+@media(min-width:1024px){.view-hint{position:absolute;bottom:60px;left:50%;transform:translateX(-50%);background:var(--navy);color:var(--card);font:600 11px var(--cond);padding:3px 7px;border-radius:7px;white-space:nowrap;pointer-events:none;z-index:8}.stage-wrap:has(.toolbar:hover) .view-hint,.stage-wrap:has(.toolbar:focus-within) .view-hint{display:block}}
