@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Licht messen', heading: 'Licht messen',
       lede: 'Ein lichtabhängiger Widerstand leitet umso besser, je mehr Licht darauf fällt. Zusammen mit einem festen Widerstand macht er Helligkeit zu einer Spannung, die der ESP32 lesen kann.',
-      features: ['Spannungsteiler an GPIO35', 'Ein Nachtlicht, das sich selbst einschaltet', 'Bewege die Taschenlampe näher und weiter weg'],
+      features: ['Spannungsteiler an GPIO35', 'Ein Nachtlicht, das sich selbst einschaltet', "Lampe anklicken, um sie näher oder weiter weg zu stellen"],
       pinout: [['Teiler-Mitte', 'Liest 0–4095 je nach Licht.'], ['Nachtlicht-LED', 'Geht an, wenn es dunkel wird.'], ['Teiler-Enden', 'LDR oben, 10 kΩ unten.']],
       example: [
         'Helles Licht: Der LDR-Widerstand fällt, die Spannung in der Mitte steigt.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Das Rad drehen', heading: 'Das Rad drehen',
-      lede: 'Ein Schrittmotor dreht sich in exakten Schritten — 2048 ergeben eine volle Umdrehung. Vier Spulen, in Folge über eine ULN2003-Platine angesteuert, drehen ihn weiter.',
-      features: ['2048 Schritte pro Umdrehung', 'Vier GPIOs treiben vier Spulen', 'Klicken kehrt die Richtung um'],
-      pinout: [['Spulen 1–4', 'Werden der Reihe nach bestromt.'], ['ULN2003-Versorgung', 'Die Treiberplatine nimmt 5 V.'], ['Masse', 'Mit dem Board geteilt.']],
-      example: [
-        'Die Folge 1000 → 1100 → 0100 → 0110 … bewegt den Rotor einen Achtelschritt weiter.',
-        'Langsamere Schritte geben mehr Drehmoment; zu schnell und er bleibt brummend stehen.',
-        'Zähle 2048 Schritte und die Fahne ist wieder am Start — Präzision ohne Rückführung.',
-      ],
-      specs: [['Motor', '28BYJ-48, 5 V'], ['Schritte / Umdr.', '2048 (Halbschritt)'], ['Treiber', 'ULN2003-Platine'], ['Max. Rate', '≈ 500 Schritte / s']],
+      lede: "Ein Schrittmotor dreht sich in genauen Schritten. Drücke den Taster, um das Rad zu drehen und auf einem Feld anzuhalten.",
+      features: ['2048 Schritte pro Umdrehung', 'Vier GPIOs treiben vier Spulen', "Taster drücken, um zu drehen"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Taster", "Interner Pull-up; Drücken verbindet mit Masse."], ["Motorversorgung", "5 V mit gemeinsamer Masse."]],
+      example: ["Der Taster nutzt INPUT_PULLUP: gedrückt ergibt LOW.", "Wähle ein Feld und zähle eine ganze Umdrehung plus die Schritte dorthin.", "AccelStepper beschleunigt und bremst. Die App zeigt eine vorgegebene Simulation und führt diesen Code nicht aus."],
+      specs: [["Motor", "28BYJ-48, 5 V"], ["Schritte / Umdr.", "2048"], ["Treiber", "ULN2003"], ["Taster", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Schlaue Pflanze', heading: 'Schlaue Pflanze',

@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Merasa cahaya', heading: 'Merasa cahaya',
       lede: 'Resistor peka cahaya (LDR) menghantar lebih baik saat lebih banyak cahaya jatuh di atasnya. Dipasangkan dengan resistor tetap, ia mengubah kecerahan menjadi tegangan yang bisa dibaca ESP32.',
-      features: ['Pembagi tegangan ke GPIO35', 'Lampu tidur yang menyala sendiri', 'Dekatkan dan jauhkan senter'],
+      features: ['Pembagi tegangan ke GPIO35', 'Lampu tidur yang menyala sendiri', "Klik lampu untuk mendekatkan atau menjauhkannya"],
       pinout: [['Titik tengah pembagi', 'Membaca 0–4095 saat cahaya berubah.'], ['LED lampu tidur', 'Menyala saat gelap.'], ['Ujung pembagi', 'LDR di atas, 10 kΩ di bawah.']],
       example: [
         'Cahaya terang: resistansi LDR turun, tegangan titik tengah naik.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Putar rodanya', heading: 'Putar rodanya',
-      lede: 'Motor stepper berputar dalam langkah pasti — 2048 langkah satu putaran penuh. Empat koil, digerakkan berurutan lewat papan ULN2003, memutarnya.',
-      features: ['2048 langkah per putaran', 'Empat GPIO menggerakkan empat koil', 'Klik untuk membalik arah'],
-      pinout: [['Koil 1–4', 'Diberi arus berurutan.'], ['Suplai ULN2003', 'Papan driver memakai 5 V.'], ['Ground', 'Berbagi dengan papan.']],
-      example: [
-        'Urutan 1000 → 1100 → 0100 → 0110 … menggerakkan rotor seperdelapan langkah setiap kali.',
-        'Langkah lebih lambat berarti torsi lebih besar; terlalu cepat dan ia macet berdengung.',
-        'Hitung 2048 langkah dan bendera kembali ke awal — presisi open-loop.',
-      ],
-      specs: [['Motor', '28BYJ-48, 5 V'], ['Langkah / putaran', '2048 (half-step)'], ['Driver', 'Papan ULN2003'], ['Laju maks', '≈ 500 langkah / s']],
+      lede: "Motor stepper berputar dalam langkah tepat. Tekan tombol untuk memutar roda dan berhenti pada satu bagian.",
+      features: ['2048 langkah per putaran', 'Empat GPIO menggerakkan empat koil', "Tekan tombol untuk memutar"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Tombol", "Pull-up internal; saat ditekan terhubung ke ground."], ["Catu motor", "5 V dengan ground bersama."]],
+      example: ["Tombol memakai INPUT_PULLUP: saat ditekan terbaca LOW.", "Pilih bagian dan hitung satu putaran penuh ditambah langkah menuju bagian itu.", "AccelStepper mempercepat dan memperlambat. Aplikasi menampilkan simulasi terprogram, bukan menjalankan kode ini."],
+      specs: [["Motor", "28BYJ-48, 5 V"], ["Langkah / putaran", "2048"], ["Driver", "ULN2003"], ["Tombol", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Tanaman pintar', heading: 'Tanaman pintar',

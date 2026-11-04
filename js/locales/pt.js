@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Sentir a luz', heading: 'Sentir a luz',
       lede: 'Um LDR conduz melhor quanto mais luz recebe. Junto com um resistor fixo, ele transforma o brilho numa tensão que o ESP32 consegue ler.',
-      features: ['Divisor de tensão em GPIO35', 'Uma luz noturna que liga sozinha', 'Aproxime e afaste a lanterna'],
+      features: ['Divisor de tensão em GPIO35', 'Uma luz noturna que liga sozinha', "Clique na lâmpada para aproximar ou afastar"],
       pinout: [['Ponto médio', 'Lê 0–4095 conforme a luz muda.'], ['LED da luz noturna', 'Acende quando escurece.'], ['Extremos do divisor', 'LDR em cima, 10 kΩ embaixo.']],
       example: [
         'Com luz forte: a resistência do LDR cai e a tensão do ponto médio sobe.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Girar a roda', heading: 'Girar a roda',
-      lede: 'Um motor de passo gira em passos exatos — 2048 dão uma volta completa neste. Quatro bobinas, acionadas em sequência por uma placa ULN2003, o fazem girar.',
-      features: ['2048 passos por volta', 'Quatro GPIOs acionam quatro bobinas', 'Clique para inverter o sentido'],
-      pinout: [['Bobinas 1–4', 'Energizadas em sequência.'], ['Alimentação ULN2003', 'A placa driver usa 5 V.'], ['Terra', 'Compartilhado com a placa.']],
-      example: [
-        'A sequência 1000 → 1100 → 0100 → 0110 … move o rotor um oitavo de passo por vez.',
-        'Passos mais lentos dão mais torque; rápido demais e ele trava e zumbe.',
-        'Conte 2048 passos e a bandeira volta ao início — precisão em malha aberta.',
-      ],
-      specs: [['Motor', '28BYJ-48, 5 V'], ['Passos / volta', '2048 (meio passo)'], ['Driver', 'Placa ULN2003'], ['Taxa máxima', '≈ 500 passos / s']],
+      lede: "Um motor de passo gira em passos exatos. Pressione o botão para girar a roda e parar em um segmento.",
+      features: ['2048 passos por volta', 'Quatro GPIOs acionam quatro bobinas', "Pressione o botão para girar"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Botão", "Pull-up interno; ao pressionar liga ao terra."], ["Alimentação do motor", "5 V com terra comum."]],
+      example: ["O botão usa INPUT_PULLUP: pressionado lê LOW.", "Escolha um segmento e conte uma volta completa mais os passos até ele.", "AccelStepper acelera e desacelera. O app mostra uma simulação predefinida, não executa este código."],
+      specs: [["Motor", "28BYJ-48, 5 V"], ["Passos / volta", "2048"], ["Driver", "ULN2003"], ["Botão", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Planta inteligente', heading: 'Planta inteligente',

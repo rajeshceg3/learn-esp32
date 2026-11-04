@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Sentir la lumière', heading: 'Sentir la lumière',
       lede: 'Une photorésistance conduit d’autant mieux qu’elle reçoit de lumière. Associée à une résistance fixe, elle transforme la luminosité en une tension que l’ESP32 peut lire.',
-      features: ['Pont diviseur vers GPIO35', 'Une veilleuse qui s’allume toute seule', 'Approchez et éloignez la lampe torche'],
+      features: ['Pont diviseur vers GPIO35', 'Une veilleuse qui s’allume toute seule', "Cliquez sur la lampe pour la rapprocher ou l’éloigner"],
       pinout: [['Point milieu', 'Lit 0–4095 selon la lumière.'], ['LED de veilleuse', 'S’allume à la tombée de la nuit.'], ['Extrémités du pont', 'LDR en haut, 10 kΩ en bas.']],
       example: [
         'Pleine lumière : la résistance de la LDR chute, la tension du point milieu monte.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Faire tourner la roue', heading: 'Faire tourner la roue',
-      lede: 'Un moteur pas à pas tourne par pas exacts — 2048 pour un tour complet de celui-ci. Quatre bobines, alimentées en séquence via une carte ULN2003, le font avancer.',
-      features: ['2048 pas par tour', 'Quatre GPIO pilotent quatre bobines', 'Cliquez pour inverser le sens'],
-      pinout: [['Bobines 1–4', 'Alimentées en séquence.'], ['Alimentation ULN2003', 'La carte driver prend du 5 V.'], ['Masse', 'Partagée avec la carte.']],
-      example: [
-        'La séquence 1000 → 1100 → 0100 → 0110 … fait avancer le rotor d’un huitième de pas à la fois.',
-        'Des pas plus lents donnent plus de couple ; trop vite, il décroche et bourdonne.',
-        'Comptez 2048 pas et le drapeau revient à son départ — précision en boucle ouverte.',
-      ],
-      specs: [['Moteur', '28BYJ-48, 5 V'], ['Pas / tour', '2048 (demi-pas)'], ['Driver', 'Carte ULN2003'], ['Cadence max', '≈ 500 pas / s']],
+      lede: "Un moteur pas à pas tourne par pas précis. Appuyez sur le bouton pour lancer la roue et arrêter sur un secteur.",
+      features: ['2048 pas par tour', 'Quatre GPIO pilotent quatre bobines', "Appuyez sur le bouton pour tourner"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Bouton", "Pull-up interne ; un appui relie à la masse."], ["Alimentation moteur", "5 V avec masse commune."]],
+      example: ["Le bouton utilise INPUT_PULLUP : un appui donne LOW.", "Choisissez un secteur et comptez un tour complet plus les pas pour l’atteindre.", "AccelStepper accélère et ralentit. L’app montre une simulation prédéfinie, sans exécuter ce code."],
+      specs: [["Moteur", "28BYJ-48, 5 V"], ["Pas / tour", "2048"], ["Driver", "ULN2003"], ["Bouton", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Plante connectée', heading: 'Plante connectée',

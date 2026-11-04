@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Işığı hisset', heading: 'Işığı hisset',
       lede: 'Işığa bağlı direnç (LDR), üzerine ne kadar çok ışık düşerse o kadar iyi iletir. Sabit bir dirençle eşleşince parlaklığı ESP32’nin okuyabileceği bir gerilime çevirir.',
-      features: ['GPIO35’e gerilim bölücü', 'Kendi kendine yanan bir gece lambası', 'El fenerini yaklaştırıp uzaklaştır'],
+      features: ['GPIO35’e gerilim bölücü', 'Kendi kendine yanan bir gece lambası', "Lambayı yaklaştırmak veya uzaklaştırmak için tıklayın"],
       pinout: [['Bölücü ortası', 'Işık değiştikçe 0–4095 okur.'], ['Gece lambası LED’i', 'Hava kararınca yanar.'], ['Bölücü uçları', 'Üstte LDR, altta 10 kΩ.']],
       example: [
         'Parlak ışık: LDR direnci düşer, orta nokta gerilimi yükselir.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Tekerleği döndür', heading: 'Tekerleği döndür',
-      lede: 'Step motor tam adımlarla döner — bunda 2048 adım bir tam tur eder. ULN2003 kartı üzerinden sırayla sürülen dört bobin onu adım adım döndürür.',
-      features: ['Tur başına 2048 adım', 'Dört GPIO dört bobini sürer', 'Yönü tersine çevirmek için tıkla'],
-      pinout: [['Bobinler 1–4', 'Sırayla enerjilendirilir.'], ['ULN2003 beslemesi', 'Sürücü kartı 5 V alır.'], ['Toprak', 'Kartla paylaşılır.']],
-      example: [
-        '1000 → 1100 → 0100 → 0110 … dizisi rotoru her seferinde bir sekizde bir adım ilerletir.',
-        'Daha yavaş adımlar daha çok tork demektir; çok hızlıysa takılır ve vızıldar.',
-        '2048 adım say, bayrak başladığı yere döner — geri beslemesiz hassasiyet.',
-      ],
-      specs: [['Motor', '28BYJ-48, 5 V'], ['Adım / tur', '2048 (yarım adım)'], ['Sürücü', 'ULN2003 kartı'], ['Azami hız', '≈ 500 adım / s']],
+      lede: "Adım motoru kesin adımlarla döner. Çarkı döndürüp bir dilimde durdurmak için düğmeye basın.",
+      features: ['Tur başına 2048 adım', 'Dört GPIO dört bobini sürer', "Çevirmek için düğmeye basın"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Düğme", "Dahili pull-up; basılınca toprağa bağlanır."], ["Motor beslemesi", "Ortak toprak ile 5 V."]],
+      example: ["Düğme INPUT_PULLUP kullanır: basılınca LOW okunur.", "Bir dilim seçip tam tur ve o dilime kalan adımları sayın.", "AccelStepper hızlanır ve yavaşlar. Uygulama hazır bir simülasyon gösterir, bu kodu çalıştırmaz."],
+      specs: [["Motor", "28BYJ-48, 5 V"], ["Adım / tur", "2048"], ["Sürücü", "ULN2003"], ["Düğme", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Akıllı bitki', heading: 'Akıllı bitki',

@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Percepire la luce', heading: 'Percepire la luce',
       lede: 'Una fotoresistenza conduce meglio quanta più luce la colpisce. In coppia con un resistore fisso, trasforma la luminosità in una tensione che l’ESP32 può leggere.',
-      features: ['Partitore di tensione su GPIO35', 'Una luce notturna che si accende da sola', 'Avvicina e allontana la torcia'],
+      features: ['Partitore di tensione su GPIO35', 'Una luce notturna che si accende da sola', "Fai clic sulla lampada per avvicinarla o allontanarla"],
       pinout: [['Punto centrale', 'Legge 0–4095 al cambiare della luce.'], ['LED luce notturna', 'Si accende quando fa buio.'], ['Estremi del partitore', 'LDR sopra, 10 kΩ sotto.']],
       example: [
         'Luce intensa: la resistenza dell’LDR scende, la tensione del punto centrale sale.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Far girare la ruota', heading: 'Far girare la ruota',
-      lede: 'Un motore passo-passo gira a passi esatti — 2048 fanno un giro completo di questo. Quattro bobine, pilotate in sequenza tramite una scheda ULN2003, lo fanno avanzare.',
-      features: ['2048 passi per giro', 'Quattro GPIO pilotano quattro bobine', 'Clicca per invertire il senso'],
-      pinout: [['Bobine 1–4', 'Eccitate in sequenza.'], ['Alimentazione ULN2003', 'La scheda driver prende 5 V.'], ['Massa', 'In comune con la scheda.']],
-      example: [
-        'La sequenza 1000 → 1100 → 0100 → 0110 … fa avanzare il rotore di un ottavo di passo alla volta.',
-        'Passi più lenti danno più coppia; troppo veloce e si blocca ronzando.',
-        'Conta 2048 passi e la bandierina torna al via — precisione ad anello aperto.',
-      ],
-      specs: [['Motore', '28BYJ-48, 5 V'], ['Passi / giro', '2048 (mezzo passo)'], ['Driver', 'Scheda ULN2003'], ['Frequenza max', '≈ 500 passi / s']],
+      lede: "Un motore passo-passo gira a passi precisi. Premi il pulsante per girare la ruota e fermarla su uno spicchio.",
+      features: ['2048 passi per giro', 'Quattro GPIO pilotano quattro bobine', "Premi il pulsante per girare"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Pulsante", "Pull-up interno; premendo si collega a massa."], ["Alimentazione motore", "5 V con massa comune."]],
+      example: ["Il pulsante usa INPUT_PULLUP: premuto legge LOW.", "Scegli uno spicchio e conta un giro completo più i passi per raggiungerlo.", "AccelStepper accelera e rallenta. L’app mostra una simulazione predefinita, non esegue questo codice."],
+      specs: [["Motore", "28BYJ-48, 5 V"], ["Passi / giro", "2048"], ["Driver", "ULN2003"], ["Pulsante", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Pianta intelligente', heading: 'Pianta intelligente',

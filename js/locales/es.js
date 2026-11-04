@@ -135,7 +135,7 @@ export default {
     light: {
       title: 'Sentir la luz', heading: 'Sentir la luz',
       lede: 'Una fotorresistencia conduce mejor cuanta más luz recibe. Junto con una resistencia fija, convierte el brillo en un voltaje que el ESP32 puede leer.',
-      features: ['Divisor de voltaje hacia GPIO35', 'Una luz nocturna que se enciende sola', 'Acerca y aleja la linterna'],
+      features: ['Divisor de voltaje hacia GPIO35', 'Una luz nocturna que se enciende sola', "Haz clic en la lámpara para acercarla o alejarla"],
       pinout: [['Punto medio', 'Lee 0–4095 según cambia la luz.'], ['LED de luz nocturna', 'Se enciende al oscurecer.'], ['Extremos del divisor', 'LDR arriba, 10 kΩ abajo.']],
       example: [
         'Con luz intensa: la resistencia del LDR baja y el voltaje del punto medio sube.',
@@ -219,15 +219,11 @@ export default {
     },
     stepper: {
       title: 'Girar la rueda', heading: 'Girar la rueda',
-      lede: 'Un motor paso a paso gira en pasos exactos: 2048 dan una vuelta completa en este. Cuatro bobinas, activadas en secuencia a través de una placa ULN2003, lo hacen girar.',
-      features: ['2048 pasos por vuelta', 'Cuatro GPIO controlan cuatro bobinas', 'Haz clic para invertir el giro'],
-      pinout: [['Bobinas 1–4', 'Se activan en secuencia.'], ['Alimentación ULN2003', 'La placa controladora toma 5 V.'], ['Tierra', 'Compartida con la placa.']],
-      example: [
-        'La secuencia 1000 → 1100 → 0100 → 0110 … avanza el rotor de a un octavo de paso.',
-        'Pasos más lentos dan más par; demasiado rápido y se cala y zumba.',
-        'Cuenta 2048 pasos y la bandera vuelve a su sitio: precisión en lazo abierto.',
-      ],
-      specs: [['Motor', '28BYJ-48, 5 V'], ['Pasos / vuelta', '2048 (medio paso)'], ['Controlador', 'Placa ULN2003'], ['Ritmo máximo', '≈ 500 pasos / s']],
+      lede: "Un motor paso a paso gira en pasos exactos. Pulsa el botón para girar la rueda y detenerla en un segmento.",
+      features: ['2048 pasos por vuelta', 'Cuatro GPIO controlan cuatro bobinas', "Pulsa el botón para girar"],
+      pinout: [["IN1–IN4", "GPIO14 · 27 · 26 · 25"], ["Botón", "Resistencia pull-up interna; al pulsar conecta a masa."], ["Alimentación del motor", "5 V con masa compartida."]],
+      example: ["El botón usa INPUT_PULLUP: pulsado se lee LOW.", "Elige un segmento y cuenta una vuelta completa más los pasos hasta él.", "AccelStepper acelera y frena. La app muestra una simulación predefinida, no ejecuta este código."],
+      specs: [["Motor", "28BYJ-48, 5 V"], ["Pasos / vuelta", "2048"], ["Controlador", "ULN2003"], ["Botón", "GPIO4 → GND"]],
     },
     plant: {
       title: 'Planta inteligente', heading: 'Planta inteligente',
