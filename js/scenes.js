@@ -292,7 +292,7 @@ servo: {
 stepper: {
   build(s) {
     const st = C.stepper(); st.position.set(76, 0, 0); s.add(st, 'stepper');
-    const drv = box(20, 1.6, 16, new THREE.MeshStandardMaterial({ color: 0x2a56a3, roughness: .55 }));
+    const drv = C.stepperDriver();
     drv.position.set(46, 9.2, -8); s.add(drv, 'drv');
     ['D14', 'D27', 'D26', 'D25'].forEach((p, i) => s.wires.push(wireTo(pin(p), bb(10 + i, 5), [WIRE.orange, WIRE.yellow, WIRE.green, WIRE.purple][i], 13, p)));
     s.wires.push(wireTo(pin('VIN'), bb(16, 6), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(17, 7), WIRE.navy, 12, 'GND'));

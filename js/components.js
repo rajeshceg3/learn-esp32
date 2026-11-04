@@ -221,14 +221,35 @@ export function servo() {
   g.userData.setAngle = a => { armG.rotation.y = a; };
   return g;
 }
+export function stepperDriver() {
+  const g=new THREE.Group();
+  g.add(ink(box(20,1.6,16,new THREE.MeshStandardMaterial({color:0x2e8156}),0,0,0)));
+  g.add(ink(box(5,1.8,10,MAT.chip,-1,1.7,0)));
+  for(let i=0;i<8;i++)for(const x of[-4,2])g.add(box(1.5,.4,.45,MAT.pinMetal,x,1.3,-4.1+i*1.15));
+  for(let i=0;i<4;i++){g.add(ink(box(1.6,2.8,1.6,MAT.plastic,-7,2.2,-5+i*2.54)));g.add(box(.55,2.5,.55,MAT.pinMetal,-7,4,-5+i*2.54));g.add(box(1.2,.5,1.2,new THREE.MeshStandardMaterial({color:0xd64a3a}),-4,1.2,-5+i*2.54));}
+  g.add(ink(box(4,3.4,6,MAT.cream,6,2.5,3)));
+  for(const z of[1.3,2.5,3.7,4.9])g.add(box(2,.6,.4,MAT.pinMetal,6,4.3,z));
+  return g;
+}
 export function stepper() {
   const g = new THREE.Group();
-  g.add(cyl(11, 11, 10, MAT.metalDark, 0, 5, 0));
-  g.add(cyl(3, 3, 3, MAT.metal, 0, 11, 0));
-  const shaft = cyl(1.4, 1.4, 5, MAT.pinMetal, 0, 13, 0); g.add(shaft);
-  const flag = box(10, 1.2, 3, MAT.cream, 5, 14.5, 0);
-  const fg = new THREE.Group(); fg.add(flag); fg.position.y = 14.5; flag.position.set(5, 0, 0); g.add(fg);
-  g.userData.setAngle = a => { fg.rotation.y = a; };
+  g.add(ink(box(30,1.4,30,MAT.cream,0,.7,0)),ink(cyl(8,8,10,MAT.metalDark,0,6.4,0)));
+  g.add(ink(box(5,8,7,new THREE.MeshStandardMaterial({color:0x2d5d9d}),-7,5.4,0)));
+  for(const x of[-10,10]){g.add(ink(box(3,1.1,7,MAT.metal,x,1.9,0)));g.add(cyl(.8,.8,.6,MAT.metalDark,x,2.7,0,12));}
+  const wheel=new THREE.Group();wheel.position.y=15;g.add(wheel);
+  wheel.add(ink(cyl(15,15,1.2,MAT.metal,0,0,0,64)));
+  const cv=document.createElement('canvas');cv.width=512;cv.height=512;const c=cv.getContext('2d');
+  const colors=['#f3c94c','#2f9d9c','#ed7d54','#d55442','#eea53a','#8965b5','#49aa73','#303a57'];
+  const labels=['200','100','50','JACKPOT','1000','2×','500','AGAIN'];
+  for(let i=0;i<8;i++){const a=i*Math.PI/4,b=a+Math.PI/4;c.beginPath();c.moveTo(256,256);c.arc(256,256,250,a,b);c.closePath();c.fillStyle=colors[i];c.fill();c.strokeStyle='#f4dfb9';c.lineWidth=2;c.stroke();c.save();c.translate(256,256);c.rotate(a+Math.PI/8);c.fillStyle=i===0?'#25334b':'#fff9e9';c.font='bold '+(labels[i].length>5?19:25)+'px sans-serif';c.textAlign='center';c.fillText(labels[i],170,9);c.restore();}
+  const tex=new THREE.CanvasTexture(cv);tex.colorSpace=THREE.SRGBColorSpace;
+  const face=new THREE.Mesh(new THREE.CircleGeometry(14.85,64),new THREE.MeshBasicMaterial({map:tex}));face.rotation.x=-Math.PI/2;face.position.y=.64;wheel.add(face);
+  for(let i=0;i<8;i++){const a=i*Math.PI/4;wheel.add(ink(cyl(.38,.38,1.8,MAT.pinMetal,13.7*Math.cos(a),1.5,13.7*Math.sin(a),8)));}
+  wheel.add(ink(cyl(2.3,2.3,.8,MAT.red,0,1.2,0,24)));
+  g.add(ink(cyl(.65,.65,16,MAT.metalDark,0,8,17)));
+  const pointer=new THREE.Mesh(new THREE.ConeGeometry(1.6,4,3),MAT.red);pointer.position.set(0,17,15.6);pointer.rotation.x=-Math.PI/2;g.add(ink(pointer));
+  g.userData.setAngle = a => { wheel.rotation.y = a; };
+  g.userData.wheel=wheel;
   return g;
 }
 export function oled() {
