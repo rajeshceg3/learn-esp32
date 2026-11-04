@@ -59,7 +59,16 @@ function applyCam(dt) {
 
 // pointer controls: drag pans, wheel zooms, Q/E rotate
 let drag = null;
-canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY, tx: rig.tTarget.x, tz: rig.tTarget.z, moved: 0 }; canvas.setPointerCapture(e.pointerId); });
+let heldPianoPointer = null;
+function releasePianoPointer() { if (heldPianoPointer !== null) cur.sim?.release?.(); heldPianoPointer = null; }
+canvas.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  if (state.running && cur.scene?.pickKey) {
+    const i = pianoKeyAt(e);
+    if (i >= 0) { releasePianoPointer(); heldPianoPointer = e.pointerId; cur.sim?.note?.(i, true); canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+  }
+  drag = { x: e.clientX, y: e.clientY, tx: rig.tTarget.x, tz: rig.tTarget.z, moved: 0 }; canvas.setPointerCapture(e.pointerId);
+});
 canvas.addEventListener('pointermove', e => {
   if (drag) {
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved += Math.abs(dx) + Math.abs(dy);
@@ -70,9 +79,11 @@ canvas.addEventListener('pointermove', e => {
     idle.t = 0;
   }
 });
-canvas.addEventListener('pointerup', e => { if (drag && drag.moved < 6) pickAt(e); drag = null; });
+canvas.addEventListener('pointerup', e => { if(heldPianoPointer===e.pointerId){releasePianoPointer();drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
 canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); idle.t = 0; }, { passive: false });
-canvas.addEventListener('pointercancel',()=>{drag=null;});
+canvas.addEventListener('pointercancel',()=>{releasePianoPointer();drag=null;});
+canvas.addEventListener('lostpointercapture',releasePianoPointer);
+addEventListener('blur',releasePianoPointer);
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
   const key=e.key.toLowerCase();
@@ -246,6 +257,14 @@ canvas.addEventListener('pointermove', e => {
   } else hp.style.display = 'none';
 });
 
+// Raycast the actual key geometry, shared by pointer-down and click fallback.
+function pianoKeyAt(e) {
+  const r = canvas.getBoundingClientRect();
+  mouseV.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  ray.setFromCamera(mouseV,camera);
+  const hits=ray.intersectObject(cur.scene.refs.keys,true);
+  return hits.length ? cur.scene.pickKey(hits[0].point) : -1;
+}
 // click: board part info or scene interactive
 function pickAt(e) {
   const r = canvas.getBoundingClientRect();

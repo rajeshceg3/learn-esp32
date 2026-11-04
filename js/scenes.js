@@ -225,11 +225,12 @@ piano: {
   },
   sim: api => ({
     running: false,
-    start() { this.running = true; api.serial('Tap the coloured buttons to play a note.'); },
+    start() { this.running = true; api.serial('Press and hold a coloured button to play; release to stop.'); },
     stop() { this.running = false; clearTimeout(this._t); api.tone(0); api.pressKey(-1, false); },
-    note(i) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
+    release() { clearTimeout(this._t); api.pressKey(-1, false); api.tone(0); },
+    note(i, hold = false) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
       api.line?.(13); api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);
-      clearTimeout(this._t); this._t = setTimeout(() => { api.pressKey(-1, false); api.tone(0); }, 280); },
+      clearTimeout(this._t); if (!hold) this._t = setTimeout(() => this.release(), 280); },
     tick() {},
   }),
 },
