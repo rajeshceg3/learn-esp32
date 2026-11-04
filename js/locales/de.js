@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "Klicken, um es zu bewegen.",
     "Plays tones with ledcWriteTone.": "Spielt Töne mit ledcWriteTone.",
     "Turns pulses into sound.": "Wandelt Impulse in Ton um.",
-    "Each key plays a note.": "Jede Taste spielt eine Note.",
+    "Hold a key to play; release to stop.": "Taste zum Spielen gedrückt halten; zum Stoppen loslassen",
     "PWM sets the motor speed.": "PWM bestimmt die Motordrehzahl.",
     "Transistor switches the motor current.": "Transistor schaltet den Motorstrom.",
     "Click to change speed.": "Klicken, um die Geschwindigkeit zu ändern.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'Mini-Klavier', heading: 'Mini-Klavier',
       lede: 'Acht Tasten und ein Summer ergeben ein spielbares Klavier. Der ESP32 überwacht die Tasten und spielt jede Note — und seine Touch-Pins können die Taster ganz ersetzen.',
-      features: ['Klicke die Tasten zum Spielen', 'Jede Taste ist eine Note der Tonleiter', 'Extra: <code>touchRead()</code> macht blanke Pads zu Tasten'],
+      features: ["Taste zum Spielen gedrückt halten; zum Stoppen loslassen", 'Jede Taste ist eine Note der Tonleiter', 'Extra: <code>touchRead()</code> macht blanke Pads zu Tasten'],
       pinout: [['Tasten-Eingänge', 'Diese acht haben interne Pull-ups; Drücken liest LOW.'], ['Summer', 'Spielt die Note der gedrückten Taste.'], ['Touch-Pads', 'Kapazitive Pins, die einen Finger spüren.']],
       example: [
         'Die Noten C D E F G A H C sind 262, 294, 330, 349, 392, 440, 494 und 523 Hz.',

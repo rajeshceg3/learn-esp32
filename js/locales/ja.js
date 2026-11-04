@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "クリックで動かします。",
     "Plays tones with ledcWriteTone.": "ledcWriteToneで音を鳴らします。",
     "Turns pulses into sound.": "パルスを音に変えます。",
-    "Each key plays a note.": "各キーが1音を鳴らします。",
+    "Hold a key to play; release to stop.": "キーを押している間は鳴り、離すと止まる",
     "PWM sets the motor speed.": "PWMがモーター速度を決めます。",
     "Transistor switches the motor current.": "トランジスタがモーター電流をスイッチします。",
     "Click to change speed.": "クリックで速度を変えます。",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'ミニピアノ', heading: 'ミニピアノ',
       lede: '8 つのキーと 1 つのブザーで、弾けるピアノになる。ESP32 はキーを監視して各音を鳴らす——タッチピンを使えばボタンそのものも置き換えられる。',
-      features: ['キーをクリックして演奏', '各キーは音階の 1 音', 'おまけ：<code>touchRead()</code> でむき出しパッドを鍵盤に'],
+      features: ["キーを押している間は鳴り、離すと止まる", '各キーは音階の 1 音', 'おまけ：<code>touchRead()</code> でむき出しパッドを鍵盤に'],
       pinout: [['キー入力', 'この 8 本は内部プルアップ付き。押すと LOW。'], ['ブザー', '押されたキーの音を鳴らす。'], ['タッチパッド', '指を検知する静電容量ピン。']],
       example: [
         'C D E F G A B C の音は 262、294、330、349、392、440、494、523 Hz。',

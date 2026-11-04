@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "Hareket ettirmek için tıkla.",
     "Plays tones with ledcWriteTone.": "ledcWriteTone ile ton çalar.",
     "Turns pulses into sound.": "Darbeleri sese çevirir.",
-    "Each key plays a note.": "Her tuş bir nota çalar.",
+    "Hold a key to play; release to stop.": "Çalmak için tuşu basılı tutun; durdurmak için bırakın",
     "PWM sets the motor speed.": "PWM motor hızını ayarlar.",
     "Transistor switches the motor current.": "Transistör motor akımını anahtarlar.",
     "Click to change speed.": "Hızı değiştirmek için tıkla.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'Mini piyano', heading: 'Mini piyano',
       lede: 'Sekiz tuş ve bir buzzer, çalabileceğin bir piyano yapar. ESP32 tuşları izler ve her notayı çalar — dokunma pinleri butonların yerini tamamen alabilir.',
-      features: ['Çalmak için tuşlara tıkla', 'Her tuş gamın bir notası', 'Bonus: <code>touchRead()</code> çıplak pedleri tuşa çevirir'],
+      features: ["Çalmak için tuşu basılı tutun; durdurmak için bırakın", 'Her tuş gamın bir notası', 'Bonus: <code>touchRead()</code> çıplak pedleri tuşa çevirir'],
       pinout: [['Tuş girişleri', 'Bu sekizde dahili pull-up var; basınca LOW okur.'], ['Buzzer', 'Basılan tuşun notasını çalar.'], ['Dokunma pedleri', 'Parmağı hisseden kapasitif pinler.']],
       example: [
         'Do Re Mi Fa Sol La Si Do notaları 262, 294, 330, 349, 392, 440, 494 ve 523 Hz’dir.',

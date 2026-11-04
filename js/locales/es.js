@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "Haz clic para moverlo.",
     "Plays tones with ledcWriteTone.": "Toca notas con ledcWriteTone.",
     "Turns pulses into sound.": "Convierte pulsos en sonido.",
-    "Each key plays a note.": "Cada tecla toca una nota.",
+    "Hold a key to play; release to stop.": "Mantén pulsada una tecla para tocar; suéltala para parar",
     "PWM sets the motor speed.": "PWM fija la velocidad del motor.",
     "Transistor switches the motor current.": "El transistor conmuta la corriente del motor.",
     "Click to change speed.": "Haz clic para cambiar la velocidad.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'Mini piano', heading: 'Mini piano',
       lede: 'Ocho teclas y un zumbador forman un piano que puedes tocar. El ESP32 vigila las teclas y toca cada nota; y sus pines táctiles pueden sustituir a los botones por completo.',
-      features: ['Haz clic en las teclas para tocar', 'Cada tecla es una nota de la escala', 'Extra: <code>touchRead()</code> convierte pads desnudos en teclas'],
+      features: ["Mantén pulsada una tecla para tocar; suéltala para parar", 'Cada tecla es una nota de la escala', 'Extra: <code>touchRead()</code> convierte pads desnudos en teclas'],
       pinout: [['Entradas de teclas', 'Estas ocho tienen pull-ups internos; al pulsar leen LOW.'], ['Zumbador', 'Toca la nota de la tecla pulsada.'], ['Pads táctiles', 'Pines capacitivos que sienten un dedo.']],
       example: [
         'Las notas Do Re Mi Fa Sol La Si Do son 262, 294, 330, 349, 392, 440, 494 y 523 Hz.',

@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "點擊移動它。",
     "Plays tones with ledcWriteTone.": "用 ledcWriteTone 播放音調。",
     "Turns pulses into sound.": "把脈衝變成聲音。",
-    "Each key plays a note.": "每個按鍵彈奏一個音符。",
+    "Hold a key to play; release to stop.": "按住琴鍵發聲，放開即停止",
     "PWM sets the motor speed.": "PWM 決定馬達轉速。",
     "Transistor switches the motor current.": "電晶體開關馬達電流。",
     "Click to change speed.": "點擊改變速度。",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: '迷你鋼琴', heading: '迷你鋼琴',
       lede: '八個琴鍵加一個蜂鳴器，就是一台可以彈奏的鋼琴。ESP32 監視琴鍵並演奏每個音符——它的觸控腳位還可以完全取代按鈕。',
-      features: ['點擊琴鍵彈奏', '每個琴鍵是音階的一個音符', '附加：<code>touchRead()</code> 把裸焊盤變成琴鍵'],
+      features: ["按住琴鍵發聲，放開即停止", '每個琴鍵是音階的一個音符', '附加：<code>touchRead()</code> 把裸焊盤變成琴鍵'],
       pinout: [['琴鍵輸入', '這八個有內部上拉；按下讀數為 LOW。'], ['蜂鳴器', '演奏按下的琴鍵音符。'], ['觸控焊盤', '能感知手指的電容腳位。']],
       example: [
         'C D E F G A B C 音分別是 262、294、330、349、392、440、494 和 523 Hz。',

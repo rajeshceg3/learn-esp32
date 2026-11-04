@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "Clicca per spostarlo.",
     "Plays tones with ledcWriteTone.": "Suona note con ledcWriteTone.",
     "Turns pulses into sound.": "Trasforma gli impulsi in suono.",
-    "Each key plays a note.": "Ogni tasto suona una nota.",
+    "Hold a key to play; release to stop.": "Tieni premuto un tasto per suonare; rilascialo per fermare",
     "PWM sets the motor speed.": "PWM regola la velocità del motore.",
     "Transistor switches the motor current.": "Il transistor commuta la corrente del motore.",
     "Click to change speed.": "Clicca per cambiare velocità.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'Mini pianoforte', heading: 'Mini pianoforte',
       lede: 'Otto tasti e un buzzer formano un pianoforte che puoi suonare. L’ESP32 sorveglia i tasti e suona ogni nota — e i suoi pin touch possono sostituire del tutto i pulsanti.',
-      features: ['Clicca i tasti per suonare', 'Ogni tasto è una nota della scala', 'Extra: <code>touchRead()</code> trasforma pad nudi in tasti'],
+      features: ["Tieni premuto un tasto per suonare; rilascialo per fermare", 'Ogni tasto è una nota della scala', 'Extra: <code>touchRead()</code> trasforma pad nudi in tasti'],
       pinout: [['Ingressi dei tasti', 'Questi otto hanno pull-up interni; la pressione legge LOW.'], ['Buzzer', 'Suona la nota del tasto premuto.'], ['Pad touch', 'Pin capacitivi che sentono un dito.']],
       example: [
         'Le note Do Re Mi Fa Sol La Si Do sono 262, 294, 330, 349, 392, 440, 494 e 523 Hz.',

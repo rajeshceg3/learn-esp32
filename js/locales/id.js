@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "Klik untuk menggerakkannya.",
     "Plays tones with ledcWriteTone.": "Memainkan nada dengan ledcWriteTone.",
     "Turns pulses into sound.": "Mengubah pulsa menjadi suara.",
-    "Each key plays a note.": "Setiap tuts memainkan satu nada.",
+    "Hold a key to play; release to stop.": "Tahan tombol untuk memainkan nada; lepaskan untuk berhenti",
     "PWM sets the motor speed.": "PWM mengatur kecepatan motor.",
     "Transistor switches the motor current.": "Transistor mengalihkan arus motor.",
     "Click to change speed.": "Klik untuk mengubah kecepatan.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'Piano mini', heading: 'Piano mini',
       lede: 'Delapan tuts dan sebuah buzzer membentuk piano yang bisa kau mainkan. ESP32 mengawasi tuts dan memainkan setiap nada — dan pin sentuhnya bisa menggantikan tombol sepenuhnya.',
-      features: ['Klik tuts untuk bermain', 'Setiap tuts adalah satu nada tangga nada', 'Bonus: <code>touchRead()</code> mengubah pad telanjang jadi tuts'],
+      features: ["Tahan tombol untuk memainkan nada; lepaskan untuk berhenti", 'Setiap tuts adalah satu nada tangga nada', 'Bonus: <code>touchRead()</code> mengubah pad telanjang jadi tuts'],
       pinout: [['Masukan tuts', 'Delapan ini punya pull-up internal; ditekan terbaca LOW.'], ['Buzzer', 'Memainkan nada tuts yang ditekan.'], ['Pad sentuh', 'Pin kapasitif yang merasakan jari.']],
       example: [
         'Nada C D E F G A B C adalah 262, 294, 330, 349, 392, 440, 494 dan 523 Hz.',

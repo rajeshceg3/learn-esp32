@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "클릭해서 움직이기.",
     "Plays tones with ledcWriteTone.": "ledcWriteTone으로 음을 재생합니다.",
     "Turns pulses into sound.": "펄스를 소리로 바꿉니다.",
-    "Each key plays a note.": "각 건반이 하나의 음을 냅니다.",
+    "Hold a key to play; release to stop.": "키를 누르고 있으면 소리가 나고 놓으면 멈춥니다",
     "PWM sets the motor speed.": "PWM이 모터 속도를 정합니다.",
     "Transistor switches the motor current.": "트랜지스터가 모터 전류를 스위칭합니다.",
     "Click to change speed.": "클릭해서 속도 변경.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: '미니 피아노', heading: '미니 피아노',
       lede: '여덟 개의 건반과 부저 하나면 연주할 수 있는 피아노가 됩니다. ESP32는 건반을 감시하며 각 음을 연주합니다 — 터치 핀으로 버튼 자체를 대체할 수도 있습니다.',
-      features: ['건반을 클릭해 연주', '각 건반은 음계의 한 음', '보너스: <code>touchRead()</code>로 맨 패드를 건반으로'],
+      features: ["키를 누르고 있으면 소리가 나고 놓으면 멈춥니다", '각 건반은 음계의 한 음', '보너스: <code>touchRead()</code>로 맨 패드를 건반으로'],
       pinout: [['건반 입력', '이 여덟 개는 내부 풀업이 있음. 누르면 LOW.'], ['부저', '눌린 건반의 음을 연주.'], ['터치 패드', '손가락을 감지하는 정전용량 핀.']],
       example: [
         'C D E F G A B C 음은 262, 294, 330, 349, 392, 440, 494, 523 Hz입니다.',

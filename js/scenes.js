@@ -217,7 +217,7 @@ piano: {
     const inputs=['D32','D33','D25','D26','D27','D14','D13','D4'];
     inputs.forEach((name,i)=>s.wires.push(wireTo(pin(name),V(46+i*7-24.5,9,1.7),[WIRE.red,WIRE.orange,WIRE.yellow,WIRE.green,WIRE.teal,WIRE.purple,WIRE.navy,WIRE.purple][i],16+i*.8,name)));
     s.wires.push(wireTo(pin('GND'),V(21.5,8.5,9.4),WIRE.navy,20,'GND'));
-    s.tags = [ { at: V(46, 16, 5), label: '8 KEYS - TAP TO PLAY', click: 'keys', i: 'hand', d: 'Each key plays a note.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
+    s.tags = [ { at: V(46, 16, 5), label: '8 KEYS - TAP TO PLAY', click: 'keys', i: 'hand', d: 'Hold a key to play; release to stop.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
     s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
     s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
       const i = Math.round((lp.x + 24.5) / 7);
@@ -267,14 +267,17 @@ temp: {
     s.wires.push(wireTo(pin('D32'),bb(14,4),WIRE.green,13,'D32'),wireTo(pin('3V3'),bb(11,1),WIRE.red,15,'3V3'),wireTo(pin('GND'),bb(17,1),WIRE.navy,12,'GND'),wireTo(pin('D27'),bb(17,2),WIRE.orange,15,'D27'),wireTo(pin('VIN'),V(63,3,-23),WIRE.red,16,'VIN'),wireTo(bb(21,2),V(67,3,-23),WIRE.navy,13),wireTo(bb(22,3),bb(17,1),WIRE.navy,8));
     s.tags=[{at:pin('D32'),label:'GPIO32 · ADC',i:'wave',d:'Reads the sensor voltage.'},{at:bb(14,2).add(V(0,8,0)),label:'TMP36',i:'info',d:'Outputs 10 mV per °C.'},{at:V(65,29,-23),label:'FAN',i:'gear',d:'GPIO27 turns it on above 30 °C.'},{at:V(103,5,20),label:'HEAT',click:'heat',i:'bolt',d:'Click to switch the scripted dryer on or off.'}];
     s.api.thermalFan=(dt,on)=>{s.refs.fan.userData.tick(dt,on);};
-    s.onClick=(w,api)=>{if(w==='heat'){api._heat=!api._heat;s.refs.heat.position.x=api._heat?83:91;}};
+    s.onClick=(w,api)=>{if(w==='heat')api._heat=!api._heat;};
+    let dragStartX=91;
+    s.beginDrag=(ray)=>{if(!ray.intersectObject(s.refs.heat,true).length)return false;dragStartX=s.refs.heat.position.x;return true;};
+    s.dragTo=(delta,api)=>{const x=Math.max(66,Math.min(91,dragStartX+delta.x));s.refs.heat.position.x=x;api._heatDistance=5+(x-66)/25*55;};
   },
   sim: api=>{
-    api._heat=false;let temp=24,acc=0,fan=false;
+    api._heat=false;api._heatDistance=60;let temp=24,acc=0,fan=false;
     return {running:false,
-      start(){this.running=true;api.serial('Scripted thermostat. Click HEAT to switch the dryer on/off.');},
+      start(){this.running=true;api.serial('Scripted thermostat. Drag the dryer closer or farther; click HEAT to switch it on/off.');},
       stop(){this.running=false;fan=false;api.flow('D27',false);},
-      tick(dt){if(!this.running)return;temp+=((api._heat?42:24)-temp)*Math.min(dt*.45,1)-(fan?5*dt:0);fan=temp>30;api.thermalFan(dt,fan);api.flow('D27',fan);acc+=dt;if(acc>.2){acc=0;api.line?.(fan?14:15);api.serial(`${temp.toFixed(1)} °C · fan ${fan?'ON':'OFF'}`);}}
+      tick(dt){if(!this.running)return;temp+=((api._heat?24+28*(1-Math.min(60,Math.max(5,api._heatDistance??30))/75):24)-temp)*Math.min(dt*.45,1)-(fan?5*dt:0);fan=temp>30;api.thermalFan(dt,fan);api.flow('D27',fan);acc+=dt;if(acc>.2){acc=0;api.line?.(fan?14:15);api.serial(`${temp.toFixed(1)} °C · fan ${fan?'ON':'OFF'}`);}}
     };
   },
 },

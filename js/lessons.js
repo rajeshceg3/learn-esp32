@@ -237,7 +237,7 @@ void loop() {
 {
   id: 'piano', num: 9, title: 'Mini piano', heading: 'Mini piano',
   lede: 'Eight keys and a buzzer make a piano you can play. The ESP32 watches the keys and plays each note — and its touch pins can replace the buttons entirely.',
-  features: [['hand', 'Click the keys to play'], ['bulb', 'Each key is one note of the scale'], ['chip', 'Bonus: <code>touchRead()</code> turns bare pads into keys']],
+  features: [['hand', 'Hold a key to play; release to stop'], ['bulb', 'Each key is one note of the scale'], ['chip', 'Bonus: <code>touchRead()</code> turns bare pads into keys']],
   pinout: [['GPIO 32·33·25·26 ·27·14·13·4', 'Key inputs', 'These eight have internal pull-ups; a press reads LOW.', '#2a56a3'], ['GPIO19', 'Buzzer', 'Plays the note of the pressed key.', '#1aa3a1'], ['T0–T9', 'Touch pads', 'Capacitive pins that sense a finger.', '#6a4fa3']],
   example: [
     'The notes C D E F G A B C are 262, 294, 330, 349, 392, 440, 494 and 523 Hz.',

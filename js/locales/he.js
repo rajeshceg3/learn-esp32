@@ -43,7 +43,7 @@ export default {
     "Click to move it.": "לחיצה כדי להזיז אותו.",
     "Plays tones with ledcWriteTone.": "מנגן צלילים עם ledcWriteTone.",
     "Turns pulses into sound.": "הופך פולסים לצליל.",
-    "Each key plays a note.": "כל קליד מנגן תו.",
+    "Hold a key to play; release to stop.": "החזיקו קליד לנגינה; שחררו לעצירה",
     "PWM sets the motor speed.": "PWM קובע את מהירות המנוע.",
     "Transistor switches the motor current.": "הטרנזיסטור מפעיל את זרם המנוע.",
     "Click to change speed.": "לחיצה כדי לשנות מהירות.",
@@ -171,7 +171,7 @@ export default {
     piano: {
       title: 'פסנתר מיני', heading: 'פסנתר מיני',
       lede: 'שמונה קלידים וזמזם אחד יוצרים פסנתר שאפשר לנגן עליו. ESP32 עוקב אחרי הקלידים ומנגן כל תו — ופיני המגע שלו יכולים להחליף את הכפתורים לגמרי.',
-      features: ['לחצו על הקלידים כדי לנגן', 'כל קליד הוא תו בסולם', 'בונוס: <code>touchRead()</code> הופך משטח חשוף לקלידים'],
+      features: ["החזיקו קליד לנגינה; שחררו לעצירה", 'כל קליד הוא תו בסולם', 'בונוס: <code>touchRead()</code> הופך משטח חשוף לקלידים'],
       pinout: [['קלט קלידים', 'לשמונה אלה יש פול-אפ פנימי; נלחץ נקרא LOW.'], ['זמזם', 'מנגן את תו הקליד הלחוץ.'], ['משטח מגע', 'פין קיבולי שחש אצבע.']],
       example: [
         'התווים C D E F G A B C הם 262, 294, 330, 349, 392, 440, 494 ו-523 הרץ.',
