@@ -35,6 +35,14 @@ export function box(w, h, d, mat, x = 0, y = 0, z = 0, ry = 0) {
   m.position.set(x, y, z); if (ry) m.rotation.y = ry;
   m.castShadow = m.receiveShadow = true; return m;
 }
+// ink outline: crisp technical edge lines on a mesh, follows its transform
+export function ink(mesh, color = 0x141a2e, thresh = 24) {
+  const e = new THREE.LineSegments(
+    new THREE.EdgesGeometry(mesh.geometry, thresh),
+    new THREE.LineBasicMaterial({ color, transparent: true, opacity: .82 }));
+  mesh.add(e); return mesh;
+}
+
 export function cyl(r1, r2, h, mat, x = 0, y = 0, z = 0, seg = 20) {
   const m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, seg), mat);
   m.position.set(x, y, z); m.castShadow = m.receiveShadow = true; return m;
@@ -68,6 +76,23 @@ function boardTexture() {
   c.font = `600 ${1.05 * K}px "Barlow Semi Condensed", sans-serif`;
   c.fillText('EN', px(BOARD.W / 2 - 21.5), py(-4.2)); c.fillText('BOOT', px(BOARD.W / 2 - 21.5), py(4.6));
   c.fillText('38-56-7D-2A', px(BOARD.W / 2 + 14), py(0)); // module markings flavour
+  // silkscreen component outlines
+  c.strokeStyle = 'rgba(233,228,216,.5)'; c.lineWidth = 1.6;
+  const srect = (xm, zm, wm, dm) => c.strokeRect(px(BOARD.W / 2 + xm - wm / 2), py(zm - dm / 2), wm * K, dm * K);
+  srect(14, 0, 20.4, 20.4);   // module footprint
+  srect(-12, 0, 6, 6);        // USB-UART
+  srect(-6, 7.6, 7.6, 7.6);   // regulator
+  srect(2, 6.2, 3.2, 2.4);    // built-in LED
+  srect(2, -6.2, 3.2, 2.4);   // power LED
+  // mounting holes
+  [[-BOARD.W / 2 + 2.5, -BOARD.D / 2 + 2.5], [BOARD.W / 2 - 2.5, -BOARD.D / 2 + 2.5], [-BOARD.W / 2 + 2.5, BOARD.D / 2 - 2.5], [BOARD.W / 2 - 2.5, BOARD.D / 2 - 2.5]].forEach(([xm, zm]) => {
+    const cx = px(BOARD.W / 2 + xm), cy = py(zm);
+    c.beginPath(); c.fillStyle = '#10142a'; c.arc(cx, cy, 1.05 * K, 0, 7); c.fill();
+    c.beginPath(); c.strokeStyle = 'rgba(233,228,216,.6)'; c.lineWidth = 2; c.arc(cx, cy, 1.7 * K, 0, 7); c.stroke();
+  });
+  // vias
+  c.fillStyle = 'rgba(140,160,210,.35)';
+  for (let i = 0; i < 42; i++) { c.beginPath(); c.arc(rnd() * W, rnd() * H, 1.1, 0, 7); c.fill(); }
   const tex = new THREE.CanvasTexture(cv);
   tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
   return tex;
@@ -89,7 +114,7 @@ export function buildBoard() {
   shape.lineTo(-w, -d + r); shape.absarc(-w + r, -d + r, r, Math.PI, Math.PI * 1.5);
   const geo = new THREE.ExtrudeGeometry(shape, { depth: BOARD.T, bevelEnabled: false, curveSegments: 20 });
   geo.rotateX(-Math.PI / 2);
-  const pcb = new THREE.Mesh(geo, [MAT.pcbEdge, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 }), MAT.pcbEdge]);
+  const pcb = ink(new THREE.Mesh(geo, [MAT.pcbEdge, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 }), MAT.pcbEdge]), 0x141a2e, 12);
   pcb.position.y = BOARD.T; pcb.castShadow = pcb.receiveShadow = true;
   // fix material groups: extrude gives 2 groups (side walls+caps). Simplest: single mat with texture loses edges.
   pcb.material = [MAT.pcbEdge, new THREE.MeshStandardMaterial({ map: boardTexture(), roughness: .55 })];
@@ -101,8 +126,8 @@ export function buildBoard() {
 
   // WROOM module: pcb + metal can with antenna
   const mod = new THREE.Group();
-  mod.add(box(19, 1.2, 19, new THREE.MeshStandardMaterial({ color: 0x1c2136, roughness: .55 }), 0, .6, 0));
-  const can = box(17, 2.4, 13, MAT.metal, 0, 2.4, 2.6); mod.add(can);
+  mod.add(ink(box(19, 1.2, 19, new THREE.MeshStandardMaterial({ color: 0x1c2136, roughness: .55 }), 0, .6, 0)));
+  const can = ink(box(17, 2.4, 13, MAT.metal, 0, 2.4, 2.6), 0x2a3040); mod.add(can);
   // antenna meander lines
   for (let i = 0; i < 4; i++) mod.add(box(14, .3, .8, MAT.metal, 0, 1.35, -7.2 + i * 2.2));
   mod.position.set(14, top, 0);
@@ -111,7 +136,7 @@ export function buildBoard() {
 
   // USB micro port (left edge)
   const usb = new THREE.Group();
-  usb.add(box(7.5, 3.2, 6, MAT.metal, 0, 1.6, 0));
+  usb.add(ink(box(7.5, 3.2, 6, MAT.metal, 0, 1.6, 0), 0x2a3040));
   usb.add(box(6.2, 1.8, 4.6, MAT.chip, -0.4, 1.5, 0));
   usb.position.set(-BOARD.W / 2 + 1.4, top, 0);
   g.add(usb); reg(usb.children[0], 'usb', 'Micro-USB port', 'Uploads code and powers the board from your computer.');
@@ -120,8 +145,8 @@ export function buildBoard() {
   // EN + BOOT buttons
   const mkTact = (id, label, desc, x, z) => {
     const t = new THREE.Group();
-    t.add(box(4.6, 1.2, 4.6, MAT.plastic, 0, .6, 0));
-    t.add(box(3, 1.6, 3, MAT.metalDark, 0, 1.6, 0));
+    t.add(ink(box(4.6, 1.2, 4.6, MAT.plastic, 0, .6, 0)));
+    t.add(ink(box(3, 1.6, 3, MAT.metalDark, 0, 1.6, 0), 0x0e1220));
     t.position.set(x, top, z); g.add(t);
     reg(t.children[1], id, label, desc);
   };
@@ -130,27 +155,27 @@ export function buildBoard() {
   A('en', -21.6, top + 3, -6.4); A('boot', -21.6, top + 3, 6.4);
 
   // CP2102 USB-UART bridge (QFN)
-  const uart = box(5, .9, 5, MAT.chip, -12, top + .45, 0); g.add(uart);
+  const uart = ink(box(5, .9, 5, MAT.chip, -12, top + .45, 0), 0x3a4358); g.add(uart);
   reg(uart, 'uart', 'USB-UART bridge', 'Turns USB into serial so your computer can talk to the ESP32.');
   // regulator
-  const regM = box(6.5, 2.2, 6.5, MAT.chip, -6, top + 1.1, 7.6); g.add(regM);
+  const regM = ink(box(6.5, 2.2, 6.5, MAT.chip, -6, top + 1.1, 7.6), 0x3a4358); g.add(regM);
   reg(regM, 'reg', '3.3 V regulator', 'Steps the 5 V USB supply down to the 3.3 V the ESP32 runs on.');
   // built-in LED (GPIO2) + power LED
-  const ledB = box(2, .9, 1.3, MAT.blueLed, 2, top + .45, 6.2); g.add(ledB);
+  const ledB = ink(box(2, .9, 1.3, MAT.blueLed, 2, top + .45, 6.2), 0x14203c); g.add(ledB);
   reg(ledB, 'bled', 'Built-in LED', 'Wired to GPIO2 — blinks with LED_BUILTIN.');
-  const ledP = box(2, .9, 1.3, MAT.red, 2, top + .45, -6.2); g.add(ledP);
+  const ledP = ink(box(2, .9, 1.3, MAT.red, 2, top + .45, -6.2), 0x3c1414); g.add(ledP);
   reg(ledP, 'pled', 'Power LED', 'Lit whenever the board has power.');
   A('bled', 2, top + 2, 6.2);
 
   // passives sprinkle
   const pass = [[-3, -6, 0], [0.5, -7.6, 0], [-9, -7.4, 90], [-15, 6.8, 0], [-17.5, -7.8, 90], [5.4, -6.6, 0], [7, 7, 90], [-0.5, 6.4, 0]];
-  pass.forEach(([x, z, rot]) => g.add(box(1.6, .5, .8, MAT.chip, x, top + .25, z, rot * Math.PI / 180)));
+  pass.forEach(([x, z, rot]) => g.add(ink(box(1.6, .5, .8, MAT.chip, x, top + .25, z, rot * Math.PI / 180), 0x3a4358)));
 
   // headers: 2 x 15 pins
   const headerGroup = new THREE.Group();
   const mkHeader = (z, names) => {
     const h = new THREE.Group();
-    h.add(box(names.length * 2.54 + .6, 2.4, 2.54, MAT.header, 0, 1.2, 0));
+    h.add(ink(box(names.length * 2.54 + .6, 2.4, 2.54, MAT.header, 0, 1.2, 0)));
     for (let i = 0; i < names.length; i++) {
       h.add(box(.7, 6.4, .7, MAT.pinMetal, -((names.length - 1) / 2) * 2.54 + i * 2.54, 1.2, 0));
     }
