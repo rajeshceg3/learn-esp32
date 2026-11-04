@@ -279,6 +279,7 @@ temp: {
     s.tags[2].value=()=>`GPIO27 · ${shownFan?'HIGH':'LOW'}`;
     s.api.thermalReadout=(temperature,on)=>{shownTemperature=temperature;shownFan=on;};
     s.api.thermalFan=(dt,on)=>{s.refs.fan.userData.tick(dt,on);};
+    s.api.heatPlume=(dt,on)=>s.refs.heat.userData.heat(dt,on);
     s.inspect=w=>w==='heat'?'thermal':null;
     s.api.setHeatDistance=(distance,api)=>{const d=Math.max(5,Math.min(40,Number(distance)));api._heatDistance=d;const x=66+(d-5)/35*16;s.refs.heat.position.x=x;s.tags[3].at.x=x+8;};
     let dragStartX=82;
@@ -289,8 +290,8 @@ temp: {
     api._heat=false;api._heatDistance=40;let temp=24,acc=0,fan=false;
     return {running:false,
       start(){this.running=true;api.serial('Scripted thermostat. Drag the dryer closer or farther; open HEAT for power and distance.');},
-      stop(){this.running=false;fan=false;api.thermalReadout?.(temp,false);api.flow('D27',false);},
-      tick(dt){if(!this.running)return;temp+=((api._heat?24+28*(1-Math.min(40,Math.max(5,api._heatDistance??30))/50):24)-temp)*Math.min(dt*.45,1)-(fan?5*dt:0);fan=temp>30;api.thermalReadout?.(temp,fan);api.thermalFan(dt,fan);api.flow('D27',fan);acc+=dt;if(acc>.2){acc=0;api.line?.(fan?14:15);api.serial(`${temp.toFixed(1)} °C · fan ${fan?'ON':'OFF'}`);}}
+      stop(){this.running=false;fan=false;api.heatPlume?.(0,false);api.thermalReadout?.(temp,false);api.flow('D27',false);},
+      tick(dt){if(!this.running)return;api.heatPlume?.(dt,!!api._heat);temp+=((api._heat?24+28*(1-Math.min(40,Math.max(5,api._heatDistance??30))/50):24)-temp)*Math.min(dt*.45,1)-(fan?5*dt:0);fan=temp>30;api.thermalReadout?.(temp,fan);api.thermalFan(dt,fan);api.flow('D27',fan);acc+=dt;if(acc>.2){acc=0;api.line?.(fan?14:15);api.serial(`${temp.toFixed(1)} °C · fan ${fan?'ON':'OFF'}`);}}
     };
   },
 },

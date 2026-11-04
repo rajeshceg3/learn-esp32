@@ -220,6 +220,13 @@ export function heatGun() {
   g.add(box(1.1,3,3,MAT.red,-.1,9,0));
   const cord=new THREE.CatmullRomCurve3([new THREE.Vector3(5,1.5,0),new THREE.Vector3(11,.8,1),new THREE.Vector3(15,.7,4)]);
   g.add(new THREE.Mesh(new THREE.TubeGeometry(cord,12,.45,6,false),dark));
+  const plume=new THREE.Group();plume.visible=false;g.add(plume);
+  const strands=[];for(const z of[-2,0,2]){
+    const points=[];for(let i=0;i<=24;i++){const x=i/24;points.push(new THREE.Vector3(-17-x*17,18+Math.sin(x*Math.PI*3+z)*1.1,z+x*5));}
+    const material=new THREE.MeshBasicMaterial({color:z===0?0xf3b45a:0xe78042,transparent:true,opacity:.7,depthWrite:false});
+    const strand=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),24,.5,6,false),material);plume.add(strand);strands.push(strand);
+  }
+  let phase=0;g.userData.heat=(dt,on)=>{plume.visible=on;phase+=dt*5;strands.forEach((strand,i)=>{strand.material.opacity=.7+.2*Math.sin(phase+i);strand.position.y=Math.sin(phase+i)*.35;});};
   return g;
 }
 export function tmp36() {
