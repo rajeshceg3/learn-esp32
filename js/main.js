@@ -413,7 +413,7 @@ function loadLesson(i, keepTab) {
   $('#sheet').classList.remove('open');state.sheet=null;
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 || (i === 3 && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
+  rig.tAz = i === 0 || ([1,3].includes(i) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
   clearComponentFocus();lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -722,7 +722,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 || (state.lesson === 3 && innerWidth < 1024) ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
+  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 || ([1,3].includes(state.lesson) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
