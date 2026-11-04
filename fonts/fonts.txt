@@ -1,0 +1,8 @@
+Barlow|400|barlow-400.woff2
+Barlow|500|barlow-500.woff2
+Barlow|600|barlow-600.woff2
+Barlow Semi Condensed|500|barlow-semi-condensed-500.woff2
+Barlow Semi Condensed|600|barlow-semi-condensed-600.woff2
+Barlow Semi Condensed|700|barlow-semi-condensed-700.woff2
+JetBrains Mono|400|jetbrains-mono-400.woff2
+JetBrains Mono|500|jetbrains-mono-500.woff2

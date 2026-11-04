@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en" class="is-loading">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Learn ESP32 — interactive 3D lessons for beginners</title>
+<meta name="description" content="Learn ESP32 on an interactive 3D board: wire LEDs, buttons, sensors, motors and servos, then run the code and watch it work. 16 free beginner lessons." />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<meta name="theme-color" content="#f6eddd" />
+<meta name="color-scheme" content="light" />
+<meta name="application-name" content="Learn ESP32" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="stylesheet" href="styles.css" />
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.js" } }</script>
+</head>
+<body>
+<div class="bg-grid" aria-hidden="true"></div>
+<svg class="bg-traces" id="bgTraces" aria-hidden="true"></svg>
+
+<div class="loader" id="loader" role="status" aria-live="polite">
+  <div class="loader-inner">
+    <svg class="loader-logo" viewBox="0 0 92 50" aria-hidden="true"><rect class="loop" x="24" y="12" width="34" height="26" rx="6"/><path class="sign" d="M66 18a10 10 0 0 1 0 14M74 13a19 19 0 0 1 0 24M18 18a10 10 0 0 0 0 14M10 13a19 19 0 0 0 0 24"/></svg>
+    <p class="loader-title">LEARN ESP32</p>
+    <div class="loader-track" aria-hidden="true"><span class="loader-fill" id="loadFill"></span><span class="loader-shine"></span></div>
+    <p class="loader-step" id="loadStep">Loading</p>
+    <noscript><div class="noscript"><p>An interactive 3D course in your browser. Turn on JavaScript to start.</p></div></noscript>
+  </div>
+</div>
+
+<div id="app" aria-hidden="true">
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-logo" viewBox="0 0 92 50" aria-hidden="true"><rect x="24" y="12" width="34" height="26" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><path d="M66 18a10 10 0 0 1 0 14M74 13a19 19 0 0 1 0 24M18 18a10 10 0 0 0 0 14M10 13a19 19 0 0 0 0 24" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"/></svg>
+      <div>
+        <div class="brand-name">LEARN ESP32</div>
+        <div class="brand-tag">EXPLORE&nbsp;&nbsp;·&nbsp;&nbsp;UNDERSTAND&nbsp;&nbsp;·&nbsp;&nbsp;BUILD</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="progress-pill">
+        <svg class="book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5V5.5M20 18H6.5A2.5 2.5 0 0 0 4 20.5"/><path d="M8 7h8M8 10h6"/></svg>
+        <span class="progress-label" data-i18n="basics">BASICS</span>
+        <span class="progress-bar"><span class="progress-fill" id="progressFill"></span></span>
+        <span class="progress-count" id="progressCount">0/16</span>
+      </div>
+      <div class="clock"><div class="date" id="clockDate"></div><div class="time" id="clockTime"></div></div>
+    </div>
+  </header>
+
+  <nav class="sidebar" id="sidebar" aria-label="Sections"></nav>
+
+  <div class="main">
+    <section class="stage-wrap" id="stageWrap">
+      <canvas id="stage"></canvas>
+      <div class="tags" id="tags"></div>
+      <div class="stage-vignette"></div>
+      <span class="stage-credit" id="stageCredit">inspired by Learn Arduino · Dilum Sanjaya</span>
+      <div class="toolbar" id="toolbar" role="toolbar" aria-label="View controls"></div>
+    </section>
+
+    <aside class="panel" id="panel">
+      <div class="tabbar" id="tabbar" role="tablist"></div>
+      <div class="panel-body" id="panelBody"></div>
+    </aside>
+
+    <section class="lessons-sec" id="lessonsSec">
+      <div class="lessons-title" data-i18n="lessons">LESSONS</div>
+      <div class="lesson-rail" id="lessonRail"></div>
+    </section>
+
+    <div class="sheet" id="sheet" role="dialog" aria-modal="false">
+      <div class="sheet-head"><span class="sheet-title" id="sheetTitle"></span><span class="sheet-sub" id="sheetSub"></span></div>
+      <div class="sheet-body" id="sheetBody"></div>
+    </div>
+  </div>
+
+  <nav class="bottomnav" id="bottomnav" aria-label="Sections"></nav>
+  <span class="credit" id="creditSide">INSPIRED BY LEARN ARDUINO (DILUM SANJAYA)</span>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

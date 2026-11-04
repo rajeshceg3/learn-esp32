@@ -1,0 +1,388 @@
+// Learn ESP32 — lesson scene assembly + simulation behaviour. Original code.
+import * as THREE from 'three';
+import { MAT, box, cyl, pinLocal } from './scene.js';
+import * as C from './components.js';
+
+export const BOARD_POS = new THREE.Vector3(-46, 0, 6);
+export const BB_POS = new THREE.Vector3(46, 0, 10);
+export const WIRE = { red: 0xd64a3a, navy: 0x2f3547, orange: 0xe8913a, green: 0x3fbf6a, yellow: 0xe8c53a, purple: 0x6a4fa3, white: 0xf2efe6, teal: 0x1aa3a1 };
+const bb = (col, row) => C.bbHole(col, row).add(BB_POS);
+const pin = name => pinLocal(name).add(BOARD_POS);
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+function wireTo(from, to, color, arch = 16, net = null) {
+  const w = C.wire(from, to, color, arch);
+  return { mesh: w, dot: C.flowDot(w), curve: w.userData.curve, net };
+}
+
+export const SCENES = {
+builtin: {
+  build(s) {
+    s.tags = [
+      { at: pin('D2'), label: 'GPIO2' },
+      { at: V(2 + BOARD_POS.x, 5, 6.2 + BOARD_POS.z), label: 'BUILT-IN LED' },
+      { at: V(BOARD_POS.x - 24, 6, BOARD_POS.z), label: 'USB' },
+    ];
+    s.tagParts = true;
+  },
+  sim: api => ({
+    running: false,
+    start() { this.running = true; api.setBuiltin(true); api.serial('Sketch running: LED on GPIO2 → HIGH'); },
+    stop() { this.running = false; api.setBuiltin(false); },
+    tick() {},
+  }),
+},
+blink: {
+  build(s) {
+    const led = C.led5mm(C.LED_COLORS.red); led.position.copy(bb(14, 2)); s.add(led, 'led');
+    const res = C.resistor(220); res.position.copy(bb(16, 2)); res.position.z += 1.27; s.add(res, 'resistor');
+    s.wires.push(wireTo(pin('D26'), bb(11, 2), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(19, 4), WIRE.navy, 12, 'GND'));
+    s.tags = [
+      { at: pin('D26'), label: 'GPIO26' }, { at: pin('GND'), label: 'GND' },
+      { at: bb(14, 2).add(V(0, 10, 0)), label: 'LED', click: 'led' },
+      { at: bb(16, 2).add(V(0, 6, 0)), label: 'RESISTOR', click: 'resistor' },
+    ];
+    s.api.setLed = on => s.refs.led.userData.setLit(on);
+    s.api.ledColor = c => s.refs.led.userData.setColor(c);
+    s.api.setResistor = o => { const r = s.refs.resistor, n = C.resistor(o); n.position.copy(r.position); s.add(n, 'resistor'); };
+    const cols = [0xe8392e, 0xf2c23a, 0x3fbf6a, 0x3d7be0, 0xf2efe6], ohms = [220, 1000, 10000];
+    s.onClick = (what, api) => {
+      if (what === 'led') { api._ci = ((api._ci ?? 0) + 1) % cols.length; api.ledColor(cols[api._ci]); }
+      if (what === 'resistor') { api._ri = ((api._ri ?? 0) + 1) % ohms.length; api.setResistor(ohms[api._ri]); api.serial(`Resistor: ${ohms[api._ri]} Ω`); }
+    };
+  },
+  sim: api => {
+    let t = 0, on = false, dur = [500, 500];
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Uploading… done. Blinking on GPIO26.'); },
+      stop() { this.running = false; on = false; api.setLed(false); api.tag(null); api.flow('D26', false); },
+      setTiming(a, b) { dur = [a, b]; },
+      tick(dt) { if (!this.running) return; t += dt * 1000;
+        if (t >= (on ? dur[0] : dur[1])) { t = 0; on = !on; api.setLed(on); api.tag(on ? 'HIGH' : 'LOW'); api.flow('D26', on); api.serial(`GPIO26 → ${on ? 'HIGH' : 'LOW'}`); } },
+    };
+  },
+},
+button: {
+  build(s) {
+    const btn = C.pushButton(); btn.position.copy(bb(14, 1)); s.add(btn, 'button');
+    const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(18, 7)); s.add(led, 'led');
+    s.wires.push(wireTo(pin('D27'), bb(12, 1), WIRE.green, 14, 'D27'), wireTo(pin('D26'), bb(15, 7), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
+    s.tags = [
+      { at: pin('D27'), label: 'GPIO27 · IN' },
+      { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button' },
+      { at: bb(18, 7).add(V(0, 10, 0)), label: 'LED' },
+    ];
+    s.api.setLed = on => s.refs.led.userData.setLit(on);
+    s.api.press = p => s.refs.button.userData.setPressed(p);
+    s.onClick = (w, api) => { if (w === 'button') api._press(!api._pressed); };
+  },
+  sim: api => {
+    api._pressed = false;
+    const sim = {
+      running: false,
+      start() { this.running = true; api.serial('Sketch running. Press the button.'); },
+      stop() { this.running = false; api.setLed(false); api.press(false); api._pressed = false; api.flow('D26', false); },
+      tick() {},
+    };
+    api._press = p => { api._pressed = p; api.press(p);
+      if (sim.running) { api.setLed(p); api.flow('D26', p); api.serial(p ? 'GPIO27 reads LOW → LED on' : 'Released → HIGH → LED off'); } };
+    return sim;
+  },
+},
+pot: {
+  build(s) {
+    const pot = C.potentiometer(); pot.position.copy(bb(13, 2)); s.add(pot, 'pot');
+    const led = C.led5mm(0xf2efe6); led.position.copy(bb(19, 7)); s.add(led, 'led');
+    s.wires.push(wireTo(pin('D34'), bb(13, 5), WIRE.green, 14, 'D34'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'), wireTo(pin('D25'), bb(16, 7), WIRE.orange, 14, 'D25'));
+    s.tags = [
+      { at: pin('D34'), label: 'GPIO34 · ADC' },
+      { at: bb(13, 2).add(V(0, 10, 0)), label: 'POT', click: 'pot' },
+      { at: bb(19, 7).add(V(0, 10, 0)), label: 'LED' },
+    ];
+    s.api.level = v => { const l = s.refs.led.userData; l.setLit(v > .02); l.body.material.emissiveIntensity = v * 1.7; };
+    s.api.knob = a => s.refs.pot.userData.setAngle(a);
+    s.onClick = (w, api) => { if (w === 'pot') api._v = (api._v + .34) % 1.02; };
+  },
+  sim: api => {
+    api._v = .5; let acc = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Sketch running. Click the knob to turn it.'); },
+      stop() { this.running = false; api.level(0); api.flow('D25', false); },
+      tick(dt) { if (!this.running) return; const v = Math.min(1, api._v);
+        api.knob(-2.2 + v * 4.4); api.level(v); api.flow('D25', v > .02);
+        acc += dt; if (acc > .8) { acc = 0; api.serial(`analogRead(GPIO34) = ${Math.round(v * 4095)}`); } },
+    };
+  },
+},
+rgb: {
+  build(s) {
+    const rgb = C.rgbLed(); rgb.position.copy(bb(15, 2)); s.add(rgb, 'rgb');
+    [['D25', 11, WIRE.red], ['D26', 12, WIRE.green], ['D33', 13, 0x4d7de8]].forEach(([p, cr, c]) => s.wires.push(wireTo(pin(p), bb(cr, 2), c, 14, p)));
+    s.wires.push(wireTo(pin('GND'), bb(18, 3), WIRE.navy, 12, 'GND'));
+    s.tags = [
+      { at: pin('D25'), label: 'R·G·B = 25·26·33' },
+      { at: bb(15, 2).add(V(0, 10, 0)), label: 'RGB LED', click: 'rgb' },
+    ];
+    s.api.rgb = (r, g, b) => s.refs.rgb.userData.setRGB(r, g, b);
+    const pal = [[255, 30, 110], [255, 190, 0], [0, 200, 150], [60, 120, 255], [170, 0, 255], [244, 240, 232]];
+    s.onClick = (w, api) => { if (w === 'rgb') { api._pi = ((api._pi ?? -1) + 1) % pal.length; api._c = pal[api._pi]; if (api._run) api.rgb(...api._c); } };
+  },
+  sim: api => ({
+    running: false,
+    start() { this.running = true; api._run = true; api.rgb(...(api._c || [255, 30, 110])); api.serial('Mixing colours. Click the LED to change the palette.'); },
+    stop() { this.running = false; api._run = false; api.rgb(0, 0, 0); },
+    tick() {},
+  }),
+},
+light: {
+  build(s) {
+    const ldr = C.ldr(); ldr.position.copy(bb(13, 2)); s.add(ldr, 'ldr');
+    const res = C.resistor(10000); res.position.copy(bb(15, 2)); res.position.z += 1.27; s.add(res, 'resistor');
+    const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(19, 7)); s.add(led, 'led');
+    const torch = new THREE.Group();
+    const tb = cyl(2.2, 2.8, 8, MAT.plastic); tb.rotation.z = Math.PI / 2.4; torch.add(tb);
+    const beam = new THREE.Mesh(new THREE.ConeGeometry(3.4, 10, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff2c8, transparent: true, opacity: .16, side: THREE.DoubleSide }));
+    beam.position.set(5, -4, 0); beam.rotation.z = -2.2; torch.add(beam);
+    torch.position.copy(bb(8, 2)).add(V(0, 14, 0)); s.add(torch, 'torch');
+    s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 14, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 14, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
+    s.tags = [
+      { at: pin('D35'), label: 'GPIO35 · ADC' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR' },
+      { at: V(bb(8, 2).x, 26, bb(8, 2).z), label: 'TORCH', click: 'torch' },
+      { at: bb(19, 7).add(V(0, 10, 0)), label: 'NIGHT LIGHT' },
+    ];
+    s.api.setLed = on => s.refs.led.userData.setLit(on);
+    s.onClick = (w, api) => { if (w === 'torch') { api._near = !api._near;
+      s.refs.torch.position.set(bb(8, 2).x + (api._near ? 4 : 0), api._near ? 24 : 14, bb(8, 2).z); } };
+  },
+  sim: api => {
+    api._near = false; let acc = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Sketch running. Click the torch to move it closer.'); },
+      stop() { this.running = false; api.setLed(false); },
+      tick(dt) { if (!this.running) return; const dark = !api._near; api.setLed(dark);
+        acc += dt; if (acc > 1) { acc = 0; api.serial(`light = ${dark ? 320 : 3300}${dark ? '  (dark → night light on)' : ''}`); } },
+    };
+  },
+},
+distance: {
+  build(s) {
+    const us = C.ultrasonic(); us.position.copy(bb(15, 6)); s.add(us, 'us');
+    const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
+    s.wires.push(wireTo(pin('D5'), bb(11, 6), WIRE.yellow, 14, 'D5'), wireTo(pin('D18'), bb(12, 7), WIRE.green, 14, 'D18'), wireTo(pin('VIN'), bb(19, 5), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(20, 8), WIRE.navy, 12, 'GND'));
+    s.tags = [
+      { at: pin('D5'), label: 'TRIG · GPIO5' }, { at: pin('D18'), label: 'ECHO · GPIO18' },
+      { at: bb(15, 6).add(V(0, 12, 0)), label: 'HC-SR04' },
+      { at: V(96, 14, 28), label: 'OBSTACLE', click: 'car', dyn: 'car' },
+    ];
+    s.api._dist = 30;
+    s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist >= 44 ? 8 : api._dist + 12;
+      s.refs.car.position.x = 96 - (44 - api._dist) * 1.1; } };
+  },
+  sim: api => {
+    let acc = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Measuring. Click the car to move it.'); },
+      stop() { this.running = false; },
+      tick(dt) { if (!this.running) return; acc += dt; if (acc > .5) { acc = 0; api.serial(`${api._dist.toFixed(1)} cm`); } },
+    };
+  },
+},
+sound: {
+  build(s) {
+    const bz = C.buzzer(); bz.position.copy(bb(15, 2)); s.add(bz, 'buzzer');
+    s.wires.push(wireTo(pin('D19'), bb(11, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(19, 3), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: pin('D19'), label: 'GPIO19' }, { at: bb(15, 2).add(V(0, 9, 0)), label: 'BUZZER' } ];
+  },
+  sim: api => {
+    const seq = [[262, 'C'], [330, 'E'], [392, 'G'], [0, 'rest']]; let i = -1, wait = 0;
+    return {
+      running: false,
+      start() { this.running = true; i = -1; wait = 0; api.serial('Playing C · E · G …'); },
+      stop() { this.running = false; api.tone(0); },
+      tick(dt) { if (!this.running) return; wait -= dt * 1000;
+        if (wait <= 0) { i = (i + 1) % seq.length; const [f, n] = seq[i];
+          api.tone(f); api.serial(f ? `ledcTone(GPIO19, ${f})  // ${n}` : 'ledcTone(GPIO19, 0)  // rest');
+          wait = f ? 400 : 600; } },
+    };
+  },
+},
+piano: {
+  build(s) {
+    const keys = C.pianoKeys(8); keys.position.set(46, 8.7, 30); s.add(keys, 'keys');
+    const bz = C.buzzer(); bz.position.copy(bb(6, 2)); s.add(bz, 'buzzer');
+    s.wires.push(wireTo(pin('D19'), bb(3, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(9, 4), WIRE.navy, 10, 'GND'));
+    s.tags = [ { at: V(46, 16, 30), label: '8 KEYS — TAP TO PLAY', click: 'keys' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER' } ];
+    s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
+    s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
+      const i = Math.round((lp.x + 24.5) / 7);
+      return (i >= 0 && i < 8 && Math.abs(lp.z) < 7 && lp.y > -2 && lp.y < 5) ? i : -1; };
+  },
+  sim: api => ({
+    running: false,
+    start() { this.running = true; api.serial('Tap the white keys.'); },
+    stop() { this.running = false; api.tone(0); api.pressKey(-1, false); },
+    note(i) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
+      api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);
+      clearTimeout(this._t); this._t = setTimeout(() => { api.pressKey(-1, false); api.tone(0); }, 280); },
+    tick() {},
+  }),
+},
+motor: {
+  build(s) {
+    const m = C.dcMotor(); m.position.set(78, 0, -6); s.add(m, 'motor');
+    const tr = C.npn(); tr.position.copy(bb(14, 2)); s.add(tr, 'npn');
+    const res = C.resistor(1000); res.position.copy(bb(12, 2)); res.position.z += 1.27; s.add(res, 'resistor');
+    s.wires.push(wireTo(pin('D27'), bb(10, 2), WIRE.orange, 14, 'D27'), wireTo(pin('VIN'), V(78, 2, -14), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(17, 4), WIRE.navy, 12, 'GND'), wireTo(bb(16, 2), V(78, 2, 2), WIRE.navy, 18));
+    s.tags = [ { at: pin('D27'), label: 'GPIO27 · PWM' }, { at: bb(14, 2).add(V(0, 7, 0)), label: '2N2222' }, { at: V(78, 26, -6), label: 'MOTOR', click: 'motor' } ];
+    s.api.spin = v => s.refs.motor.userData.spin(v);
+    s.api.tickMotor = dt => s.refs.motor.userData.tick(dt);
+    const speeds = [0, 6, 14, 22];
+    s.onClick = (w, api) => { if (w === 'motor') { api._si = ((api._si ?? 0) + 1) % speeds.length; api._speed = speeds[api._si]; } };
+  },
+  sim: api => {
+    api._speed = 14;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Motor on GPIO27. Click it to change speed.'); },
+      stop() { this.running = false; api.spin(0); api.flow('D27', false); },
+      tick(dt) { if (!this.running) return; api.spin(api._speed); api.tickMotor(dt); api.flow('D27', api._speed > 0); },
+    };
+  },
+},
+temp: {
+  build(s) {
+    const t = C.tmp36(); t.position.copy(bb(14, 2)); s.add(t, 'tmp');
+    s.wires.push(wireTo(pin('D32'), bb(14, 4), WIRE.green, 13, 'D32'), wireTo(pin('3V3'), bb(11, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(17, 1), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: pin('D32'), label: 'GPIO32 · ADC' }, { at: bb(14, 2).add(V(0, 8, 0)), label: 'TMP36', click: 'tmp' } ];
+    s.onClick = (w, api) => { if (w === 'tmp') api._warm = ((api._warm ?? 1) + 1) % 3; };
+  },
+  sim: api => {
+    api._warm = 1; let acc = 0; const temps = [12, 24, 38];
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Reading the TMP36. Click it for a different room.'); },
+      stop() { this.running = false; },
+      tick(dt) { if (!this.running) return; acc += dt;
+        if (acc > .9) { acc = 0; const tc = temps[api._warm]; api.serial(`${tc.toFixed(1)} °C  (raw ${Math.round((tc / 100 + .5) / 3.3 * 4095)})`); } },
+    };
+  },
+},
+servo: {
+  build(s) {
+    const sv = C.servo(); sv.position.set(74, 0, 2); sv.rotation.y = .5; s.add(sv, 'servo');
+    s.wires.push(wireTo(pin('D13'), V(64, 2, 8), WIRE.orange, 15, 'D13'), wireTo(pin('VIN'), V(68, 2, 12), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), V(60, 2, 12), WIRE.navy, 13, 'GND'));
+    s.tags = [ { at: pin('D13'), label: 'GPIO13 · 50 Hz' }, { at: V(74, 20, 2), label: 'SERVO', click: 'servo' } ];
+    s.api.servo = a => s.refs.servo.userData.setAngle(a);
+    s.onClick = (w, api) => { if (w === 'servo') api._rate = ((api._rate ?? 0) + 1) % 3; };
+  },
+  sim: api => {
+    let t = 0; api._rate = 0; const rates = [.7, 1.2, 2];
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Sweeping 0 → 180 → 0. Click the servo to change speed.'); },
+      stop() { this.running = false; api.servo(0); },
+      tick(dt) { if (!this.running) return; t += dt * rates[api._rate];
+        api.servo(-(Math.sin(t * 1.4) * .5 + .5) * Math.PI); },
+    };
+  },
+},
+stepper: {
+  build(s) {
+    const st = C.stepper(); st.position.set(76, 0, 0); s.add(st, 'stepper');
+    const drv = box(20, 1.6, 16, new THREE.MeshStandardMaterial({ color: 0x2a56a3, roughness: .55 }));
+    drv.position.set(46, 9.2, -8); s.add(drv, 'drv');
+    ['D14', 'D27', 'D26', 'D25'].forEach((p, i) => s.wires.push(wireTo(pin(p), bb(10 + i, 5), [WIRE.orange, WIRE.yellow, WIRE.green, WIRE.purple][i], 13, p)));
+    s.wires.push(wireTo(pin('VIN'), bb(16, 6), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(17, 7), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: pin('D14'), label: 'COILS · 14·27·26·25' }, { at: V(76, 18, 0), label: 'STEPPER', click: 'stepper' } ];
+    s.api.stepper = a => s.refs.stepper.userData.setAngle(a);
+    s.onClick = (w, api) => { if (w === 'stepper') api._dir = -(api._dir ?? 1); };
+  },
+  sim: api => {
+    api._dir = 1; let a = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Stepping… 2048 steps per turn. Click the motor to reverse.'); },
+      stop() { this.running = false; },
+      tick(dt) { if (!this.running) return; a += dt * 2.2 * api._dir; api.stepper(a); },
+    };
+  },
+},
+plant: {
+  build(s) {
+    const pot = new THREE.Group();
+    pot.add(cyl(8, 6.4, 9, new THREE.MeshStandardMaterial({ color: 0xb96b45, roughness: .8 }), 0, 4.5, 0));
+    pot.add(cyl(7.4, 7.4, 1.2, new THREE.MeshStandardMaterial({ color: 0x4a3524, roughness: 1 }), 0, 8.6, 0));
+    [[0, .5], [2.1, .45], [4.2, .55], [1, .3], [3.1, .35]].forEach(([ry, rx]) => {
+      const l = new THREE.Mesh(new THREE.SphereGeometry(3.2, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4d9a51, roughness: .6 }));
+      l.scale.set(1, 2.1, .45); l.position.set(Math.sin(ry) * 2.4, 13, Math.cos(ry) * 2.4); l.rotation.set(rx, ry, 0); pot.add(l);
+    });
+    pot.position.set(76, 0, 4); s.add(pot, 'plant');
+    const probe = C.soilProbe(); probe.position.set(76, 6.4, 4); probe.rotation.y = .4; s.add(probe, 'probe');
+    const ol = C.oled(); ol.position.copy(bb(14, 5)); s.add(ol, 'oled');
+    s.wires.push(wireTo(pin('D34'), bb(10, 5), WIRE.green, 14, 'D34'), wireTo(pin('D21'), bb(11, 6), WIRE.purple, 14, 'D21'), wireTo(pin('D22'), bb(12, 7), WIRE.yellow, 14, 'D22'), wireTo(pin('3V3'), bb(17, 4), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(18, 8), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34' }, { at: pin('D21'), label: 'I²C · 21/22' }, { at: bb(14, 5).add(V(0, 9, 0)), label: 'OLED' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant' } ];
+    s.api.oledDraw = fn => s.refs.oled.userData.draw(fn);
+    s.onClick = (w, api) => { if (w === 'plant') api._wet = ((api._wet ?? 1) + 1) % 3; };
+  },
+  sim: api => {
+    api._wet = 1; let acc = 0; const levels = [18, 52, 88];
+    const face = m => m < 30 ? 'THIRSTY :(' : m < 65 ? 'OK :|' : 'HAPPY :)';
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Reading the soil. Click the plant to water it.'); },
+      stop() { this.running = false; api.oledDraw(c => { c.fillStyle = '#9fd8ff'; c.font = '10px monospace'; c.fillText('ESP32', 46, 34); }); },
+      tick(dt) { if (!this.running) return; acc += dt;
+        if (acc > 1) { acc = 0; const m = levels[api._wet];
+          api.oledDraw(c => { c.fillStyle = '#9fd8ff'; c.font = 'bold 13px monospace'; c.fillText('SOIL ' + m + '%', 26, 26); c.font = '10px monospace'; c.fillText(face(m), 34, 46); });
+          api.serial(`soil moisture = ${m}%`); } },
+    };
+  },
+},
+force: {
+  build(s) {
+    const f = C.fsr(); f.position.copy(bb(13, 2)); s.add(f, 'fsr');
+    const leds = [0x3fbf6a, 0xf2c23a, 0xe8392e].map((c, i) => { const l = C.led5mm(c); l.position.copy(bb(18 + i * 2, 7)); s.add(l, 'bar' + i); return l; });
+    s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 13, 'D35'), wireTo(pin('D25'), bb(17, 6), WIRE.orange, 13, 'D25'), wireTo(pin('D26'), bb(19, 6), WIRE.yellow, 13, 'D26'), wireTo(pin('D33'), bb(21, 6), WIRE.red, 13, 'D33'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: pin('D35'), label: 'FSR · GPIO35' }, { at: bb(13, 2).add(V(0, 6, 0)), label: 'PRESS PAD', click: 'fsr' }, { at: bb(20, 7).add(V(0, 11, 0)), label: 'LED BAR' } ];
+    s.api.bar = n => leds.forEach((l, i) => l.userData.setLit(i < n));
+    s.onClick = (w, api) => { if (w === 'fsr') api._f = ((api._f ?? 0) + 1) % 4; };
+  },
+  sim: api => {
+    api._f = 0; let acc = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Press the pad (click it) and watch the bar.'); },
+      stop() { this.running = false; api.bar(0); },
+      tick(dt) { if (!this.running) return; api.bar(api._f);
+        acc += dt; if (acc > .9) { acc = 0; api.serial(`force = ${api._f * 850}`); } },
+    };
+  },
+},
+project: {
+  build(s) {
+    const us = C.ultrasonic(); us.position.copy(bb(10, 6)); s.add(us, 'us');
+    const tl = C.trafficLight(); tl.position.copy(bb(22, 2)); s.add(tl, 'tl');
+    const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
+    s.wires.push(wireTo(pin('D5'), bb(7, 6), WIRE.yellow, 13, 'D5'), wireTo(pin('D18'), bb(8, 7), WIRE.green, 13, 'D18'), wireTo(pin('D25'), bb(20, 4), WIRE.red, 14, 'D25'), wireTo(pin('D26'), bb(21, 5), WIRE.orange, 14, 'D26'), wireTo(pin('D33'), bb(22, 6), WIRE.green, 14, 'D33'), wireTo(pin('VIN'), bb(13, 5), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(14, 8), WIRE.navy, 12, 'GND'));
+    s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car' } ];
+    s.api.tl = (r, y, g) => s.refs.tl.userData.set(r, y, g);
+    s.api._dist = 40;
+    s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist <= 8 ? 46 : api._dist - 12;
+      s.refs.car.position.x = 96 - (46 - api._dist) * 1.1; } };
+  },
+  sim: api => {
+    let acc = 0;
+    return {
+      running: false,
+      start() { this.running = true; api.serial('Parking sensor live. Click the car to move it.'); },
+      stop() { this.running = false; api.tl(0, 0, 0); },
+      tick(dt) { if (!this.running) return; const d = api._dist;
+        api.tl(d < 10, d >= 10 && d < 30, d >= 30);
+        acc += dt; if (acc > .6) { acc = 0; api.serial(`${d.toFixed(1)} cm → ${d < 10 ? 'STOP' : d < 30 ? 'careful' : 'clear'}`); } },
+    };
+  },
+},
+};
