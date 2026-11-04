@@ -182,7 +182,7 @@ const SCH = {
 export function buildSchematic(id) {
   const spec = SCH[id];
   if (!spec) return null;
-  if(id==='blink')return{svg:`<svg class="sch" viewBox="0 0 380 112" role="img" aria-label="ESP32 GPIO26 through a 220 ohm resistor and LED to ground"><g class="board"><rect class="box" x="16" y="25" width="82" height="56" rx="7"/>${T(57,43,'ESP32','block-t')}${T(90,66,'GPIO26','pin-t','end')}</g>${W([[98,62],[170,62]])}<g class="sym" transform="translate(200 62)">${SYM.resistor('R1','220 Ω')}</g>${W([[230,62],[264,62]])}<g class="sym" transform="translate(294 62)">${SYM.led('D1','LED')}</g>${W([[324,62],[350,62],[350,69]])}<g class="sym" transform="translate(350 69)">${SYM.gnd()}</g></svg>`};
+  if(id==='blink')return{svg:`<svg class="sch" viewBox="0 0 380 112" role="img" aria-label="ESP32 GPIO26 · 220 Ω · LED · GND"><g class="board"><rect class="box" x="16" y="25" width="82" height="56" rx="7"/>${T(57,43,'ESP32','block-t')}${T(90,66,'GPIO26','pin-t','end')}</g><text class="pinval" data-pin="GPIO26" x="126" y="52"></text>${W([[98,62],[170,62]])}<g class="sym" transform="translate(200 62)">${SYM.resistor('R1','220 Ω')}</g>${W([[230,62],[264,62]])}<g class="sym" transform="translate(294 62)">${SYM.led('D1','LED')}</g>${W([[324,62],[350,62],[350,69]])}<g class="sym" transform="translate(350 69)">${SYM.gnd()}</g></svg>`};
   const P = spec.pads, g = [];
   const pinY = i => (P['p' + i] ? P['p' + i][1] : 62 + i * 42);
   const ys = spec.pins.map((_, i) => pinY(i));
