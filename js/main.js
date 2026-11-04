@@ -24,7 +24,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true 
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
-scene.background = null;
+scene.background = new THREE.Color(0xf6eddd);
 const camera = new THREE.PerspectiveCamera(30, 1, 1, 2000);
 
 const hemi = new THREE.HemisphereLight(0xfff4e0, 0xcbb894, 1.05); scene.add(hemi);
@@ -248,7 +248,7 @@ function frameScene(snap) {
   const ca = Math.abs(Math.cos(rig.az)), sa = Math.abs(Math.sin(rig.az));
   const halfW = (sz.x * ca + sz.z * sa) / 2;
   const halfH = (sz.y + (sz.x * sa + sz.z * ca) * .45) / 2;
-  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 1.0 : 0.92) + 10;
+  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 1.0 : 1.0) + 10;
   rig.tTarget.set(c.x, aspect < 1 ? Math.min(-2, c.y * .2 - 6) : Math.max(2, c.y * .55), c.z);
   rig.tDist = THREE.MathUtils.clamp(dist, 120, 700);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
@@ -372,6 +372,7 @@ function renderRail() {
       <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
     </button>`).join('') + `<span class="rail-arrow"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></span>`;
   rail.querySelectorAll('.lesson-card').forEach(c => c.onclick = () => loadLesson(+c.dataset.i));
+  requestAnimationFrame(() => rail.querySelector('.lesson-card.on')?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' }));
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
     const i = +img.dataset.thumb;
@@ -454,8 +455,11 @@ function renderNavs() {
   const tog = $('#sidebar .side-toggle');
   tog.onclick = () => {
     const sb = $('#sidebar'), on = sb.classList.toggle('expanded');
+    $('#app').classList.toggle('side-open', on);
     tog.innerHTML = on ? ICON.chevL : ICON.chevR;
     tog.setAttribute('aria-label', on ? 'Collapse sidebar' : 'Expand sidebar');
+    setTimeout(() => { resize(); frameScene(); }, 60);
+    setTimeout(() => { resize(); frameScene(); }, 350);
   };
 }
 
