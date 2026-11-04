@@ -774,7 +774,7 @@ function resize() {
 }
 addEventListener('resize', resize);
 new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); }).observe($('#stageWrap'));
-let rsT; addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => frameScene(), 250); });
+let rsT; addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { frameScene(); renderRail(); }, 250); });
 
 // ---------- boot ----------
 async function boot() {

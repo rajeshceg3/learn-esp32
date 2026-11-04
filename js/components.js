@@ -70,6 +70,7 @@ export function led5mm(color = 0xe8392e) {
   const body = cyl(2.5, 2.5, 5.5, ledBody(color), 0, 5.2, 0);
   const dome = new THREE.Mesh(new THREE.SphereGeometry(2.5, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), body.material);
   dome.position.y = 8; ink(body); g.add(body, dome);
+  g.add(ink(cyl(2.9,2.9,.65,body.material,0,2.65,0),0x4a2530,40));
   g.add(cyl(.35, .35, 8, MAT.pinMetal, -1.25, 0, 0, 6), cyl(.35, .35, 6.5, MAT.pinMetal, 1.25, -.6, 0, 6));
   g.userData.setLit = on => { body.material.emissiveIntensity = on ? 1.6 : 0; };
   g.userData.setColor = c => { body.material.color.set(c); body.material.emissive.set(c); };
@@ -77,7 +78,10 @@ export function led5mm(color = 0xe8392e) {
   return g;
 }
 export function rgbLed() {
-  const g = led5mm(0xffffff);
+  const g = led5mm(0xb84de3);
+  // A through-hole RGB LED has four legs: one common and three colour channels.
+  g.children.filter(o=>o.geometry?.type==='CylinderGeometry'&&o.geometry.parameters.radiusTop===.35).forEach(o=>o.removeFromParent());
+  [-1.9,-.63,.63,1.9].forEach((x,i)=>g.add(cyl(.28,.28,i===1?8.5:7, MAT.pinMetal,x,i===1?-.25:-1,0,6)));
   g.userData.setRGB = (r, gg, b) => { const c = new THREE.Color(r / 255, gg / 255, b / 255); g.userData.body.material.color.set(c); g.userData.body.material.emissive.set(c); g.userData.body.material.emissiveIntensity = (r + gg + b) > 12 ? 1.4 : 0; };
   return g;
 }
