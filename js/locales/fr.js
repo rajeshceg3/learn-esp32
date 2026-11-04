@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Sentir la force', heading: 'Sentir la force',
       lede: "La résistance du FSR change sous la pression. L’ESP32 lit le diviseur, déplace l’aiguille avec un servo et fait sonner un piézo.",
-      features: ["GPIO35 lit le diviseur FSR", "GPIO13 déplace l’aiguille du servo", "Cliquez sur PRESS PAD pour parcourir cinq niveaux"],
-      pinout: [["Diviseur FSR", "FSR sur 3V3 ; résistance de 10 kΩ entre signal et GND."], ["Servo · 50 Hz", "Alimentez le servo avec une source 5 V adaptée."], ["Avertisseur piézo", "Sonne si la mesure dépasse 3071."], ["Alimentations", "FSR sous 3,3 V ; servo sous 5 V. Reliez toutes les masses."]],
-      example: ["La pression réduit la résistance du FSR et augmente la tension du diviseur de 10 kΩ.", "Mesure relative de 0–4095, pas des grammes étalonnés.", "À 50 Hz et 12 bits, 205–410 pas donnent des impulsions d’environ 1–2 ms.", "La simulation parcourt cinq niveaux prédéfinis. Elle ne lance pas le code de l’éditeur."],
+      features: ["GPIO35 lit le diviseur FSR", "GPIO13 déplace l’aiguille du servo", "Maintenez PRESS PAD et glissez vers le bas pour appuyer plus fort"],
+      pinout: [["Diviseur FSR", "FSR sur 3V3 ; résistance de 10 kΩ entre signal et GND."], ["Servo · 50 Hz", "Alimentez le servo avec une source 5 V adaptée."], ["Avertisseur piézo", "Sonne une fois au-dessus de 3071 ; se réarme sous 2662."], ["Alimentations", "FSR sous 3,3 V ; servo sous 5 V. Reliez toutes les masses."]],
+      example: ["La pression réduit la résistance du FSR et augmente la tension du diviseur de 10 kΩ.", "Mesure relative de 0–4095, pas des grammes étalonnés.", "À 50 Hz et 12 bits, 205–410 pas donnent des impulsions d’environ 1–2 ms.", "La simulation suit la pression et garde le maximum jusqu’à réinitialiser la leçon. Elle ne lance pas le code de l’éditeur."],
       specs: [["ADC", "0–4095"], ["Diviseur FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Avertisseur piézo", "> 3071 / 4095"]],
     },
     project: {

@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Kraft spüren', heading: 'Kraft spüren',
       lede: "Der FSR ändert unter Druck seinen Widerstand. Der ESP32 liest den Spannungsteiler, bewegt den Zeiger per Servo und lässt einen Piezo ertönen.",
-      features: ["GPIO35 liest den FSR-Spannungsteiler", "GPIO13 bewegt den Servo-Zeiger", "Klicke PRESS PAD für fünf Druckstufen"],
-      pinout: [["FSR-Spannungsteiler", "FSR an 3V3; 10-kΩ-Widerstand vom Signal an GND."], ["Servo · 50 Hz", "Servo aus einer geeigneten 5-V-Quelle versorgen."], ["Piezo-Summer", "Tönt bei einem Messwert größer als 3071."], ["Versorgung", "FSR mit 3,3 V; Servo mit 5 V. Alle Massen verbinden."]],
-      example: ["Druck senkt den FSR-Widerstand und erhöht die Spannung am 10-kΩ-Teiler.", "Relativer Messwert von 0–4095, keine kalibrierten Gramm.", "Bei 50 Hz und 12 Bit ergeben 205–410 Schritte etwa 1–2 ms lange Pulse.", "Die Simulation wechselt zwischen fünf vorgegebenen Stufen. Sie führt den Editorcode nicht aus."],
+      features: ["GPIO35 liest den FSR-Spannungsteiler", "GPIO13 bewegt den Servo-Zeiger", "PRESS PAD halten und für mehr Druck nach unten ziehen"],
+      pinout: [["FSR-Spannungsteiler", "FSR an 3V3; 10-kΩ-Widerstand vom Signal an GND."], ["Servo · 50 Hz", "Servo aus einer geeigneten 5-V-Quelle versorgen."], ["Piezo-Summer", "Klingelt einmal über 3071; wird unter 2662 erneut bereit."], ["Versorgung", "FSR mit 3,3 V; Servo mit 5 V. Alle Massen verbinden."]],
+      example: ["Druck senkt den FSR-Widerstand und erhöht die Spannung am 10-kΩ-Teiler.", "Relativer Messwert von 0–4095, keine kalibrierten Gramm.", "Bei 50 Hz und 12 Bit ergeben 205–410 Schritte etwa 1–2 ms lange Pulse.", "Die Simulation folgt dem Druck und merkt den Höchstwert bis zum Neustart der Lektion. Sie führt den Editorcode nicht aus."],
       specs: [["ADC", "0–4095"], ["FSR-Spannungsteiler", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Piezo-Summer", "> 3071 / 4095"]],
     },
     project: {

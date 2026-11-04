@@ -446,12 +446,14 @@ void loop() {
 {
   id: 'force', num:15, title:'Feel the force', heading:'Test your strength',
   lede:'An FSR changes resistance under pressure. A voltage divider feeds GPIO35, a servo moves the meter needle, and a piezo sounds above the mark.',
-  features:[['wave','GPIO35 reads the FSR divider'],['gear','GPIO13 moves the servo needle'],['hand','Click PRESS PAD to cycle scripted pressure levels']],
-  pinout:[['GPIO35','FSR divider','FSR to 3V3, 10 kΩ resistor from signal to GND.','#1aa3a1'],['GPIO13','Servo signal','50 Hz pulses; servo power from a suitable 5 V supply.','#e8913a'],['GPIO19','Piezo buzzer','Sounds above 75% of the ADC range.','#6a4fa3'],['3V3 · VIN · GND','Supplies','FSR on 3.3 V; servo on 5 V. Join all grounds.','#d64a3a']],
-  example:['The 10 kΩ resistor pulls the divider down. Pressing lowers FSR resistance, raising the voltage.','<code>analogRead(35)</code> gives 0–4095 on the classic ESP32. This is a relative reading, not calibrated grams.','At 50 Hz and 12-bit resolution, 205–410 counts give about 1–2 ms servo pulses.','The scripted simulation cycles five pressure levels. The editor code is not executed.'],
+  features:[['wave','GPIO35 reads the FSR divider'],['gear','GPIO13 moves the servo needle'],['hand','Hold PRESS PAD, then drag down to press harder']],
+  pinout:[['GPIO35','FSR divider','FSR to 3V3, 10 kΩ resistor from signal to GND.','#1aa3a1'],['GPIO13','Servo signal','50 Hz pulses; servo power from a suitable 5 V supply.','#e8913a'],['GPIO19','Piezo buzzer','Rings once above 75%; rearms below 65%.','#6a4fa3'],['3V3 · VIN · GND','Supplies','FSR on 3.3 V; servo on 5 V. Join all grounds.','#d64a3a']],
+  example:['The 10 kΩ resistor pulls the divider down. Pressing lowers FSR resistance, raising the voltage.','<code>analogRead(35)</code> gives 0–4095 on the classic ESP32. This is a relative reading, not calibrated grams.','At 50 Hz and 12-bit resolution, 205–410 counts give about 1–2 ms servo pulses.','The scripted simulation follows held pressure and remembers the best reading until the lesson resets. The editor code is not executed.'],
   specs:[['ADC','0–4095'],['Divider','10 kΩ'],['Servo signal','GPIO13 · 50 Hz'],['Bell threshold','> 3071 / 4095']],
   code:
 `const int FSR = 35, SERVO = 13, BELL = 19;
+bool rung = false;
+unsigned long bellUntil = 0;
 
 void setup() {
   analogReadResolution(12);
@@ -463,7 +465,13 @@ void loop() {
   int pressure = analogRead(FSR);
   int duty = map(pressure, 0, 4095, 205, 410);
   ledcWrite(SERVO, duty);
-  ledcWriteTone(BELL, pressure > 3071 ? 880 : 0);
+  if (pressure > 3071 && !rung) {
+    ledcWriteTone(BELL, 1568); bellUntil = millis() + 400; rung = true;
+  }
+  if (pressure < 2662) rung = false;
+  if (bellUntil && (long)(millis() - bellUntil) >= 0) {
+    ledcWriteTone(BELL, 0); bellUntil = 0;
+  }
   delay(20);
 }`,
   sim: 'force',

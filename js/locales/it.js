@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Sentire la forza', heading: 'Sentire la forza',
       lede: "Il FSR cambia resistenza sotto pressione. L’ESP32 legge il partitore, muove la lancetta con un servo e fa suonare un piezo.",
-      features: ["GPIO35 legge il partitore FSR", "GPIO13 muove la lancetta del servo", "Clicca PRESS PAD per alternare cinque livelli"],
-      pinout: [["Partitore FSR", "FSR a 3V3; resistenza da 10 kΩ dal segnale a GND."], ["Servo · 50 Hz", "Alimenta il servo con una sorgente adatta da 5 V."], ["Cicalino piezo", "Suona se la lettura supera 3071."], ["Alimentazione", "FSR a 3,3 V; servo a 5 V. Unisci tutte le masse."]],
-      example: ["La pressione riduce la resistenza del FSR e alza la tensione del partitore da 10 kΩ.", "Lettura relativa 0–4095, non grammi calibrati.", "A 50 Hz e 12 bit, 205–410 conteggi danno impulsi di circa 1–2 ms.", "La simulazione alterna cinque livelli predefiniti. Non esegue il codice dell’editor."],
+      features: ["GPIO35 legge il partitore FSR", "GPIO13 muove la lancetta del servo", "Tieni premuto PRESS PAD e trascina in basso per premere di più"],
+      pinout: [["Partitore FSR", "FSR a 3V3; resistenza da 10 kΩ dal segnale a GND."], ["Servo · 50 Hz", "Alimenta il servo con una sorgente adatta da 5 V."], ["Cicalino piezo", "Suona una volta sopra 3071; si riarma sotto 2662."], ["Alimentazione", "FSR a 3,3 V; servo a 5 V. Unisci tutte le masse."]],
+      example: ["La pressione riduce la resistenza del FSR e alza la tensione del partitore da 10 kΩ.", "Lettura relativa 0–4095, non grammi calibrati.", "A 50 Hz e 12 bit, 205–410 conteggi danno impulsi di circa 1–2 ms.", "La simulazione segue la pressione e conserva il massimo fino al riavvio della lezione. Non esegue il codice dell’editor."],
       specs: [["ADC", "0–4095"], ["Partitore FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Cicalino piezo", "> 3071 / 4095"]],
     },
     project: {

@@ -71,11 +71,12 @@ canvas.addEventListener('pointerdown', e => {
     if (i >= 0) { releasePianoPointer(); heldPianoPointer = e.pointerId; cur.sim?.note?.(i, true); canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
   }
   sceneGroundPoint(e);
-  if(state.running&&cur.scene?.holdStart?.(ray,api)){heldScenePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);e.preventDefault();return;}
+  if(state.running&&cur.scene?.holdStart?.(ray,api,e)){heldScenePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);e.preventDefault();return;}
   if (cur.scene?.beginDrag && cur.scene.beginDrag(ray, e, canvas, camera)) { const pt=sceneGroundPoint(e); objectDrag={id:e.pointerId,start:pt,x:e.clientX,y:e.clientY,moved:0};canvas.setPointerCapture(e.pointerId);e.preventDefault();return; }
   drag = { x: e.clientX, y: e.clientY, tx: rig.tTarget.x, tz: rig.tTarget.z, moved: 0 }; canvas.setPointerCapture(e.pointerId);
 });
 canvas.addEventListener('pointermove', e => {
+  if(heldScenePointer===e.pointerId){cur.scene?.holdMove?.(e,api);return;}
   if(objectDrag?.id===e.pointerId){const pt=sceneGroundPoint(e);objectDrag.moved=Math.hypot(e.clientX-objectDrag.x,e.clientY-objectDrag.y);if(pt&&objectDrag.start)cur.scene.dragTo?.(pt.clone().sub(objectDrag.start),api);return;}
   if (drag) {
     const dx = e.clientX - drag.x, dy = e.clientY - drag.y; drag.moved += Math.abs(dx) + Math.abs(dy);
@@ -167,7 +168,9 @@ function rebuildTags() {
     const d = document.createElement('button'); d.className = 'tag';
     d.innerHTML = `<span class="tag-ic">${ICON[t.i || 'pins']}</span><span class="tag-tx"><b>${trTag(t.label)}</b>${t.d ? `<i>${trTagDesc(t.label, t.d)}</i>` : ''}</span>`;
     if (t.hold) {
-      d.addEventListener('pointerdown',e=>{if(!state.running)return;e.preventDefault();d.setPointerCapture(e.pointerId);cur.scene.tagHold?.(t.click,true,api);});
+      d.style.touchAction='none';
+      d.addEventListener('pointerdown',e=>{if(!state.running)return;e.preventDefault();d.setPointerCapture(e.pointerId);cur.scene.tagHold?.(t.click,true,api,e);});
+      d.addEventListener('pointermove',e=>{if(d.hasPointerCapture(e.pointerId))cur.scene.holdMove?.(e,api);});
       const end=()=>cur.scene.tagHold?.(t.click,false,api);
       d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);d.addEventListener('blur',end);
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});

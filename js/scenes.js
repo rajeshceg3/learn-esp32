@@ -358,14 +358,19 @@ force: {
     const r=C.resistor(10000);r.position.copy(bb(14,2));s.add(r,'resistor');
     const bz=C.buzzer();bz.position.copy(bb(9,2));s.add(bz,'buzzer');
     s.wires.push(wireTo(pin('D35'),V(46,1,19),WIRE.green,13,'D35'),wireTo(pin('3V3'),V(50,1,19),WIRE.red,15,'3V3'),wireTo(V(46,1,19),bb(13,2),WIRE.green,10),wireTo(bb(15,2),pin('GND'),WIRE.navy,12,'GND'),wireTo(pin('D13'),V(44,3,-24),WIRE.orange,16,'D13'),wireTo(pin('VIN'),V(47,3,-24),WIRE.red,17,'VIN'),wireTo(pin('GND'),V(41,3,-24),WIRE.navy,18,'GND'),wireTo(pin('D19'),bb(8,2),WIRE.purple,13,'D19'),wireTo(pin('GND'),bb(10,2),WIRE.navy,12,'GND'));
-    s.tags=[{at:V(44,34,-25),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(39,1,39),label:'PRESS PAD',click:'fsr',i:'hand',d:'Click to cycle pressure levels.'}];
+    s.tags=[{at:V(44,34,-25),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(39,1,39),label:'PRESS PAD',click:'fsr',hold:true,i:'hand',d:'Hold and drag down to press harder.'}];
     s.api.forceMeter=(v)=>{s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
-    s.onClick=(w,api)=>{if(w==='fsr')api._f=((api._f??0)+1)%5;};
+    let startY=0;
+    const begin=(api,e)=>{startY=e?.clientY??0;api._pressing=true;api._pressureTarget=.12;};
+    s.tagHold=(w,on,api,e)=>{if(on)begin(api,e);else{api._pressing=false;api._pressureTarget=0;}};
+    s.holdStart=(ray,api,e)=>{if(!ray.intersectObject(s.refs.fsr,true).length)return false;begin(api,e);return true;};
+    s.holdMove=(e,api)=>{api._pressureTarget=Math.max(.05,Math.min(1,.12+(e.clientY-startY)/100));};
+    s.holdEnd=api=>{api._pressing=false;api._pressureTarget=0;};
   },
-  sim:api=>{api._f=0;let acc=0,last=-1;return{running:false,
-    start(){this.running=true;api.serial('Scripted strength meter. Click PRESS PAD to cycle pressure.');},
-    stop(){this.running=false;api.forceMeter(0);api.tone(0);},
-    tick(dt){if(!this.running)return;const v=api._f/4;api.forceMeter(v);api.line?.(13);if(api._f!==last){last=api._f;api.tone(Math.round(v*4095)>3071?880:0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${Math.round(v*4095)} · bell ${Math.round(v*4095)>3071?'ON':'OFF'}`);}}
+  sim:api=>{api._pressureTarget=0;api._pressing=false;let value=0,best=0,acc=0,bell=0,rung=false;return{running:false,
+    start(){this.running=true;api.serial('Scripted strength meter. Hold PRESS PAD, drag down to press harder, release to reset pressure.');},
+    stop(){this.running=false;api._pressing=false;api._pressureTarget=0;value=0;bell=0;api.forceMeter(0);api.tone(0);},
+    tick(dt){if(!this.running)return;value+=(api._pressureTarget-value)*Math.min(dt*9,1);if(value<.001)value=0;best=Math.max(best,value);api.forceMeter(value);api.line?.(16);const raw=Math.round(value*4095);if(raw>3071&&!rung){api.tone(1568);bell=.4;rung=true;}if(raw<2662)rung=false;if(bell>0){bell-=dt;if(bell<=0)api.tone(0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${raw} · best ${Math.round(best*4095)}`);}}
   };},
 },
 project: {

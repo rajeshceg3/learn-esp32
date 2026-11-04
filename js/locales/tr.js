@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Kuvveti hisset', heading: 'Kuvveti hisset',
       lede: "FSR direnci basınçla değişir. ESP32 bölücüyü okur, servo ile ibreyi hareket ettirir ve piezoyu çalar.",
-      features: ["GPIO35 FSR bölücüsünü okur", "GPIO13 servo ibresini hareket ettirir", "Beş düzey arasında geçmek için PRESS PAD’e tıklayın"],
-      pinout: [["FSR bölücüsü", "FSR 3V3’e; sinyalden GND’ye 10 kΩ direnç."], ["Servo · 50 Hz", "Servoyu uygun bir 5 V kaynaktan besleyin."], ["Piezo ses üretici", "Okuma 3071’den büyükse çalar."], ["Besleme", "FSR 3,3 V; servo 5 V. Tüm toprakları birleştirin."]],
-      example: ["Basınç FSR direncini düşürür ve 10 kΩ bölücünün gerilimini yükseltir.", "0–4095 arası bağıl okuma; kalibre edilmiş gram değildir.", "50 Hz ve 12 bitte 205–410 sayım yaklaşık 1–2 ms darbeler verir.", "Simülasyon beş önceden belirlenmiş düzeyi dolaşır. Editör kodunu çalıştırmaz."],
+      features: ["GPIO35 FSR bölücüsünü okur", "GPIO13 servo ibresini hareket ettirir", "PRESS PAD’i tutup daha sert basmak için aşağı sürükleyin"],
+      pinout: [["FSR bölücüsü", "FSR 3V3’e; sinyalden GND’ye 10 kΩ direnç."], ["Servo · 50 Hz", "Servoyu uygun bir 5 V kaynaktan besleyin."], ["Piezo ses üretici", "3071 üzerinde bir kez çalar; 2662 altında yeniden kurulur."], ["Besleme", "FSR 3,3 V; servo 5 V. Tüm toprakları birleştirin."]],
+      example: ["Basınç FSR direncini düşürür ve 10 kΩ bölücünün gerilimini yükseltir.", "0–4095 arası bağıl okuma; kalibre edilmiş gram değildir.", "50 Hz ve 12 bitte 205–410 sayım yaklaşık 1–2 ms darbeler verir.", "Simülasyon basıncı izler ve ders sıfırlanana kadar en yüksek değeri tutar. Editör kodunu çalıştırmaz."],
       specs: [["ADC", "0–4095"], ["FSR bölücüsü", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Piezo ses üretici", "> 3071 / 4095"]],
     },
     project: {

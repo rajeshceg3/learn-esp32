@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Rasakan tekanan', heading: 'Rasakan tekanan',
       lede: "Hambatan FSR berubah saat ditekan. ESP32 membaca pembagi, menggerakkan jarum dengan servo, dan membunyikan piezo.",
-      features: ["GPIO35 membaca pembagi FSR", "GPIO13 menggerakkan jarum servo", "Klik PRESS PAD untuk menggilir lima tingkat"],
-      pinout: [["Pembagi FSR", "FSR ke 3V3; resistor 10 kΩ dari sinyal ke GND."], ["Servo · 50 Hz", "Beri daya servo dari sumber 5 V yang sesuai."], ["Buzzer piezo", "Berbunyi jika pembacaan lebih dari 3071."], ["Catu daya", "FSR pada 3,3 V; servo pada 5 V. Satukan semua ground."]],
-      example: ["Tekanan menurunkan hambatan FSR dan menaikkan tegangan pembagi 10 kΩ.", "Pembacaan relatif 0–4095, bukan gram terkalibrasi.", "Pada 50 Hz dan 12 bit, 205–410 hitungan menghasilkan pulsa sekitar 1–2 ms.", "Simulasi menggilir lima tingkat terprogram. Kode editor tidak dijalankan."],
+      features: ["GPIO35 membaca pembagi FSR", "GPIO13 menggerakkan jarum servo", "Tahan PRESS PAD lalu seret ke bawah untuk menekan lebih keras"],
+      pinout: [["Pembagi FSR", "FSR ke 3V3; resistor 10 kΩ dari sinyal ke GND."], ["Servo · 50 Hz", "Beri daya servo dari sumber 5 V yang sesuai."], ["Buzzer piezo", "Berbunyi sekali di atas 3071; aktif lagi di bawah 2662."], ["Catu daya", "FSR pada 3,3 V; servo pada 5 V. Satukan semua ground."]],
+      example: ["Tekanan menurunkan hambatan FSR dan menaikkan tegangan pembagi 10 kΩ.", "Pembacaan relatif 0–4095, bukan gram terkalibrasi.", "Pada 50 Hz dan 12 bit, 205–410 hitungan menghasilkan pulsa sekitar 1–2 ms.", "Simulasi mengikuti tekanan dan menyimpan nilai tertinggi sampai pelajaran diatur ulang. Kode editor tidak dijalankan."],
       specs: [["ADC", "0–4095"], ["Pembagi FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Buzzer piezo", "> 3071 / 4095"]],
     },
     project: {

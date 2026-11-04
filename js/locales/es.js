@@ -237,9 +237,9 @@ export default {
     force: {
       title: 'Sentir la fuerza', heading: 'Sentir la fuerza',
       lede: "El FSR cambia de resistencia al presionarlo. El ESP32 lee el divisor, mueve la aguja con un servo y hace sonar un piezo.",
-      features: ["GPIO35 lee el divisor FSR", "GPIO13 mueve la aguja del servo", "Haz clic en PRESS PAD para recorrer cinco niveles"],
-      pinout: [["Divisor FSR", "FSR a 3V3; resistencia de 10 kΩ de la señal a GND."], ["Servo · 50 Hz", "Alimenta el servo con una fuente adecuada de 5 V."], ["Zumbador piezoeléctrico", "Suena si la lectura es mayor que 3071."], ["Alimentación", "FSR a 3,3 V; servo a 5 V. Une todas las masas."]],
-      example: ["Al presionar baja la resistencia del FSR y sube la tensión del divisor de 10 kΩ.", "Lectura relativa de 0–4095, no gramos calibrados.", "A 50 Hz y 12 bits, 205–410 cuentas producen pulsos de aproximadamente 1–2 ms.", "La simulación recorre cinco niveles programados. No ejecuta el código del editor."],
+      features: ["GPIO35 lee el divisor FSR", "GPIO13 mueve la aguja del servo", "Mantén PRESS PAD y arrastra hacia abajo para apretar más"],
+      pinout: [["Divisor FSR", "FSR a 3V3; resistencia de 10 kΩ de la señal a GND."], ["Servo · 50 Hz", "Alimenta el servo con una fuente adecuada de 5 V."], ["Zumbador piezoeléctrico", "Suena una vez por encima de 3071; se rearma por debajo de 2662."], ["Alimentación", "FSR a 3,3 V; servo a 5 V. Une todas las masas."]],
+      example: ["Al presionar baja la resistencia del FSR y sube la tensión del divisor de 10 kΩ.", "Lectura relativa de 0–4095, no gramos calibrados.", "A 50 Hz y 12 bits, 205–410 cuentas producen pulsos de aproximadamente 1–2 ms.", "La simulación sigue la presión y recuerda el máximo hasta reiniciar la lección. No ejecuta el código del editor."],
       specs: [["ADC", "0–4095"], ["Divisor FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Zumbador piezoeléctrico", "> 3071 / 4095"]],
     },
     project: {
