@@ -6,14 +6,20 @@ const ledBody = c => new THREE.MeshStandardMaterial({ color: c, roughness: .25, 
 export const LED_COLORS = { red: 0xe8392e, yellow: 0xf2c23a, green: 0x3fbf6a, blue: 0x3d7be0, white: 0xf2efe6 };
 
 // ---------- breadboard ----------
-// 30-col x 10-row mini board, 2.54mm pitch; origin at board centre (top surface y=0)
-export const BB = { cols: 30, rows: 10, pitch: 2.54, w: 30 * 2.54 + 9, d: 10 * 2.54 + 9 };
+// Compact 24-column board uses logical columns 3..26 of the 30-column wiring grid.
+// Keep every mounted part and wire endpoint in the same physical location.
+export const BB = { cols: 24, rows: 10, pitch: 2.54, w: 24 * 2.54 + 9, d: 10 * 2.54 + 9 };
 export function bbHole(col, row) { // col 0..29, row 0..9 (0..4 top half, 5..9 bottom)
-  return new THREE.Vector3((col - (BB.cols - 1) / 2) * BB.pitch, 8.6, (row - (BB.rows - 1) / 2) * BB.pitch);
+  return new THREE.Vector3((col - 14.5) * BB.pitch, 8.6, (row - (BB.rows - 1) / 2) * BB.pitch);
 }
 export function breadboard() {
   const g = new THREE.Group();
   g.add(ink(box(BB.w, 8.5, BB.d, new THREE.MeshBasicMaterial({color:0xeee9de}), 0, 4.25, 0)));
+  // Dark extruded edge strokes retain their weight at oblique camera angles.
+  const em=new THREE.MeshBasicMaterial({color:0x333642});
+  for(const yy of[0,8.5])for(const zz of[-BB.d/2,BB.d/2]){const e=cyl(.16,.16,BB.w,em,0,yy,zz,6);e.rotation.z=Math.PI/2;g.add(e)}
+  for(const yy of[0,8.5])for(const xx of[-BB.w/2,BB.w/2]){const e=cyl(.16,.16,BB.d,em,xx,yy,0,6);e.rotation.x=Math.PI/2;g.add(e)}
+  for(const xx of[-BB.w/2,BB.w/2])for(const zz of[-BB.d/2,BB.d/2])g.add(cyl(.16,.16,8.5,em,xx,4.25,zz,6));
   // groove down the middle
   g.add(box(BB.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
   // holes texture
@@ -30,7 +36,7 @@ export function breadboard() {
   c.fillStyle='#c45f50';c.fillRect(8,7,496,1.4);c.fillRect(8,168,496,1.4);
   c.fillStyle='#66829c';c.fillRect(8,10,496,1.4);c.fillRect(8,164.5,496,1.4);
   c.fillStyle='#ded7c9';c.fillRect(7,84,498,8);c.strokeStyle='#b9b2a6';c.strokeRect(7,84,498,8);
-  c.fillStyle='#958c7d';c.font='7px monospace';c.textAlign='center';for(let i=0;i<30;i+=5)c.fillText(String(i+1),hx(i),161);
+  c.fillStyle='#958c7d';c.font='7px monospace';c.textAlign='center';for(let i=0;i<BB.cols;i+=5)c.fillText(String(i+4),hx(i),161);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
   const topM = new THREE.Mesh(new THREE.PlaneGeometry(BB.w, BB.d), new THREE.MeshBasicMaterial({ map: tex }));
   topM.rotation.x = -Math.PI / 2; topM.position.y = 8.62; topM.receiveShadow = true;

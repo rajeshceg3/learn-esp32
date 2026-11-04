@@ -464,7 +464,9 @@ function stopSim() {
 
 // ---------- lessons rail + thumbnails ----------
 let thumbRenderer = null;
+const thumbCache = new Map();
 function thumbFor(i) {
+  if(thumbCache.has(i))return thumbCache.get(i);
   if (!thumbRenderer) {
     thumbRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
     thumbRenderer.setSize(192, 192);
@@ -485,6 +487,7 @@ function thumbFor(i) {
   thumbRenderer.render(ts, cam);
   const url = thumbRenderer.domElement.toDataURL();
   m.traverse(o => { o.geometry?.dispose?.(); });
+  thumbCache.set(i,url);
   return url;
 }
 let thumbsDone = false;
@@ -519,7 +522,8 @@ function renderRail() {
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
     const i = +img.dataset.thumb;
-    if (!img.src) setTimeout(() => { img.src = thumbFor(i); }, 30 * i);
+    if(thumbCache.has(i))img.src=thumbCache.get(i);
+    else setTimeout(() => { const url=thumbFor(i);if(img.isConnected)img.src=url; }, 30*i);
   });
 }
 function updateProgress() {
