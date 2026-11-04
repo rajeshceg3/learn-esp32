@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: runtime-locales-20261104
+// Build: mobile-document-scroll-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -360,12 +360,11 @@ function hl(code) {
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   const L = trLesson(LESSONS[state.lesson]);
-  $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
+  $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
   document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
-    const wasOpen = $('#panel').classList.contains('open') && state.tab === b.dataset.tab;
     state.tab = b.dataset.tab;
-    if (innerWidth < 1024) $('#panel').classList.toggle('open', !wasOpen);
     renderPanel();
+    document.querySelector(`[data-tab="${state.tab}"]`)?.focus({preventScroll:true});
   });
   const body = $('#panelBody');
   const cardHead = (name) => `<div class="lesson-head"><div class="lesson-title">${name}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>`;
@@ -400,8 +399,12 @@ function renderPanel() {
     $('#btnFs').innerHTML = on ? ICON.collapse : ICON.expand;
   });
   $('#btnCodeFs').onclick = () => {
-    const c = $('#btnCodeFs').closest('.code-card'), on = c.classList.toggle('full');
+    const c = $('#btnCodeFs').closest('.code-card');
+    const on = !c.classList.contains('full');
+    if(on){ c._returnScroll = scrollY; const ph=document.createElement('div');ph.className='code-placeholder';ph.style.height=c.offsetHeight+'px';c.before(ph);c._placeholder=ph; }
+    c.classList.toggle('full',on);
     $('#btnCodeFs').innerHTML = on ? ICON.collapse : ICON.expand;
+    if(!on){ c._placeholder?.remove();scrollTo({top:c._returnScroll||0,behavior:'instant'});$('#btnCodeFs').focus({preventScroll:true}); }
   };
   const mountParams = () => {
     if (state.lesson !== 1) return;
