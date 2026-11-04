@@ -576,7 +576,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : .65; rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
@@ -599,9 +599,9 @@ function renderNavs() {
     ['lang', 'Language', 'globe', el => openSheet('language', null, el), 'EN'],
   ];
   $('#bottomnav').innerHTML = items.map(([k, a, ic, , badge]) =>
-    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
-  $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="${T('expand_sidebar')}" title="${T('expand_sidebar')}">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
-    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}" title="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
+    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge">${state.settings.lang.toUpperCase().slice(0,2)}</span>` : ''}</button>`).join('');
+  $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="${T('expand_sidebar')}" title="${T('expand_sidebar')}">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic, , badge]) =>
+    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}" title="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge">${state.settings.lang.toUpperCase().slice(0,2)}</span>` : ''}</button>`).join('');
   document.querySelectorAll('.nav-btn[data-k]').forEach(b => { const fn = items.find(x => x[0] === b.dataset.k)?.[3]; b.onclick = () => { document.querySelectorAll('.nav-btn.on').forEach(n=>n.classList.remove('on')); b.classList.add('on'); fn?.(b); }; });
   const tog = $('#sidebar .side-toggle');
   tog.onclick = () => {
@@ -709,7 +709,7 @@ async function setLang(code, opts = {}) {
   setLocaleData(localeCache[code] || null);
   applyLang(code);
   renderNavs();
-  const b = $('#langBadge'); if (b) b.textContent = code.toUpperCase().slice(0, 2);
+  document.querySelectorAll('.nav-badge').forEach(b=>b.textContent=code.toUpperCase().slice(0,2));
   loadLesson(state.lesson, true);   // rebuilds panel, rail, callout tags with translated text
   if (!opts.silent) openSheet('language');
 }

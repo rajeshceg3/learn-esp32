@@ -556,3 +556,17 @@ svg{display:block}
 /* Original etched circuit frame, kept behind all controls. */
 @media(min-width:1024px){.bg-grid{background:var(--bg)}.bg-traces{width:100%;height:100%;opacity:.8}.stage-corner{display:none}.stage-wrap{background-image:repeating-linear-gradient(26deg,transparent 0 25px,rgba(183,153,108,.21) 25px 26px),repeating-linear-gradient(136deg,transparent 0 28px,rgba(183,153,108,.21) 28px 29px)}.stage-vignette{box-shadow:inset 0 0 75px 30px var(--bg)}}
 @media(max-width:1023px){.bg-traces{display:none}}
+
+/* Desktop navigation uses an inset selection tile, not the phone underline. */
+@media(min-width:1024px){
+ .sidebar .nav-btn{color:#70747b;justify-content:center}
+ .sidebar .nav-btn:nth-child(-n+5){color:#2b3d62}
+ .sidebar .nav-btn svg{width:21px;height:21px;stroke-width:1.9}
+ .sidebar .nav-btn.on::before{top:50%;left:50%;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:5px;background:#d4ccbf;z-index:-1}
+ .sidebar .nav-btn[data-k=play] svg path{fill:currentColor;stroke:none}
+ .sidebar .side-toggle{min-height:38px;height:38px;width:36px;border:1px solid var(--line);border-radius:8px;background:#f0e6d7b3;margin-bottom:18px}
+ .sidebar .nav-badge{top:calc(50% + 3px);right:4px;font-size:7px;padding:1px 2px;line-height:1}
+ .sidebar.expanded .nav-btn{justify-content:flex-start}
+ .sidebar.expanded .nav-btn.on::before{width:calc(100% - 2px)}
+ .sidebar.expanded .nav-badge{right:7px}
+}
