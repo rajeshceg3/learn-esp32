@@ -29,7 +29,7 @@ builtin: {
   },
   sim: api => ({
     running: false,
-    start() { this.running = true; api.setBuiltin(true); api.serial('Sketch running: LED on GPIO2 → HIGH'); },
+    start() { this.running = true; api.setBuiltin(true); api.line?.(6); api.serial('Sketch running: LED on GPIO2 → HIGH'); },
     stop() { this.running = false; api.setBuiltin(false); },
     tick() {},
   }),
@@ -57,7 +57,7 @@ blink: {
     let t = 0, on = false, dur = [500, 500];
     return {
       running: false,
-      start() { this.running = true; api.serial('Uploading… done. Blinking on GPIO26.'); },
+      start() { this.running = true; t = 0; on = false; api.serial('Uploading… done. Blinking on GPIO26.'); },
       stop() { this.running = false; on = false; api.setLed(false); api.tag(null); api.flow('D26', false); },
       setTiming(a, b) { dur = [a, b]; },
       tick(dt) { if (!this.running) return; t += dt * 1000;
@@ -83,12 +83,12 @@ button: {
     api._pressed = false;
     const sim = {
       running: false,
-      start() { this.running = true; api.serial('Sketch running. Press the button.'); },
+      start() { this.running = true; api.line?.(10); api.serial('Sketch running. Press the button.'); },
       stop() { this.running = false; api.setLed(false); api.press(false); api._pressed = false; api.flow('D26', false); },
       tick() {},
     };
     api._press = p => { api._pressed = p; api.press(p);
-      if (sim.running) { api.setLed(p); api.flow('D26', p); api.serial(p ? 'GPIO27 reads LOW → LED on' : 'Released → HIGH → LED off'); } };
+      if (sim.running) { api.line?.(11); api.setLed(p); api.flow('D26', p); api.serial(p ? 'GPIO27 reads LOW → LED on' : 'Released → HIGH → LED off'); } };
     return sim;
   },
 },
@@ -113,7 +113,7 @@ pot: {
       start() { this.running = true; api.serial('Sketch running. Click the knob to turn it.'); },
       stop() { this.running = false; api.level(0); api.flow('D25', false); },
       tick(dt) { if (!this.running) return; const v = Math.min(1, api._v);
-        api.knob(-2.2 + v * 4.4); api.level(v); api.flow('D25', v > .02);
+        api.line?.(12); api.knob(-2.2 + v * 4.4); api.level(v); api.flow('D25', v > .02);
         acc += dt; if (acc > .8) { acc = 0; api.serial(`analogRead(GPIO34) = ${Math.round(v * 4095)}`); } },
     };
   },
@@ -129,11 +129,11 @@ rgb: {
     ];
     s.api.rgb = (r, g, b) => s.refs.rgb.userData.setRGB(r, g, b);
     const pal = [[255, 30, 110], [255, 190, 0], [0, 200, 150], [60, 120, 255], [170, 0, 255], [244, 240, 232]];
-    s.onClick = (w, api) => { if (w === 'rgb') { api._pi = ((api._pi ?? -1) + 1) % pal.length; api._c = pal[api._pi]; if (api._run) api.rgb(...api._c); } };
+    s.onClick = (w, api) => { if (w === 'rgb') { api._pi = ((api._pi ?? -1) + 1) % pal.length; api._c = pal[api._pi]; if (api._run) { api.line?.(10); api.rgb(...api._c); } } };
   },
   sim: api => ({
     running: false,
-    start() { this.running = true; api._run = true; api.rgb(...(api._c || [255, 30, 110])); api.serial('Mixing colours. Click the LED to change the palette.'); },
+    start() { this.running = true; api._run = true; api.line?.(10); api.rgb(...(api._c || [255, 30, 110])); api.serial('Mixing colours. Click the LED to change the palette.'); },
     stop() { this.running = false; api._run = false; api.rgb(0, 0, 0); },
     tick() {},
   }),
@@ -164,7 +164,7 @@ light: {
       running: false,
       start() { this.running = true; api.serial('Sketch running. Click the torch to move it closer.'); },
       stop() { this.running = false; api.setLed(false); },
-      tick(dt) { if (!this.running) return; const dark = !api._near; api.setLed(dark);
+      tick(dt) { if (!this.running) return; const dark = !api._near; api.line?.(12); api.setLed(dark);
         acc += dt; if (acc > 1) { acc = 0; api.serial(`light = ${dark ? 320 : 3300}${dark ? '  (dark → night light on)' : ''}`); } },
     };
   },
@@ -189,7 +189,7 @@ distance: {
       running: false,
       start() { this.running = true; api.serial('Measuring. Click the car to move it.'); },
       stop() { this.running = false; },
-      tick(dt) { if (!this.running) return; acc += dt; if (acc > .5) { acc = 0; api.serial(`${api._dist.toFixed(1)} cm`); } },
+      tick(dt) { if (!this.running) return; acc += dt; if (acc > .5) { acc = 0; api.line?.(14); api.serial(`${api._dist.toFixed(1)} cm`); } },
     };
   },
 },
@@ -207,7 +207,7 @@ sound: {
       stop() { this.running = false; api.tone(0); },
       tick(dt) { if (!this.running) return; wait -= dt * 1000;
         if (wait <= 0) { i = (i + 1) % seq.length; const [f, n] = seq[i];
-          api.tone(f); api.serial(f ? `ledcTone(GPIO19, ${f})  // ${n}` : 'ledcTone(GPIO19, 0)  // rest');
+          api.line?.(8+i); api.tone(f); api.serial(f ? `ledcTone(GPIO19, ${f})  // ${n}` : 'ledcTone(GPIO19, 0)  // rest');
           wait = f ? 400 : 600; } },
     };
   },
@@ -228,7 +228,7 @@ piano: {
     start() { this.running = true; api.serial('Tap the white keys.'); },
     stop() { this.running = false; api.tone(0); api.pressKey(-1, false); },
     note(i) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
-      api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);
+      api.line?.(13); api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);
       clearTimeout(this._t); this._t = setTimeout(() => { api.pressKey(-1, false); api.tone(0); }, 280); },
     tick() {},
   }),
@@ -251,7 +251,7 @@ motor: {
       running: false,
       start() { this.running = true; api.serial('Motor on GPIO27. Click it to change speed.'); },
       stop() { this.running = false; api.spin(0); api.flow('D27', false); },
-      tick(dt) { if (!this.running) return; api.spin(api._speed); api.tickMotor(dt); api.flow('D27', api._speed > 0); },
+      tick(dt) { if (!this.running) return; api.line?.(api._speed===0?12:api._speed<10?10:8); api.spin(api._speed); api.tickMotor(dt); api.flow('D27', api._speed > 0); },
     };
   },
 },
@@ -269,7 +269,7 @@ temp: {
       start() { this.running = true; api.serial('Reading the TMP36. Click it for a different room.'); },
       stop() { this.running = false; },
       tick(dt) { if (!this.running) return; acc += dt;
-        if (acc > .9) { acc = 0; const tc = temps[api._warm]; api.serial(`${tc.toFixed(1)} °C  (raw ${Math.round((tc / 100 + .5) / 3.3 * 4095)})`); } },
+        if (acc > .9) { acc = 0; api.line?.(11); const tc = temps[api._warm]; api.serial(`${tc.toFixed(1)} °C  (raw ${Math.round((tc / 100 + .5) / 3.3 * 4095)})`); } },
     };
   },
 },
@@ -288,7 +288,7 @@ servo: {
       start() { this.running = true; api.serial('Sweeping 0 → 180 → 0. Click the servo to change speed.'); },
       stop() { this.running = false; api.servo(0); },
       tick(dt) { if (!this.running) return; t += dt * rates[api._rate];
-        api.servo(-(Math.sin(t * 1.4) * .5 + .5) * Math.PI); },
+        api.line?.(Math.cos(t*1.4)>0?9:13); api.servo(-(Math.sin(t * 1.4) * .5 + .5) * Math.PI); },
     };
   },
 },
@@ -309,7 +309,7 @@ stepper: {
       running: false,
       start() { this.running = true; api.serial('Stepping… 2048 steps per turn. Click the motor to reverse.'); },
       stop() { this.running = false; },
-      tick(dt) { if (!this.running) return; a += dt * 2.2 * api._dir; api.stepper(a); },
+      tick(dt) { if (!this.running) return; a += dt * 2.2 * api._dir; api.line?.(12); api.stepper(a); },
     };
   },
 },
@@ -338,7 +338,7 @@ plant: {
       start() { this.running = true; api.serial('Reading the soil. Click the plant to water it.'); },
       stop() { this.running = false; api.oledDraw(c => { c.fillStyle = '#9fd8ff'; c.font = '10px monospace'; c.fillText('ESP32', 46, 34); }); },
       tick(dt) { if (!this.running) return; acc += dt;
-        if (acc > 1) { acc = 0; const m = levels[api._wet];
+        if (acc > 1) { acc = 0; api.line?.(12); const m = levels[api._wet];
           api.oledDraw(c => { c.fillStyle = '#9fd8ff'; c.font = 'bold 13px monospace'; c.fillText('SOIL ' + m + '%', 26, 26); c.font = '10px monospace'; c.fillText(face(m), 34, 46); });
           api.serial(`soil moisture = ${m}%`); } },
     };
@@ -359,7 +359,7 @@ force: {
       running: false,
       start() { this.running = true; api.serial('Press the pad (click it) and watch the bar.'); },
       stop() { this.running = false; api.bar(0); },
-      tick(dt) { if (!this.running) return; api.bar(api._f);
+      tick(dt) { if (!this.running) return; api.line?.(10+Math.min(2,api._f)); api.bar(api._f);
         acc += dt; if (acc > .9) { acc = 0; api.serial(`force = ${api._f * 850}`); } },
     };
   },
@@ -383,7 +383,7 @@ project: {
       start() { this.running = true; api.serial('Parking sensor live. Click the car to move it.'); },
       stop() { this.running = false; api.tl(0, 0, 0); },
       tick(dt) { if (!this.running) return; const d = api._dist;
-        api.tl(d < 10, d >= 10 && d < 30, d >= 30);
+        api.line?.(d<10?16:d<30?15:14); api.tl(d < 10, d >= 10 && d < 30, d >= 30);
         acc += dt; if (acc > .6) { acc = 0; api.serial(`${d.toFixed(1)} cm → ${d < 10 ? 'STOP' : d < 30 ? 'careful' : 'clear'}`); } },
     };
   },

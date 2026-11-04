@@ -32,6 +32,9 @@ const STR = {
   he: { basics: 'בסיס', lessons: 'שיעורים', tab_overview: 'סקירה', tab_pinout: 'פינים', tab_example: 'דוגמה', tab_specifications: 'מפרט', try_it: 'נסו בעצמכם', console_idle: 'מוניטור טורי — לחצו הפעלה.', uploading: 'מעלה…', stopped: 'הסקצ׳ נעצר.', copied: 'הועתק.', components: 'רכיבים', in_view: 'מוצגים', settings: 'הגדרות', language: 'שפה', ui_only: 'ממשק', set_language: 'שפה', set_language_d: 'שיעורים, תוויות ורכיבים', set_labels: 'תוויות', set_labels_d: 'כרטיסים ומצביעים סביב התצוגה התלת־ממדית', set_flow: 'זרימת זרם', set_flow_d: 'נקודות נעות ו־HIGH / LOW על החוטים', set_grid: 'רשת', set_grid_d: 'הרשת הקלה מתחת ללוח', set_turntable: 'צלחת מסתובבת', set_turntable_d: 'מסתובב רבע סיבוב במנוחה', set_sound: 'צליל', set_sound_d: 'להשמיע את הזמזם', set_motion: 'הפחתת תנועה', set_motion_d: 'מעברים כמעט מיידיים', reset_progress: 'איפוס התקדמות', progress_reset: 'ההתקדמות אופסה.', nav_home: 'בית', nav_lessons: 'שיעורים', nav_comp: 'רכיבים', nav_play: 'סימולטור', nav_settings: 'הגדרות', nav_lang: 'שפה', schematic: 'סכמה', schematic_none: 'אין מעגל בשיעור הזה.', set_schematic: 'סכמה', set_schematic_d: 'תרשים המעגל של השיעור הנוכחי', },
 };
 let cur = 'en';
+const EXTRA={"en": ["Serial monitor", "Running"], "es": ["Monitor serie", "En marcha"], "pt": ["Monitor serial", "Em execução"], "fr": ["Moniteur série", "En cours"], "de": ["Serieller Monitor", "Läuft"], "it": ["Monitor seriale", "In esecuzione"], "tr": ["Seri monitör", "Çalışıyor"], "id": ["Monitor serial", "Berjalan"], "zh": ["串口监视器", "运行中"], "zh-tw": ["序列埠監視器", "執行中"], "ja": ["シリアルモニタ", "実行中"], "ko": ["시리얼 모니터", "실행 중"], "hi": ["सीरियल मॉनिटर", "चल रहा है"], "he": ["מוניטור טורי", "פועל"]};
+for(const [c,[serial_monitor,running]] of Object.entries(EXTRA)) Object.assign(STR[c],{serial_monitor,running});
+
 export const currentLang = () => cur;
 export function T(key) { return (STR[cur] && STR[cur][key]) || STR.en[key] || key; }
 export function applyLang(code) {

@@ -1,4 +1,5 @@
-// Learn ESP32 — app shell. Original code.
+// Learn ESP32 - app shell. Original code.
+// Build: compact-code-mobile-depth-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -12,7 +13,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const state = {
   lesson: 0, tab: 'overview', running: false, sim: null, scene: null,
   settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, schematic: false, lang: 'en' },
-  done: new Set(), sheet: null, startedAt: 0,
+  done: new Set(), sheet: null, startedAt: 0, timing: [500, 500],
 };
 try { Object.assign(state.settings, JSON.parse(localStorage.getItem('esp32:settings') || '{}'));
   (JSON.parse(localStorage.getItem('esp32:done') || '[]')).forEach(i => state.done.add(i)); } catch {}
@@ -100,7 +101,7 @@ const api = {
   line: n => {
     document.querySelectorAll('#panelBody .code-line').forEach((el, i) => {
       const active = i + 1 === n; el.classList.toggle('active', active);
-      if (active) { const pre = el.closest('.code-pre'); if (pre && (el.offsetTop < pre.scrollTop || el.offsetTop + el.offsetHeight > pre.scrollTop + pre.clientHeight)) pre.scrollTop = el.offsetTop - pre.offsetTop - pre.clientHeight / 2; }
+      if (active) { const pre = el.closest('.code-pre'); if (pre && (el.offsetTop < pre.scrollTop || el.offsetTop + el.offsetHeight > pre.scrollTop + pre.clientHeight)) pre.scrollTop = el.offsetTop - pre.clientHeight / 2; }
     });
   },
   tag: t => { const el = $('#runTag'); if (!el) return; if (t) { el.textContent = trTag(t); el.style.display = 'flex'; } else el.style.display = 'none'; },
@@ -263,8 +264,8 @@ function loadLesson(i, keepTab) {
   schPanel.setLesson(LESSONS[i].id, trLesson(LESSONS[i]).heading);
   $('#panel').classList.remove('open');
   stopSim();
-  state.lesson = i;
-  rig.tAz = i === 0 ? 1.0 : -.62;
+  state.lesson = i; state.timing = [500, 500];
+  rig.tAz = i === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -356,15 +357,17 @@ function renderPanel() {
     renderPanel();
   });
   const body = $('#panelBody');
+  const cardHead = (name) => `<div class="lesson-head"><div class="lesson-title">${name}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>`;
+  const code = () => { let i=0; return state.lesson === 1 ? L.code.replace(/delay\(500\)/g, () => `delay(${state.timing[i++]})`) : L.code; };
   let h = '';
   if (state.tab === 'overview') {
     h = `<div class="lesson-head"><div class="lesson-title">${L.heading.toUpperCase()}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
       <p class="lesson-lede">${L.lede}</p>
       <ul class="feature-list">${L.features.map(([ic, tx]) => `<li><span class="fi">${ICON[ic]}</span><span>${tx}</span></li>`).join('')}</ul>`;
   } else if (state.tab === 'pinout') {
-    h = `<div class="pinout">${L.pinout.map(([pin, name, desc, c]) => `<div class="pin-row"><span class="pin-chip" style="background:${c}">${pin}</span><span class="pin-name">${name}</span><span class="pin-desc">${desc}</span></div>`).join('')}</div>`;
+    h = cardHead(T('tab_pinout')) + `<div class="pinout">${L.pinout.map(([pin, name, desc, c]) => `<div class="pin-row"><span class="pin-chip" style="background:${c}">${pin}</span><span class="pin-name">${name}</span><span class="pin-desc">${desc}</span></div>`).join('')}</div>`;
   } else if (state.tab === 'example') {
-    h = `<div class="example">${L.example.map(p => `<p>${p}</p>`).join('')}</div>`;
+    h = cardHead(T('tab_example')) + `<div class="example">${L.example.map(p => `<p>${p}</p>`).join('')}</div>`;
   } else {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
@@ -376,8 +379,9 @@ function renderPanel() {
       <button class="icon-btn" id="btnCopy" title="Copy code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
       <button class="icon-btn primary" id="btnRun" title="Run sketch"><svg viewBox="0 0 24 24" fill="currentColor" id="runIcon"><path d="M8 5v14l11-7z"/></svg></button>
     </span></div>
-    <div class="code-pre">${hl(L.code)}</div>
-    <div class="console" id="console"><div class="c-line c-sys">${T('console_idle')}</div></div>
+    <div class="code-pre">${hl(code())}</div>
+    <div class="console-head" ${state.running ? '' : 'hidden'}><span class="serial-dot"></span><b>${T('serial_monitor')}</b><span id="serialStatus">${T('running')}</span><button id="consoleStop" class="icon-btn" title="Stop sketch">×</button></div>
+    <div class="console" id="console" ${state.running ? '' : 'hidden'}></div>
   </div>`;
   body.innerHTML = h;
   $('#btnFs') && ($('#btnFs').onclick = () => {
@@ -388,7 +392,19 @@ function renderPanel() {
     const c = $('#btnCodeFs').closest('.code-card'), on = c.classList.toggle('full');
     $('#btnCodeFs').innerHTML = on ? ICON.collapse : ICON.expand;
   };
-  $('#btnCopy').onclick = () => { navigator.clipboard?.writeText(L.code); log(T('copied'), 'sys'); };
+  const mountParams = () => {
+    if (state.lesson !== 1) return;
+    const lines = [...document.querySelectorAll('.code-pre .code-line')].filter(e=>/delay\(/.test(e.textContent));
+    lines.forEach((el, i) => {
+      const num = el.querySelector('.tok-num'); if (!num) return;
+      const bt = document.createElement('button'); bt.className='code-param'; bt.textContent=state.timing[i]; bt.title='Change delay (ms)'; num.replaceWith(bt);
+      bt.onclick=()=>{ const choices=[100,200,500,900,1000,1500]; state.timing[i]=choices[(choices.indexOf(state.timing[i])+1)%choices.length]; bt.textContent=state.timing[i]; cur.sim?.setTiming?.(...state.timing); };
+    });
+  };
+  mountParams();
+  $('#consoleStop').onclick=()=>stopSim();
+  if(state.running) $('#runIcon').innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
+  $('#btnCopy').onclick = () => { navigator.clipboard?.writeText(code()); log(T('copied'), 'sys'); };
   $('#btnRun').onclick = () => state.running ? stopSim() : startSim();
 }
 function log(t, cls = '') {
@@ -402,6 +418,10 @@ function log(t, cls = '') {
 function startSim() {
   if (state.running) return;
   state.running = true; api.line?.(0); state.startedAt = performance.now();
+  document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML='';
+  $('#serialStatus').textContent=T('running');
+  $('#btnRun').classList.add('is-running');
+  cur.sim?.setTiming?.(...state.timing);
   $('#runIcon').innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
   log(T('uploading'), 'sys');
   cur.sim.start();
@@ -412,6 +432,8 @@ function startSim() {
 function stopSim() {
   if (!state.running) return;
   state.running = false; api.line?.(0);
+  $('#btnRun')?.classList.remove('is-running');
+  if ($('#serialStatus')) $('#serialStatus').textContent=T('stopped');
   const ic = $('#runIcon'); if (ic) ic.innerHTML = '<path d="M8 5v14l11-7z"/>';
   cur.sim?.stop(); tone(0);
   log(T('stopped'), 'sys');
@@ -431,9 +453,10 @@ function thumbFor(i) {
   let m;
   if (LESSONS[i].id === 'board') { const b = buildBoard(); m = b.group; m.scale.setScalar(.8); }
   else m = { led: C.led5mm(0xe8392e), btn: C.pushButton(), pot: C.potentiometer(), rgb: C.rgbLed(), ldr: C.ldr(), us: C.ultrasonic(), bz: C.buzzer(), keys: C.pianoKeys(8), motor: C.dcMotor(), tmp: C.tmp36(), servo: C.servo(), stepper: C.stepper(), plant: (() => { const p = new THREE.Group(); p.add(cyl(8, 6.4, 9, new THREE.MeshStandardMaterial({ color: 0xb96b45 }), 0, 4.5, 0)); const l = new THREE.Mesh(new THREE.SphereGeometry(3.4, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4d9a51 })); l.scale.set(1, 2.2, .5); l.position.y = 13; p.add(l); return p; })(), fsr: C.fsr(), tl: C.trafficLight() }[hero];
+  m.traverse(o => { if(o.isMesh && o.geometry) { const edge = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,55),new THREE.LineBasicMaterial({color:0x19243c}));o.add(edge); } });
   ts.add(m);
   const bb6 = new THREE.Box3().setFromObject(m); const c6 = bb6.getCenter(new THREE.Vector3()); const sz = bb6.getSize(new THREE.Vector3()).length();
-  const cam = new THREE.PerspectiveCamera(30, 300 / 128, 1, 2000);
+  const cam = new THREE.PerspectiveCamera(26, 300 / 128, 1, 2000);
   cam.position.set(c6.x + sz * .7, c6.y + sz * .75, c6.z + sz * .9); cam.lookAt(c6);
   thumbRenderer.render(ts, cam);
   const url = thumbRenderer.domElement.toDataURL();
@@ -480,10 +503,10 @@ const ICON = {
   bolt: I('<path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>'),
   plug: I('<path d="M9 7V3M15 7V3M7 7h10v4a5 5 0 0 1-10 0V7zM12 16v5"/>'),
   usb: I('<circle cx="12" cy="5" r="2.4"/><path d="M12 7.5V20M12 11l4-2.5M12 14l-4-2.5"/><circle cx="16.5" cy="6.5" r="1"/><path d="M7 6.5h2v2H7z"/>'),
-  home: I('<path d="M3 11l9-8 9 8M5 10v10h14V10"/>'),
+  home: I('<path d="M2 11L12 2l10 9h-3v10h-5v-7h-4v7H5V11z"/>', true),
   lessons: I('<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5V5.5"/><path d="M8 7h8M8 10h6"/>'),
   comp: I('<rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/>'),
-  play: I('<path d="M8 5v14l11-7z"/>', true),
+  play: I('<rect x="2" y="4" width="20" height="16" rx="1"/><path d="M10 8v8l6-4z"/>'),
   settings: I('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9V9c.3.8 1 1.4 1.9 1.4h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   globe: I('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>'),
   reset: I('<path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/>'),
@@ -509,7 +532,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${a}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : -.62; rig.tPol = 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
@@ -551,7 +574,7 @@ function openSheet(kind, data, anchor) {
   if (state.sheet === kind && !data) { sh.classList.remove('open'); state.sheet = null; return; }
   state.sheet = kind;
   if (kind === 'components') {
-    title.textContent = T('components'); sub.textContent = `${12 + state.lesson} ${T('in_view')}`;
+    title.textContent = T('components'); sub.textContent = `12 ${T('in_view')}`;
     const comps = [
       ['Breadboard', 'Holes in each short row of five are connected underneath.', 'comp'],
       ['220 Ω resistor', 'Limits the current flowing through the circuit.', 'res'],
@@ -598,7 +621,7 @@ function openSheet(kind, data, anchor) {
     title.textContent = data.title.toUpperCase(); sub.textContent = '';
     body.innerHTML = `<div class="comp-row"><span class="comp-ic">${ICON.chip}</span><div><div class="comp-desc">${data.desc}</div></div></div>`;
   }
-  sh.classList.add('open');
+  body.scrollTop = 0; sh.classList.add('open');
   if (innerWidth >= 1024) {
     // Keep popovers inside both the viewport and the clipped main container.
     const parentTop = sh.offsetParent ? sh.offsetParent.getBoundingClientRect().top : 0;

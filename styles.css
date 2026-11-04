@@ -383,3 +383,30 @@ svg{display:block}
 @media(min-width:1024px){
  .topbar{grid-row:1;grid-column:2;padding-left:24px}
 }
+/* Parameter chips and a serial section that appears only during a simulation. */
+[hidden]{display:none!important}
+.code-param{color:var(--fn);font:inherit;border-bottom:1px dashed var(--teal);border-radius:3px;background:rgba(26,163,161,.08);cursor:pointer;padding:0 2px;line-height:inherit}
+.code-param:hover{background:rgba(26,163,161,.2)}
+.console-head{display:flex;align-items:center;gap:6px;padding:3px 9px;background:#efe4d2;border-top:1px solid var(--line);font-family:var(--cond);font-size:10px;letter-spacing:.07em}
+.console-head b{text-transform:uppercase}
+.console-head .icon-btn{margin-inline-start:auto;width:20px;height:18px;font-size:16px;border:0;background:transparent}
+.serial-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
+.console{height:64px;font-size:10px;padding:4px 10px}
+.icon-btn.is-running{background:#ce5c3c;border-color:#ce5c3c}
+@media(min-width:1024px){
+ .tab-card{min-height:276px}
+ .code-pre{max-height:152px;font-size:12px}
+ .code-head{padding:6px 8px;height:44px}
+ .code-card{border-radius:9px}
+}
+@media(max-width:1023px){
+ .topbar{min-height:128px}
+ .stage-wrap{margin-top:6px}
+ .toolbar{height:40px;padding:3px 7px;border-radius:9px;gap:5px;bottom:7px}
+ .tool-btn{width:31px;height:30px;border-radius:5px}
+ .tool-btn svg{width:18px;height:18px}
+}
+@media(min-width:1024px){.tag:not(.mini){width:200px;max-width:200px;flex-shrink:0}.tag-ic{border:0;background:transparent;color:var(--navy);width:23px}.tag-ic svg{width:20px;height:20px}}
+@media(max-width:1023px){.nav-btn svg{width:23px;height:23px;stroke-width:2.2}.nav-btn.on svg{fill:var(--navy)}.progress-pill{flex-wrap:wrap}.progress-pill .progress-bar{order:4;flex:1;width:140px}.progress-pill .progress-count{order:5}}
+@media(max-width:1023px){.sheet{left:10px;right:10px;bottom:18px;max-height:90%;border:1px solid var(--line);border-radius:13px}.sheet-body{padding:6px 16px 14px}.comp-row{border-bottom:0;padding-top:8px;padding-bottom:8px}.comp-name{font-size:15px}.comp-desc{font-size:14px}}
+@media(max-width:1023px){.sheet:not(.open){visibility:hidden}.sheet.open{visibility:visible}}

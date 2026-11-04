@@ -1,6 +1,6 @@
 // Learn ESP32 — breadboard, circuit components, wires. Original code.
 import * as THREE from 'three';
-import { MAT, box, cyl } from './scene.js';
+import { MAT, box, cyl, ink } from './scene.js';
 
 const ledBody = c => new THREE.MeshStandardMaterial({ color: c, roughness: .25, transparent: true, opacity: .92, emissive: c, emissiveIntensity: 0 });
 export const LED_COLORS = { red: 0xe8392e, yellow: 0xf2c23a, green: 0x3fbf6a, blue: 0x3d7be0, white: 0xf2efe6 };
@@ -13,7 +13,7 @@ export function bbHole(col, row) { // col 0..29, row 0..9 (0..4 top half, 5..9 b
 }
 export function breadboard() {
   const g = new THREE.Group();
-  g.add(box(BB.w, 8.5, BB.d, MAT.bread, 0, 4.25, 0));
+  g.add(ink(box(BB.w, 8.5, BB.d, MAT.bread, 0, 4.25, 0)));
   // groove down the middle
   g.add(box(BB.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
   // holes texture
@@ -57,7 +57,7 @@ export function led5mm(color = 0xe8392e) {
   const g = new THREE.Group();
   const body = cyl(2.5, 2.5, 5.5, ledBody(color), 0, 5.2, 0);
   const dome = new THREE.Mesh(new THREE.SphereGeometry(2.5, 18, 12, 0, Math.PI * 2, 0, Math.PI / 2), body.material);
-  dome.position.y = 8; g.add(body, dome);
+  dome.position.y = 8; ink(body); g.add(body, dome);
   g.add(cyl(.35, .35, 8, MAT.pinMetal, -1.25, 0, 0, 6), cyl(.35, .35, 6.5, MAT.pinMetal, 1.25, -.6, 0, 6));
   g.userData.setLit = on => { body.material.emissiveIntensity = on ? 1.6 : 0; };
   g.userData.setColor = c => { body.material.color.set(c); body.material.emissive.set(c); };
