@@ -259,18 +259,18 @@ motor: {
 temp: {
   build(s) {
     const t=C.tmp36();t.position.copy(bb(14,2));s.add(t,'tmp');
-    const dryer=C.heatGun();dryer.position.set(91,0,7);s.add(dryer,'heat');
+    const dryer=C.heatGun();dryer.position.set(82,0,7);s.add(dryer,'heat');
     const fan=C.coolingFan();fan.position.set(65,0,-23);s.add(fan,'fan');
     const tr=C.npn();tr.position.copy(bb(20,2));s.add(tr,'npn');
     const r=C.resistor(1000);r.position.copy(bb(18,2));s.add(r,'resistor');
     const diode=new THREE.Group();diode.add(cyl(.3,.3,14,MAT.pinMetal,0,0,0,6));const body=box(2,5,2,MAT.chip,0,0,0);diode.add(body,box(2.1,.7,2.1,MAT.metal,0,1.4,0));diode.rotation.z=Math.PI/2;diode.position.set(65,4,-23);s.add(diode,'diode');
     s.wires.push(wireTo(pin('D32'),bb(14,4),WIRE.green,13,'D32'),wireTo(pin('3V3'),bb(11,1),WIRE.red,15,'3V3'),wireTo(pin('GND'),bb(17,1),WIRE.navy,12,'GND'),wireTo(pin('D27'),bb(17,2),WIRE.orange,15,'D27'),wireTo(pin('VIN'),V(63,3,-23),WIRE.red,16,'VIN'),wireTo(bb(21,2),V(67,3,-23),WIRE.navy,13),wireTo(bb(22,3),bb(17,1),WIRE.navy,8));
-    s.tags=[{at:pin('D32'),label:'GPIO32 · ADC',i:'wave',d:'Reads the sensor voltage.'},{at:bb(14,2).add(V(0,8,0)),label:'TMP36',i:'info',d:'Outputs 10 mV per °C.'},{at:V(65,29,-23),label:'FAN',i:'gear',d:'GPIO27 turns it on above 30 °C.'},{at:V(103,5,20),label:'HEAT',click:'heat',i:'bolt',d:'Click to switch the scripted dryer on or off.'}];
+    s.tags=[{at:pin('D32'),label:'GPIO32 · ADC',i:'wave',d:'Reads the sensor voltage.'},{at:bb(14,2).add(V(0,8,0)),label:'TMP36',i:'info',d:'Outputs 10 mV per °C.'},{at:V(65,29,-23),label:'FAN',i:'gear',d:'GPIO27 turns it on above 30 °C.'},{at:V(90,5,20),label:'HEAT',click:'heat',i:'bolt',d:'Click to switch the scripted dryer on or off.'}];
     s.api.thermalFan=(dt,on)=>{s.refs.fan.userData.tick(dt,on);};
     s.onClick=(w,api)=>{if(w==='heat')api._heat=!api._heat;};
-    let dragStartX=91;
+    let dragStartX=82;
     s.beginDrag=(ray)=>{if(!ray.intersectObject(s.refs.heat,true).length)return false;dragStartX=s.refs.heat.position.x;return true;};
-    s.dragTo=(delta,api)=>{const x=Math.max(66,Math.min(91,dragStartX+delta.x));s.refs.heat.position.x=x;api._heatDistance=5+(x-66)/25*55;};
+    s.dragTo=(delta,api)=>{const x=Math.max(66,Math.min(82,dragStartX+delta.x));s.refs.heat.position.x=x;api._heatDistance=5+(x-66)/16*55;s.tags[3].at.x=x+8;};
   },
   sim: api=>{
     api._heat=false;api._heatDistance=60;let temp=24,acc=0,fan=false;
