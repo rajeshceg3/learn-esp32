@@ -1,6 +1,7 @@
 // Traditional Chinese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': '檯燈',
     'BUILT-IN LED': '內建 LED', 'RESISTOR': '電阻', 'BUTTON': '按鈕', 'POT': '電位器',
     'BUZZER': '蜂鳴器', 'MOTOR': '馬達', 'SERVO': '伺服馬達', 'NIGHT LIGHT': '夜燈',
     'LED BAR': 'LED 燈條', 'RGB LED': 'RGB LED', 'PRESS PAD': '按壓墊', 'TORCH': '手電筒',

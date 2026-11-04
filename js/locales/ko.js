@@ -1,6 +1,7 @@
 // Korean — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': '램프',
     'BUILT-IN LED': '내장 LED', 'RESISTOR': '저항', 'BUTTON': '버튼', 'POT': '가변저항',
     'BUZZER': '부저', 'MOTOR': '모터', 'SERVO': '서보', 'NIGHT LIGHT': '무드등',
     'LED BAR': 'LED 바', 'RGB LED': 'RGB LED', 'PRESS PAD': '압력 패드', 'TORCH': '손전등',

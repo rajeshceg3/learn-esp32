@@ -1,6 +1,7 @@
 // Turkish — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LAMBA',
     'BUILT-IN LED': 'YERLEŞİK LED', 'RESISTOR': 'DİRENÇ', 'BUTTON': 'BUTON', 'POT': 'POTANSİYOMETRE',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'GECE LAMBASI',
     'LED BAR': 'LED ÇUBUĞU', 'RGB LED': 'RGB LED', 'PRESS PAD': 'BASINÇ PEDİ', 'TORCH': 'EL FENERİ',

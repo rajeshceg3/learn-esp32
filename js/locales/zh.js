@@ -1,6 +1,7 @@
 // Simplified Chinese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': '台灯',
     'BUILT-IN LED': '板载 LED', 'RESISTOR': '电阻', 'BUTTON': '按钮', 'POT': '电位器',
     'BUZZER': '蜂鸣器', 'MOTOR': '电机', 'SERVO': '舵机', 'NIGHT LIGHT': '夜灯',
     'LED BAR': 'LED 灯条', 'RGB LED': 'RGB LED', 'PRESS PAD': '按压垫', 'TORCH': '手电筒',

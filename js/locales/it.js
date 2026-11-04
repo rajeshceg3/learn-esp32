@@ -1,6 +1,7 @@
 // Italian — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LAMPADA',
     'BUILT-IN LED': 'LED INTEGRATO', 'RESISTOR': 'RESISTORE', 'BUTTON': 'PULSANTE', 'POT': 'POTENZIOMETRO',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTORE', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'LUCE NOTTURNA',
     'LED BAR': 'BARRA LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'PAD DI PRESSIONE', 'TORCH': 'TORCIA',

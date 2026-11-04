@@ -152,7 +152,7 @@ void loop() {
 {
   id: 'light', num: 6, title: 'Sense light', heading: 'Sense light',
   lede: 'A light-dependent resistor conducts better the more light falls on it. Paired with a fixed resistor, it turns brightness into a voltage the ESP32 can read.',
-  features: [['wave', 'Voltage divider into GPIO35'], ['bulb', 'A night light that switches itself'], ['hand', 'Drag the torch closer and further']],
+  features: [['wave', 'Voltage divider into GPIO35'], ['bulb', 'A night light that switches itself'], ['hand', 'Click the lamp to move it closer or further']],
   pinout: [['GPIO35', 'Divider midpoint', 'Reads 0–4095 as light changes.', '#1aa3a1'], ['GPIO26', 'Night-light LED', 'Comes on when it gets dark.', '#2a56a3'], ['3V3 · GND', 'Divider ends', 'LDR on top, 10 kΩ below.', '#d64a3a']],
   example: [
     'Bright light: LDR resistance falls, the midpoint voltage rises.',

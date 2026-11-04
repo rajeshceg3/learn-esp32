@@ -1,6 +1,7 @@
 // Hebrew — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'מנורה',
     'BUILT-IN LED': 'LED מובנה', 'RESISTOR': 'נגד', 'BUTTON': 'כפתור', 'POT': 'פוטנציומטר',
     'BUZZER': 'זמזם', 'MOTOR': 'מנוע', 'SERVO': 'סרוו', 'NIGHT LIGHT': 'אור לילה',
     'LED BAR': 'שורת LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'משטח לחיצה', 'TORCH': 'פנס',

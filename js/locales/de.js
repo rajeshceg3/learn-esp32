@@ -1,6 +1,7 @@
 // German — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LAMPE',
     'BUILT-IN LED': 'ONBOARD-LED', 'RESISTOR': 'WIDERSTAND', 'BUTTON': 'TASTER', 'POT': 'POTI',
     'BUZZER': 'SUMMER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'NACHTLICHT',
     'LED BAR': 'LED-LEISTE', 'RGB LED': 'RGB-LED', 'PRESS PAD': 'DRUCKPAD', 'TORCH': 'TASCHENLAMPE',

@@ -1,6 +1,7 @@
 // Japanese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'ランプ',
     'BUILT-IN LED': '内蔵 LED', 'RESISTOR': '抵抗', 'BUTTON': 'ボタン', 'POT': '可変抵抗',
     'BUZZER': 'ブザー', 'MOTOR': 'モーター', 'SERVO': 'サーボ', 'NIGHT LIGHT': '常夜灯',
     'LED BAR': 'LED バー', 'RGB LED': 'RGB LED', 'PRESS PAD': 'プレスパッド', 'TORCH': '懐中電灯',

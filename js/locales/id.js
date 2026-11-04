@@ -1,6 +1,7 @@
 // Indonesian — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LAMPU',
     'BUILT-IN LED': 'LED INTERNAL', 'RESISTOR': 'RESISTOR', 'BUTTON': 'TOMBOL', 'POT': 'POTENSIOMETER',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'LAMPU TIDUR',
     'LED BAR': 'BARISAN LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'BANTALAN TEKAN', 'TORCH': 'SENTER',

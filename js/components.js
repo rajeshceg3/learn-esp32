@@ -118,6 +118,16 @@ export function potentiometer() {
   g.userData.setAngle = a => { knob.rotation.y = a; };
   return g;
 }
+export function deskLamp() {
+  const g=new THREE.Group();
+  g.add(ink(cyl(6,6.3,1.8,MAT.metalDark,0,.9,0)),ink(cyl(5.4,5.8,.6,MAT.metalDark,0,2,0)));
+  const rod=(a,b)=>{const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b);const r=ink(cyl(.6,.6,av.distanceTo(bv),MAT.metal));r.position.copy(av.clone().add(bv).multiplyScalar(.5));r.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),bv.sub(av).normalize());g.add(r);};
+  rod([0,2.2,0],[2,12,0]);rod([2,12,0],[-3.2,18,0]);
+  for(const [x,y]of[[2,12],[-3.2,18]]){const pivot=ink(cyl(1,1,1.5,MAT.red,x,y,0));pivot.rotation.x=Math.PI/2;g.add(pivot);}
+  const shade=new THREE.Group();shade.position.set(-3.2,18,0);shade.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(-1,-.45,0).normalize());
+  const shell=new THREE.Mesh(new THREE.CylinderGeometry(4.5,1.4,6,28,1,true),new THREE.MeshStandardMaterial({color:0xe85848,roughness:.4,side:THREE.DoubleSide}));shell.position.y=3;shade.add(ink(shell));
+  shade.add(cyl(3.8,3.8,.12,MAT.cream,0,5.9,0,28));g.add(shade);return g;
+}
 export function ldr() {
   const g = new THREE.Group();
   const face = cyl(2.6, 2.6, 1.2, new THREE.MeshStandardMaterial({ color: 0xd8a25a, roughness: .5 }), 0, 3.4, 0); g.add(face);

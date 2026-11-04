@@ -1,6 +1,7 @@
 // French — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LAMPE',
     'BUILT-IN LED': 'LED INTÉGRÉE', 'RESISTOR': 'RÉSISTANCE', 'BUTTON': 'BOUTON', 'POT': 'POTENTIOMÈTRE',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTEUR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'VEILLEUSE',
     'LED BAR': 'BARRE DE LEDS', 'RGB LED': 'LED RVB', 'PRESS PAD': 'PAD DE PRESSION', 'TORCH': 'LAMPE TORCHE',

@@ -1,6 +1,7 @@
 // Portuguese — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LÂMPADA',
     'BUILT-IN LED': 'LED INTEGRADO', 'RESISTOR': 'RESISTOR', 'BUTTON': 'BOTÃO', 'POT': 'POTENCIÔMETRO',
     'BUZZER': 'BUZZER', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'LUZ NOTURNA',
     'LED BAR': 'BARRA DE LEDS', 'RGB LED': 'LED RGB', 'PRESS PAD': 'ALMOFADA DE PRESSÃO', 'TORCH': 'LANTERNA',

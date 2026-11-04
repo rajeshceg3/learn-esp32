@@ -1,6 +1,7 @@
 // Hindi — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'लैंप',
     'BUILT-IN LED': 'बिल्ट-इन LED', 'RESISTOR': 'रेज़िस्टर', 'BUTTON': 'बटन', 'POT': 'पोटेंशियोमीटर',
     'BUZZER': 'बज़र', 'MOTOR': 'मोटर', 'SERVO': 'सर्वो', 'NIGHT LIGHT': 'नाइट लाइट',
     'LED BAR': 'LED बार', 'RGB LED': 'RGB LED', 'PRESS PAD': 'प्रेस पैड', 'TORCH': 'टॉर्च',

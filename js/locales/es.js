@@ -1,6 +1,7 @@
 // Spanish — full lesson translations. Original translation for this app.
 export default {
   tags: {
+    'LAMP': 'LÁMPARA',
     'BUILT-IN LED': 'LED INTEGRADO', 'RESISTOR': 'RESISTENCIA', 'BUTTON': 'BOTÓN', 'POT': 'POTENCIÓMETRO',
     'BUZZER': 'ZUMBADOR', 'MOTOR': 'MOTOR', 'SERVO': 'SERVO', 'NIGHT LIGHT': 'LUZ NOCTURNA',
     'LED BAR': 'BARRA LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'ALMOHADILLA', 'TORCH': 'LINTERNA',
