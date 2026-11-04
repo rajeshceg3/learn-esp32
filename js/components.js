@@ -152,13 +152,23 @@ export function buzzer() {
 }
 export function dcMotor() {
   const g = new THREE.Group();
-  g.add(cyl(9, 9, 16, MAT.metalDark, 0, 9, 0));
-  const shaft = cyl(1.2, 1.2, 6, MAT.pinMetal, 0, 19, 0); g.add(shaft);
-  const fan = new THREE.Group();
-  for (let i = 0; i < 3; i++) { const b = box(2.2, .5, 7, MAT.red, 0, 0, 4); b.rotation.y = i * Math.PI * 2 / 3; fan.add(b); }
-  fan.position.y = 22; g.add(fan);
+  const metal=new THREE.MeshStandardMaterial({color:0xa7a69e,roughness:.4,metalness:.5});
+  const can=ink(cyl(7.3,7.3,19,metal,0,9,0),0x303747,40);can.rotation.x=Math.PI/2;g.add(can);
+  for(const z of[-9.5,9.5]){const cap=ink(cyl(7.4,7.4,.9,metal,0,9,z),0x303747,40);cap.rotation.x=Math.PI/2;g.add(cap);}
+  const back=ink(cyl(6.8,6.8,2,MAT.cream,0,9,-10.5));back.rotation.x=Math.PI/2;g.add(back);
+  const shaft=cyl(1,1,7,MAT.pinMetal,0,9,13);shaft.rotation.x=Math.PI/2;g.add(shaft);
+  g.add(ink(box(16,1.3,15,MAT.metalDark,0,1.8,0)));
+  for(const x of[-4,4]){g.add(ink(box(2,3,1,MAT.pinMetal,x,15,-10)));g.add(box(1.4,.8,3,MAT.pinMetal,x,16,-11));}
+  // Three independently modelled propeller blades sit in the shaft's XY plane.
+  const fan = new THREE.Group();fan.position.set(0,9,16.5);g.add(fan);
+  const orange=new THREE.MeshStandardMaterial({color:0xe39442,roughness:.45});
+  for(let i=0;i<3;i++){
+    const blade=new THREE.Shape();blade.moveTo(1,-1.2);blade.quadraticCurveTo(10,-3.5,13,-.8);blade.quadraticCurveTo(13,1.8,3,1.2);blade.closePath();
+    const mesh=new THREE.Mesh(new THREE.ExtrudeGeometry(blade,{depth:.7,bevelEnabled:false}),orange);mesh.rotation.z=i*Math.PI*2/3;fan.add(ink(mesh));
+  }
+  const hub=cyl(2.2,2.2,1.4,orange,0,0,0,20);hub.rotation.x=Math.PI/2;fan.add(ink(hub));
   g.userData.fan = fan; g.userData.spin = v => { g.userData._v = v; };
-  g.userData.tick = dt => { if (g.userData._v) fan.rotation.y += dt * g.userData._v; };
+  g.userData.tick = dt => { if (g.userData._v) fan.rotation.z += dt * g.userData._v; };
   return g;
 }
 export function npn() {
