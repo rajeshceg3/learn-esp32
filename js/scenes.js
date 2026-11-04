@@ -352,12 +352,12 @@ plant: {
   },
   sim: api => {
     api._watering=false;api._moisture=52;let acc=0;
-    const face=m=>m<30?'THIRSTY :(':m<65?'OK :|':'HAPPY :)';
+    const face=m=>m<30?'WATER ME!':m>85?'TOO WET!':'HAPPY :)';
     return {
       running:false,
       start(){this.running=true;api.serial('Scripted soil monitor. Hold the plant or WATER to water; release to let it dry.');},
       stop(){this.running=false;api._watering=false;api.waterPose?.(false);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='10px monospace';c.fillText('ESP32',46,34);});},
-      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering,dt);acc+=dt;if(acc>.5){acc=0;api.line?.(23);const m=Math.round(api._moisture);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 13px monospace';c.fillText('SOIL '+m+'%',26,26);c.font='10px monospace';c.fillText(face(m),34,46);});api.serial(`soil moisture = ${m}%`);}}
+      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering,dt);acc+=dt;if(acc>.5){acc=0;api.line?.(23);const m=Math.round(api._moisture);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 20px monospace';c.fillText(m+'%',5,21);c.strokeRect(4,28,120,8);c.fillRect(5,29,Math.round(m*118/100),6);c.font='bold 12px monospace';c.fillText(face(m),5,56);});api.serial(`soil moisture = ${m}%`);}}
     };
   },
 },

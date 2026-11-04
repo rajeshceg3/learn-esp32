@@ -429,14 +429,16 @@ void setup() {
 void loop() {
   int mv = analogReadMilliVolts(SOIL);
   int moisture = constrain(map(mv, DRY_MV, WET_MV, 0, 100), 0L, 100L);
-  const char* mood = moisture < 30 ? "THIRSTY :(" :
-                     moisture < 65 ? "OK :|" : "HAPPY :)";
+  const char* mood = moisture < 30 ? "WATER ME!" :
+                     moisture > 85 ? "TOO WET!" : "HAPPY :)";
   oled.clearDisplay();
   oled.setTextSize(2);
   oled.setCursor(0, 0);
   oled.print(moisture); oled.println("%");
+  oled.drawRect(4, 28, 120, 8, SSD1306_WHITE);
+  oled.fillRect(5, 29, moisture * 118 / 100, 6, SSD1306_WHITE);
   oled.setTextSize(1);
-  oled.setCursor(0, 32); oled.print(mood);
+  oled.setCursor(4, 48); oled.print(mood);
   oled.display(); // Send the completed frame to the screen.
   Serial.println(moisture);
   delay(500);
