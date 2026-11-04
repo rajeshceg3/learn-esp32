@@ -425,7 +425,7 @@ svg{display:block}
 }
 
 /* Independent drafting surface: fixed isometric spacing, distinct from the page backdrop. */
-.stage-wrap{background-color:var(--bg);background-image:repeating-linear-gradient(30deg,transparent 0 21px,rgba(183,153,108,.3) 21px 22px),repeating-linear-gradient(150deg,transparent 0 21px,rgba(183,153,108,.3) 21px 22px);background-position:center}
+.stage-wrap{background-color:var(--bg);background-image:repeating-linear-gradient(26deg,transparent 0 25px,rgba(183,153,108,.3) 25px 26px),repeating-linear-gradient(136deg,transparent 0 28px,rgba(183,153,108,.3) 28px 29px);background-position:center}
 .stage-wrap.no-grid{background-image:none}
 @media(max-width:1023px){
  .bg-grid{background:var(--bg)}
@@ -520,3 +520,4 @@ svg{display:block}
 @media(max-width:1023px){.tabbar{overflow-x:auto;justify-content:space-between;scrollbar-width:none}.tabbar::-webkit-scrollbar{display:none}.tab{flex:none}.tab.on:focus:not(:focus-visible){outline:none}}
 .example code,.lesson-lede code,.feature-list code{direction:ltr;unicode-bidi:isolate;display:inline-block}
 .tab:focus:not(:focus-visible){outline:none}
+@media(max-width:1023px){.bottomnav .nav-btn:nth-child(-n+4){color:#2b3d62}.bottomnav .nav-btn[data-k=home] svg{fill:currentColor;stroke:none}.bottomnav .nav-btn[data-k=lessons] svg,.bottomnav .nav-btn[data-k=comp] svg{stroke-width:1.8}.bottomnav .nav-btn[data-k=play] svg path{fill:currentColor}}

@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: nested-info-locales-20261104
+// Build: grid-nav-pointer-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
