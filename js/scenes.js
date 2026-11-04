@@ -8,7 +8,7 @@ export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
 export const WIRE = { red: 0xd64a3a, navy: 0x2f3547, orange: 0xe8913a, green: 0x3fbf6a, yellow: 0xe8c53a, purple: 0x6a4fa3, white: 0xf2efe6, teal: 0x1aa3a1 };
 export function setLessonLayout(id) {
-  const compact = ['blink','button','rgb','sound'].includes(id);
+  const compact = ['blink','button','rgb','sound','light'].includes(id);
   BOARD_POS.set(compact ? -28 : -38, 0, compact ? 16 : 25);
   BB_POS.set(compact ? 29 : 38, 0, compact ? -6 : 0);
 }
@@ -172,7 +172,7 @@ light: {
     const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(19, 7)); s.add(led, 'led');
     const torch = C.deskLamp();
     torch.position.set(bb(26,5).x+15,0,bb(26,5).z); s.add(torch,'torch');
-    s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 14, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 14, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 12, 'GND'));
+    s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 22, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 21, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 23, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D35'), label: 'GPIO35 · ADC', i: 'wave', d: 'Reads the light level.' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR', i: 'info', d: 'Resistance drops as light rises.' },
       { at: V(bb(26,5).x+15,21,bb(26,5).z), label: 'LAMP', click: 'torch', dyn: 'torch', i: 'bolt', d: 'Click to move it closer.' },

@@ -422,7 +422,7 @@ function loadLesson(i, keepTab) {
   const def = SCENES[LESSONS[i].sim];
   setLessonLayout(LESSONS[i].id);
   board.group.position.copy(BOARD_POS);
-  const cols = ['blink','button','rgb','sound'].includes(LESSONS[i].id) ? 18 : 24;
+  const cols = ['blink','button','rgb','sound','light'].includes(LESSONS[i].id) ? 18 : 24;
   bboard.visible = false;
   if (!breadboardViews[cols]) {
     breadboardViews[cols] = C.breadboard(cols);
