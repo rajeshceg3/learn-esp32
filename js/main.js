@@ -699,6 +699,27 @@ function renderNavs() {
   };
 }
 
+// Frame an inspected component inside the unobscured part of the stage.
+function focusComponent(object){
+  if(!object)return;
+  object.updateWorldMatrix(true,true);
+  const bounds=new THREE.Box3().setFromObject(object),center=bounds.getCenter(new THREE.Vector3());
+  const rect=canvas.getBoundingClientRect(),sheet=$('#sheet').getBoundingClientRect();
+  const usableBottom=innerWidth<1024?Math.min(rect.bottom,sheet.top-12):rect.bottom;
+  const available=Math.max(100,usableBottom-rect.top-16),ny=1-2*((16+available/2)/rect.height);
+  const probe=camera.clone(),up=new THREE.Vector3(-Math.cos(rig.tPol)*Math.sin(rig.tAz),Math.sin(rig.tPol),-Math.cos(rig.tPol)*Math.cos(rig.tAz));
+  probe.aspect=rect.width/rect.height;probe.updateProjectionMatrix();
+  let distance=90,target=new THREE.Vector3();
+  const corners=[];for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z])corners.push(new THREE.Vector3(x,y,z));
+  for(let n=0;n<10;n++){
+    target.copy(center).addScaledVector(up,-ny*distance*Math.tan(probe.fov*Math.PI/360));
+    probe.position.set(target.x+distance*Math.sin(rig.tPol)*Math.sin(rig.tAz),target.y+distance*Math.cos(rig.tPol),target.z+distance*Math.sin(rig.tPol)*Math.cos(rig.tAz));probe.lookAt(target);probe.updateMatrixWorld(true);
+    let need=0;for(const corner of corners){const v=corner.clone().project(probe);need=Math.max(need,Math.abs(v.x)/.68,Math.abs(v.y-ny)/(available/rect.height*.7));}
+    if(need<=1.01)break;distance*=need*1.03;
+  }
+  rig.tTarget.copy(target);rig.tDist=distance;idle.t=0;
+}
+
 // ---------- sheets ----------
 let sheetOpener=null;
 function closeSheet(restoreFocus=true){
@@ -760,9 +781,10 @@ function openSheet(kind, data, anchor) {
     body.querySelectorAll('.lang-row').forEach(r => r.onclick = () => setLang(r.dataset.c));
   } else if (kind === 'thermal') {
     title.textContent='HAIRDRYER';sub.textContent='Scripted heat source';
-    body.innerHTML=`<div class="comp-desc">Drag it closer to the sensor or farther away, or switch it off.</div><label class="set-row" for="heatDistance"><span>Distance</span><output id="heatDistanceValue">${Math.round(api._heatDistance)} cm</output></label><input id="heatDistance" type="range" min="5" max="40" step="1" value="${Math.round(api._heatDistance)}" style="width:100%;accent-color:var(--teal)"><label class="set-row" for="heatPower"><span>Hairdryer switched on</span><input id="heatPower" type="checkbox" role="switch" ${api._heat?'checked':''}></label>`;
+    body.innerHTML=`<div class="comp-desc">Drag it closer to the sensor or farther away, or switch it off.</div><label class="set-row" for="heatDistance"><span>Distance</span><output id="heatDistanceValue">${Math.round(api._heatDistance)} cm</output></label><input id="heatDistance" type="range" min="5" max="40" step="1" value="${Math.round(api._heatDistance)}" style="width:100%;accent-color:var(--teal)"><label class="set-row" for="heatPower"><span>Hairdryer switched on</span><input id="heatPower" type="checkbox" role="switch" ${api._heat?'checked':''}></label><button type="button" class="inspector-focus" id="heatFocus">⊙ Zoom to it</button>`;
     body.querySelector('#heatDistance').oninput=e=>{api.setHeatDistance(e.target.value,api);body.querySelector('#heatDistanceValue').textContent=e.target.value+' cm';};
     body.querySelector('#heatPower').onchange=e=>{api._heat=e.target.checked;};
+    body.querySelector('#heatFocus').onclick=()=>focusComponent(cur.scene.refs.heat);
   } else if (kind === 'component' && data) {
     title.textContent = data.title.toUpperCase(); sub.textContent = '';
     body.innerHTML = `<div class="comp-row"><span class="comp-ic">${ICON.chip}</span><div><div class="comp-desc">${data.desc}</div></div></div>`;

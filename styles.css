@@ -600,3 +600,5 @@ svg{display:block}
 #heatPower:checked{background:var(--teal);border-color:var(--teal)}
 #heatPower:checked:before{transform:translateX(14px)}
 #heatPower:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
+
+.inspector-focus{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--navy);padding:6px 9px;font:inherit;cursor:pointer}.inspector-focus:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
