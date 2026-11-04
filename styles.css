@@ -602,3 +602,5 @@ svg{display:block}
 #heatPower:focus-visible{outline:2px solid var(--navy);outline-offset:3px}
 
 .inspector-focus{margin-top:8px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--navy);padding:6px 9px;font:inherit;cursor:pointer}.inspector-focus:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+/* Keep projected pin dots behind readable callout text in both directions. */
+#tags .tag{z-index:2}

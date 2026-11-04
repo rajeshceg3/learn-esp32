@@ -194,7 +194,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
-    if(t.value){const value=t.value(),label=d.querySelector('b');if(label&&label.textContent!==value)label.textContent=value;}
+    if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
     v.project(camera);
@@ -287,7 +287,7 @@ function placeTags() {
 
 // hover board parts
 canvas.addEventListener('pointermove', e => {
-  if (drag) return;
+  if (drag||objectDrag||heldScenePointer!==null||heldPianoPointer!==null) {hoverPart=null;$('#partTag').style.display='none';return;}
   const r = canvas.getBoundingClientRect();
   mouseV.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(mouseV, camera);
