@@ -130,17 +130,21 @@ export function ldr() {
 }
 export function ultrasonic() {
   const g = new THREE.Group();
-  g.add(box(22, 1.6, 11, new THREE.MeshStandardMaterial({ color: 0x2a56a3, roughness: .55 }), 0, 4.4, 0));
-  const e1 = cyl(4, 4, 7, MAT.metalDark, -6.4, 8.6, 0); const e2 = e1.clone(); e2.position.x = 6.4;
-  g.add(ink(e1,0x303847,35),ink(e2,0x303847,35));
+  const blue=new THREE.MeshStandardMaterial({color:0x2a56a3,roughness:.55});
+  g.add(ink(box(23,11,1.3,blue,0,7.5,0)));
+  const emitters=[];
   const meshCanvas=document.createElement('canvas');meshCanvas.width=128;meshCanvas.height=128;const mc=meshCanvas.getContext('2d');
-  mc.fillStyle='#d4d2c9';mc.fillRect(0,0,128,128);mc.strokeStyle='#666e79';mc.lineWidth=2;
-  for(let i=0;i<128;i+=8){mc.beginPath();mc.moveTo(i,0);mc.lineTo(i,128);mc.moveTo(0,i);mc.lineTo(128,i);mc.stroke();}
+  mc.fillStyle='#454b55';mc.fillRect(0,0,128,128);mc.strokeStyle='#7c8187';mc.lineWidth=1;
+  for(let i=0;i<128;i+=6){mc.beginPath();mc.moveTo(i,0);mc.lineTo(i,128);mc.moveTo(0,i);mc.lineTo(128,i);mc.stroke();}
   const meshTex=new THREE.CanvasTexture(meshCanvas);meshTex.colorSpace=THREE.SRGBColorSpace;
-  for(const x of[-6.4,6.4]){g.add(cyl(3.45,3.45,.12,MAT.chip,x,12.14,0,32));const disk=new THREE.Mesh(new THREE.CircleGeometry(3.1,32),new THREE.MeshBasicMaterial({map:meshTex}));disk.rotation.x=-Math.PI/2;disk.position.set(x,12.22,0);g.add(disk);}
-
-  g.add(box(4, 2.4, 3, MAT.metal, 0, 6.4, -3.6));
-  g.userData.emitters = [e1, e2];
+  for(const x of[-6.3,6.3]){
+    const can=ink(cyl(4.4,4.4,7,MAT.metalDark,x,8.1,4.2),0x303847,35);can.rotation.x=Math.PI/2;g.add(can);emitters.push(can);
+    const rim=ink(cyl(4.45,4.45,.45,MAT.metal,x,8.1,7.85),0x303847,35);rim.rotation.x=Math.PI/2;g.add(rim);
+    const disk=new THREE.Mesh(new THREE.CircleGeometry(3.8,40),new THREE.MeshBasicMaterial({map:meshTex}));disk.position.set(x,8.1,8.1);g.add(disk);
+  }
+  g.add(ink(box(3.5,1.5,1.6,MAT.metal,0,10.7,1.2)));
+  for(const x of[-3.81,-1.27,1.27,3.81]){g.add(box(.6,3,.6,MAT.pinMetal,x,1.5,0));g.add(box(1.7,1.2,1.7,MAT.plastic,x,3.2,0));}
+  g.userData.emitters = emitters;
   return g;
 }
 export function buzzer() {
