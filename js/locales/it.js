@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Percepire il calore', heading: 'Percepire il calore',
-      lede: 'Il TMP36 converte la temperatura in tensione: 0,5 V a 0 °C e 10 mV in più per ogni grado. L’ADC la legge, e un po’ di matematica dà i gradi.',
-      features: ['Tensione analogica su GPIO32', 'Calibra con la tua stanza', 'Scalda il sensore con la torcia'],
-      pinout: [['Uscita TMP36', '10 mV per °C più un offset di 500 mV.'], ['Alimentazione', 'Alimentazione analogica a basso rumore.'], ['Massa', 'Terzo terminale a massa.']],
-      example: [
-        'Leggi il pin, scala in volt: <code>v = raw * 3.3 / 4095</code>.',
-        'Poi <code>tempC = (v − 0.5) * 100</code> — offset e pendenza dal datasheet.',
-        'L’ESP32 ha anche una lettura di temperatura interna per il chip stesso.',
-      ],
+      lede: "Il TMP36 converte la temperatura in tensione. Accendi il phon e usa una ventola sopra 30 °C: un piccolo termostato.",
+      features: ["GPIO32 legge millivolt calibrati", "Clicca HEAT per accendere o spegnere il phon", "GPIO27 accende la ventola sopra 30 °C"],
+      pinout: [['Uscita TMP36', '10 mV per °C più un offset di 500 mV.'], ['Alimentazione', 'Alimentazione analogica a basso rumore.'], ['Massa', 'Terzo terminale a massa.'], ["Base del transistor della ventola", "Resistenza di base da 1 kΩ. Non alimentare mai la ventola da un GPIO."], ["Alimentazione ventola a 5 V", "Usa una ventola a basso consumo e un transistor adatto. Diodo di ricircolo: catodo al positivo. Massa comune."]],
+      example: ["<code>analogReadMilliVolts(32)</code> legge millivolt calibrati con Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> converte i millivolt del TMP36 in °C.", "Sopra 30 °C GPIO27 accende la ventola tramite il transistor; altrimenti la spegne.", "La simulazione predefinita riscalda e raffredda vicino alla soglia. Non esegue il codice nell’editor."],
       specs: [['Intervallo', '−40 a +125 °C'], ['Precisione', '±2 °C tipica'], ['Pendenza', '10 mV / °C'], ['Offset', '500 mV a 0 °C']],
     },
     servo: {

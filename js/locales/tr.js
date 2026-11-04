@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Isıyı hisset', heading: 'Isıyı hisset',
-      lede: 'TMP36 sıcaklığı gerilime çevirir: 0 °C’de 0,5 V ve her derece için 10 mV fazla. ADC okur, biraz matematik dereceyi verir.',
-      features: ['GPIO32’ye analog gerilim', 'Odanı referans alarak kalibre et', 'Sensörü el feneriyle ısıt'],
-      pinout: [['TMP36 çıkışı', '°C başına 10 mV artı 500 mV ofset.'], ['Besleme', 'Düşük gürültülü analog besleme.'], ['Toprak', 'Üçüncü bacak toprağa.']],
-      example: [
-        'Pini oku, volta ölçekle: <code>v = raw * 3.3 / 4095</code>.',
-        'Sonra <code>tempC = (v − 0.5) * 100</code> — veri sayfasındaki ofset ve eğim.',
-        'ESP32’de ayrıca çipin kendisi için yerleşik bir sıcaklık okuması vardır.',
-      ],
+      lede: "TMP36 sıcaklığı voltaja çevirir. Kurutucuyu açın; 30 °C üzerinde fanı çalıştırın: küçük bir termostat.",
+      features: ["GPIO32 kalibre edilmiş milivolt okur", "Kurutucuyu açıp kapatmak için HEAT’e tıklayın", "GPIO27 fanı 30 °C üzerinde açar"],
+      pinout: [['TMP36 çıkışı', '°C başına 10 mV artı 500 mV ofset.'], ['Besleme', 'Düşük gürültülü analog besleme.'], ['Toprak', 'Üçüncü bacak toprağa.'], ["Fan transistörünün bazı", "1 kΩ baz direnci kullanın. Fanı asla GPIO’dan beslemeyin."], ["Fan için 5 V besleme", "Düşük akımlı fan ve uygun transistör kullanın. Geri tepme diyodunun katodu artıya bağlanır. Ortak toprak."]],
+      example: ["<code>analogReadMilliVolts(32)</code> Arduino-ESP32 ile kalibre edilmiş milivolt okur.", "<code>(millivolts - 500) / 10.0</code> TMP36 milivolt değerini °C’ye çevirir.", "30 °C üzerinde GPIO27 fanı transistör üzerinden açar; aksi halde kapatır.", "Önceden programlanmış simülasyon sınır yakınında ısıtır ve soğutur. Editördeki kodu çalıştırmaz."],
       specs: [['Aralık', '−40 ila +125 °C'], ['Doğruluk', 'tipik ±2 °C'], ['Eğim', '10 mV / °C'], ['Ofset', '0 °C’de 500 mV']],
     },
     servo: {

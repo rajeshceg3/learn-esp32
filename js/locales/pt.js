@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Sentir o calor', heading: 'Sentir o calor',
-      lede: 'O TMP36 transforma temperatura em tensão: 0,5 V a 0 °C e mais 10 mV por grau. O ADC lê, e uma conta simples dá os graus.',
-      features: ['Tensão analógica em GPIO32', 'Calibre com o seu cômodo', 'Aqueça o sensor com a lanterna'],
-      pinout: [['Saída TMP36', '10 mV por °C mais um offset de 500 mV.'], ['Alimentação', 'Alimentação analógica de baixo ruído.'], ['Terra', 'Terceiro terminal ao terra.']],
-      example: [
-        'Leia o pino e escale para volts: <code>v = raw * 3.3 / 4095</code>.',
-        'Depois <code>tempC = (v − 0.5) * 100</code> — offset e inclinação do datasheet.',
-        'O ESP32 também tem leitura interna de temperatura do próprio chip.',
-      ],
+      lede: "O TMP36 converte temperatura em tensão. Ligue o secador e use uma ventoinha acima de 30 °C: um pequeno termostato.",
+      features: ["GPIO32 lê milivolts calibrados", "Clique em HEAT para ligar ou desligar o secador", "GPIO27 liga a ventoinha acima de 30 °C"],
+      pinout: [['Saída TMP36', '10 mV por °C mais um offset de 500 mV.'], ['Alimentação', 'Alimentação analógica de baixo ruído.'], ['Terra', 'Terceiro terminal ao terra.'], ["Base do transistor da ventoinha", "Resistor de base de 1 kΩ. Nunca alimente a ventoinha por um GPIO."], ["Alimentação de 5 V da ventoinha", "Use ventoinha de baixo consumo e transistor adequado. Diodo de proteção: cátodo no positivo. Terra comum."]],
+      example: ["<code>analogReadMilliVolts(32)</code> lê milivolts calibrados no Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> converte os milivolts do TMP36 em °C.", "Acima de 30 °C, GPIO27 liga a ventoinha pelo transistor; caso contrário, desliga.", "A simulação programada aquece e esfria perto do limite. Não executa o código do editor."],
       specs: [['Faixa', '−40 a +125 °C'], ['Precisão', '±2 °C típica'], ['Inclinação', '10 mV / °C'], ['Offset', '500 mV a 0 °C']],
     },
     servo: {

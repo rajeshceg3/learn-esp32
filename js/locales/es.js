@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Sentir el calor', heading: 'Sentir el calor',
-      lede: 'El TMP36 convierte la temperatura en un voltaje: 0,5 V a 0 °C y 10 mV más por cada grado. El ADC lo lee y un poco de matemáticas da los grados.',
-      features: ['Voltaje analógico hacia GPIO32', 'Calibra con tu habitación', 'Calienta el sensor con la linterna'],
-      pinout: [['Salida TMP36', '10 mV por °C más un offset de 500 mV.'], ['Alimentación', 'Alimentación analógica de bajo ruido.'], ['Tierra', 'Tercer terminal a tierra.']],
-      example: [
-        'Lee el pin y escala a voltios: <code>v = raw * 3.3 / 4095</code>.',
-        'Después <code>tempC = (v − 0.5) * 100</code>: offset y pendiente de la hoja de datos.',
-        'El ESP32 también tiene una lectura de temperatura interna para el propio chip.',
-      ],
+      lede: "El TMP36 convierte la temperatura en tensión. Enciende el secador y usa un ventilador por encima de 30 °C: un pequeño termostato.",
+      features: ["GPIO32 lee milivoltios calibrados", "Haz clic en HEAT para encender o apagar el secador", "GPIO27 activa el ventilador por encima de 30 °C"],
+      pinout: [['Salida TMP36', '10 mV por °C más un offset de 500 mV.'], ['Alimentación', 'Alimentación analógica de bajo ruido.'], ['Tierra', 'Tercer terminal a tierra.'], ["Base del transistor del ventilador", "Resistencia de base de 1 kΩ. Nunca alimentes el ventilador desde un GPIO."], ["Alimentación de 5 V del ventilador", "Usa un ventilador de bajo consumo y un transistor adecuado. Diodo de rueda libre: cátodo al positivo. Masa común."]],
+      example: ["<code>analogReadMilliVolts(32)</code> lee milivoltios calibrados en Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> convierte los milivoltios del TMP36 a °C.", "Por encima de 30 °C, GPIO27 activa el ventilador mediante el transistor; si no, lo apaga.", "La simulación programada calienta y enfría alrededor del límite. No ejecuta el código del editor."],
       specs: [['Rango', '−40 a +125 °C'], ['Precisión', '±2 °C típica'], ['Pendiente', '10 mV / °C'], ['Offset', '500 mV a 0 °C']],
     },
     servo: {

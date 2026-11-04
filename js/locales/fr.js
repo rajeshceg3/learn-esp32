@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Sentir la chaleur', heading: 'Sentir la chaleur',
-      lede: 'Le TMP36 transforme la température en tension : 0,5 V à 0 °C et 10 mV de plus par degré. Le CAN le lit, et un peu de calcul donne les degrés.',
-      features: ['Tension analogique vers GPIO32', 'Étalonnez avec votre pièce', 'Réchauffez le capteur avec la lampe'],
-      pinout: [['Sortie TMP36', '10 mV par °C plus un offset de 500 mV.'], ['Alimentation', 'Alimentation analogique à faible bruit.'], ['Masse', 'Troisième patte à la masse.']],
-      example: [
-        'Lisez la broche, convertissez en volts : <code>v = raw * 3.3 / 4095</code>.',
-        'Puis <code>tempC = (v − 0.5) * 100</code> — offset et pente de la fiche technique.',
-        'L’ESP32 possède aussi une mesure de température interne pour la puce elle-même.',
-      ],
+      lede: "Le TMP36 transforme la température en tension. Allumez le sèche-cheveux et activez un ventilateur au-dessus de 30 °C : un petit thermostat.",
+      features: ["GPIO32 lit des millivolts étalonnés", "Cliquez sur HEAT pour allumer ou éteindre le sèche-cheveux", "GPIO27 active le ventilateur au-dessus de 30 °C"],
+      pinout: [['Sortie TMP36', '10 mV par °C plus un offset de 500 mV.'], ['Alimentation', 'Alimentation analogique à faible bruit.'], ['Masse', 'Troisième patte à la masse.'], ["Base du transistor du ventilateur", "Résistance de base de 1 kΩ. Ne jamais alimenter le ventilateur depuis un GPIO."], ["Alimentation 5 V du ventilateur", "Utilisez un ventilateur peu gourmand et un transistor adapté. Diode de roue libre : cathode au positif. Masse commune."]],
+      example: ["<code>analogReadMilliVolts(32)</code> lit des millivolts étalonnés avec Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> convertit les millivolts du TMP36 en °C.", "Au-dessus de 30 °C, GPIO27 active le ventilateur via le transistor ; sinon il le coupe.", "La simulation programmée chauffe et refroidit près du seuil. Elle ne lance pas le code de l’éditeur."],
       specs: [['Plage', '−40 à +125 °C'], ['Précision', '±2 °C typique'], ['Pente', '10 mV / °C'], ['Offset', '500 mV à 0 °C']],
     },
     servo: {

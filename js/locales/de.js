@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Wärme messen', heading: 'Wärme messen',
-      lede: 'Der TMP36 wandelt Temperatur in Spannung um: 0,5 V bei 0 °C und 10 mV mehr pro Grad. Der ADC liest sie, und etwas Mathe ergibt die Gradzahl.',
-      features: ['Analogspannung an GPIO32', 'Mit deinem Zimmer kalibrieren', 'Wärme den Sensor mit der Lampe'],
-      pinout: [['TMP36-Ausgang', '10 mV pro °C plus 500 mV Offset.'], ['Versorgung', 'Rauscharme Analogversorgung.'], ['Masse', 'Drittes Bein an Masse.']],
-      example: [
-        'Pin lesen, in Volt umrechnen: <code>v = raw * 3.3 / 4095</code>.',
-        'Dann <code>tempC = (v − 0.5) * 100</code> — Offset und Steigung aus dem Datenblatt.',
-        'Der ESP32 hat außerdem eine eingebaute Temperaturmessung für den Chip selbst.',
-      ],
+      lede: "Der TMP36 wandelt Temperatur in Spannung um. Schalte den Föhn ein und über 30 °C einen Lüfter dazu: ein kleiner Thermostat.",
+      features: ["GPIO32 liest kalibrierte Millivolt", "Klicke HEAT, um den Föhn ein- oder auszuschalten", "GPIO27 schaltet den Lüfter über 30 °C ein"],
+      pinout: [['TMP36-Ausgang', '10 mV pro °C plus 500 mV Offset.'], ['Versorgung', 'Rauscharme Analogversorgung.'], ['Masse', 'Drittes Bein an Masse.'], ["Basis des Lüftertransistors", "1 kΩ Basiswiderstand. Den Lüfter nie aus einem GPIO versorgen."], ["5-V-Lüfterversorgung", "Stromarmen Lüfter und passenden Transistor verwenden. Freilaufdiode: Kathode an Plus. Gemeinsame Masse."]],
+      example: ["<code>analogReadMilliVolts(32)</code> liest kalibrierte Millivolt mit Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> wandelt die TMP36-Millivolt in °C um.", "Über 30 °C schaltet GPIO27 den Lüfter über den Transistor ein, sonst aus.", "Die vorgegebene Simulation heizt und kühlt am Grenzwert. Sie führt den Editorcode nicht aus."],
       specs: [['Bereich', '−40 bis +125 °C'], ['Genauigkeit', '±2 °C typisch'], ['Steigung', '10 mV / °C'], ['Offset', '500 mV bei 0 °C']],
     },
     servo: {

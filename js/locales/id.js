@@ -195,14 +195,10 @@ export default {
     },
     temp: {
       title: 'Merasa panas', heading: 'Merasa panas',
-      lede: 'TMP36 mengubah suhu menjadi tegangan: 0,5 V pada 0 °C dan tambahan 10 mV per derajat. ADC membacanya, dan sedikit matematika menghasilkan derajat.',
-      features: ['Tegangan analog ke GPIO32', 'Kalibrasi dengan ruanganmu', 'Hangatkan sensor dengan senter'],
-      pinout: [['Keluaran TMP36', '10 mV per °C plus offset 500 mV.'], ['Suplai sensor', 'Suplai analog rendah noise.'], ['Ground', 'Kaki ketiga ke ground.']],
-      example: [
-        'Baca pin, skalakan ke volt: <code>v = raw * 3.3 / 4095</code>.',
-        'Lalu <code>tempC = (v − 0.5) * 100</code> — offset dan kemiringan dari datasheet.',
-        'ESP32 juga punya pembacaan suhu bawaan untuk chip itu sendiri.',
-      ],
+      lede: "TMP36 mengubah suhu menjadi tegangan. Nyalakan pengering dan kipas di atas 30 °C: termostat kecil.",
+      features: ["GPIO32 membaca milivolt terkalibrasi", "Klik HEAT untuk menyalakan atau mematikan pengering", "GPIO27 menyalakan kipas di atas 30 °C"],
+      pinout: [['Keluaran TMP36', '10 mV per °C plus offset 500 mV.'], ['Suplai sensor', 'Suplai analog rendah noise.'], ['Ground', 'Kaki ketiga ke ground.'], ["Basis transistor kipas", "Resistor basis 1 kΩ. Jangan pernah memberi daya kipas dari GPIO."], ["Catu kipas 5 V", "Gunakan kipas berarus rendah dan transistor yang sesuai. Dioda flyback: katoda ke positif. Ground bersama."]],
+      example: ["<code>analogReadMilliVolts(32)</code> membaca milivolt terkalibrasi pada Arduino-ESP32.", "<code>(millivolts - 500) / 10.0</code> mengubah milivolt TMP36 menjadi °C.", "Di atas 30 °C GPIO27 menyalakan kipas melalui transistor; jika tidak, kipas mati.", "Simulasi terprogram memanaskan dan mendinginkan di sekitar batas. Kode editor tidak dijalankan."],
       specs: [['Rentang', '−40 sampai +125 °C'], ['Akurasi', '±2 °C tipikal'], ['Kemiringan', '10 mV / °C'], ['Offset', '500 mV pada 0 °C']],
     },
     servo: {
