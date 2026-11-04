@@ -187,6 +187,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
+    if(t.value){const value=t.value(),label=d.querySelector('b');if(label&&label.textContent!==value)label.textContent=value;}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
     v.project(camera);
@@ -233,7 +234,10 @@ function placeTags() {
       const p={'SOIL · GPIO34':[.2,.34],'I²C · 21/22':[.2,.65],'OLED':[.6,.34],'PLANT':[.55,.65],'WATER':[.85,.65]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
-    if(!wide&&state.lesson===14&&t.label==='PRESS PAD')cy=ay+36;
+    if(state.lesson===14){
+      if(t.label==='GPIO35 · ADC'){cx=r.width*(wide?.2:.25);cy=r.height*(wide?.68:.65);}
+      if(!wide&&t.label==='PRESS PAD')cy=ay+36;
+    }
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart

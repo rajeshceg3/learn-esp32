@@ -371,7 +371,9 @@ force: {
     const bz=C.buzzer();bz.position.copy(bb(9,2));s.add(bz,'buzzer');
     s.wires.push(wireTo(pin('D35'),V(46,1,19),WIRE.green,13,'D35'),wireTo(pin('3V3'),V(50,1,19),WIRE.red,15,'3V3'),wireTo(V(46,1,19),bb(13,2),WIRE.green,10),wireTo(bb(15,2),pin('GND'),WIRE.navy,12,'GND'),wireTo(pin('D13'),V(-18,3,-26),WIRE.orange,16,'D13'),wireTo(pin('VIN'),V(-15,3,-26),WIRE.red,17,'VIN'),wireTo(pin('GND'),V(-21,3,-26),WIRE.navy,18,'GND'),wireTo(pin('D19'),bb(8,2),WIRE.purple,13,'D19'),wireTo(pin('GND'),bb(10,2),WIRE.navy,12,'GND'));
     s.tags=[{at:V(-18,34,-27),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(48,2,29),label:'PRESS PAD',click:'fsr',hold:true,i:'hand',d:'Hold and drag down to press harder.'}];
-    s.api.forceMeter=(v)=>{s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
+    let pressureRaw=0;
+    s.tags.push({at:pin('D35'),label:'GPIO35 · ADC',i:'wave',value:()=>`GPIO35 = ${pressureRaw}`,d:'Scripted 12-bit pressure reading, 0–4095.'});
+    s.api.forceMeter=(v)=>{pressureRaw=Math.round(v*4095);s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
     let startY=0;
     const begin=(api,e)=>{startY=e?.clientY??0;api._pressing=true;api._pressureTarget=.12;};
     s.tagHold=(w,on,api,e)=>{if(on)begin(api,e);else{api._pressing=false;api._pressureTarget=0;}};
