@@ -19,12 +19,15 @@ export function breadboard() {
   // holes texture
   const cv = document.createElement('canvas'); cv.width = 512; cv.height = 176;
   const c = cv.getContext('2d'); c.fillStyle = '#f4ead6'; c.fillRect(0, 0, 512, 176);
-  c.fillStyle = '#c9b globalish'; c.fillStyle = '#cbb894';
+  c.fillStyle = '#4d4c49';
   for (let i = 0; i < 30; i++) for (let j = 0; j < 10; j++) {
     c.beginPath(); c.arc(14 + i * 16.4, 12 + j * 16.4, 2.6, 0, 7); c.fill();
   }
   c.fillStyle = 'rgba(200,60,50,.65)'; c.fillRect(8, 2, 496, 2); c.fillRect(8, 172, 496, 2);
   c.fillStyle = 'rgba(60,90,200,.65)'; c.fillRect(8, 6, 496, 2); c.fillRect(8, 168, 496, 2);
+  // Recessed centre channel and row guides are original canvas artwork.
+  c.fillStyle='#ded3bf';c.fillRect(8,82,496,12);c.strokeStyle='#b9ad98';c.lineWidth=1;c.strokeRect(8,82,496,12);
+  c.fillStyle='#8a8173';c.font='8px monospace';c.textAlign='center';for(let i=0;i<30;i+=5)c.fillText(String(i+1),14+i*16.4,167);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
   const topM = new THREE.Mesh(new THREE.PlaneGeometry(BB.w, BB.d), new THREE.MeshStandardMaterial({ map: tex, roughness: .7 }));
   topM.rotation.x = -Math.PI / 2; topM.position.y = 8.62; topM.receiveShadow = true;
