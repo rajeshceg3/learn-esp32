@@ -6,7 +6,7 @@ export default {
     'BUZZER': '蜂鳴器', 'MOTOR': '馬達', 'SERVO': '伺服馬達', 'NIGHT LIGHT': '夜燈',
     'LED BAR': 'LED 燈條', 'RGB LED': 'RGB LED', 'PRESS PAD': '按壓墊', 'TORCH': '手電筒',
     'OBSTACLE': '障礙物', 'CAR': '汽車', 'PLANT': '植物', 'TRAFFIC LIGHT': '紅綠燈',
-    '8 KEYS — TAP TO PLAY': '8 個琴鍵 — 點按彈奏', 'HIGH': '高', 'LOW': '低',
+    '8 KEYS - TAP TO PLAY': '8 個琴鍵 — 點按彈奏', 'HIGH': '高', 'LOW': '低',
 
     "USB PORT": "USB 連接埠",
     "MICROCONTROLLER": "微控制器",

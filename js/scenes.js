@@ -211,18 +211,21 @@ sound: {
 },
 piano: {
   build(s) {
-    const keys = C.pianoKeys(8); keys.position.set(46, 8.7, 30); s.add(keys, 'keys');
+    const keys = C.pianoKeys(8); keys.position.set(46, 8.7, 5); s.add(keys, 'keys');
     const bz = C.buzzer(); bz.position.copy(bb(6, 2)); s.add(bz, 'buzzer');
-    s.wires.push(wireTo(pin('D19'), bb(3, 2), WIRE.purple, 14, 'D19'), wireTo(pin('GND'), bb(9, 4), WIRE.navy, 10, 'GND'));
-    s.tags = [ { at: V(46, 16, 30), label: '8 KEYS — TAP TO PLAY', click: 'keys', i: 'hand', d: 'Each key plays a note.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
+    s.wires.push(wireTo(pin('D19'), bb(5, 2), WIRE.purple, 22, 'D19'), wireTo(pin('GND'), bb(7, 2), WIRE.navy, 24, 'GND'));
+    const inputs=['D32','D33','D25','D26','D27','D14','D13','D4'];
+    inputs.forEach((name,i)=>s.wires.push(wireTo(pin(name),V(46+i*7-24.5,9,1.7),[WIRE.red,WIRE.orange,WIRE.yellow,WIRE.green,WIRE.teal,WIRE.purple,WIRE.navy,WIRE.purple][i],16+i*.8,name)));
+    s.wires.push(wireTo(pin('GND'),V(21.5,8.5,9.4),WIRE.navy,20,'GND'));
+    s.tags = [ { at: V(46, 16, 5), label: '8 KEYS - TAP TO PLAY', click: 'keys', i: 'hand', d: 'Each key plays a note.' }, { at: bb(6, 2).add(V(0, 9, 0)), label: 'BUZZER', i: 'wave', d: 'Turns pulses into sound.' } ];
     s.api.pressKey = (i, on) => s.refs.keys.userData.press(i, on);
     s.pickKey = pt => { const lp = s.refs.keys.worldToLocal(pt.clone());
       const i = Math.round((lp.x + 24.5) / 7);
-      return (i >= 0 && i < 8 && Math.abs(lp.z) < 7 && lp.y > -2 && lp.y < 5) ? i : -1; };
+      return (i >= 0 && i < 8 && Math.abs(lp.z) < 7 && lp.y > -2 && lp.y < 6) ? i : -1; };
   },
   sim: api => ({
     running: false,
-    start() { this.running = true; api.serial('Tap the white keys.'); },
+    start() { this.running = true; api.serial('Tap the coloured buttons to play a note.'); },
     stop() { this.running = false; api.tone(0); api.pressKey(-1, false); },
     note(i) { if (!this.running || i < 0) return; const N = [262, 294, 330, 349, 392, 440, 494, 523];
       api.line?.(13); api.pressKey(i, true); api.tone(N[i]); api.serial(`key ${i + 1} → ${N[i]} Hz`);

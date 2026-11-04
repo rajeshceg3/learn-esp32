@@ -6,7 +6,7 @@ export default {
     'BUZZER': 'ブザー', 'MOTOR': 'モーター', 'SERVO': 'サーボ', 'NIGHT LIGHT': '常夜灯',
     'LED BAR': 'LED バー', 'RGB LED': 'RGB LED', 'PRESS PAD': 'プレスパッド', 'TORCH': '懐中電灯',
     'OBSTACLE': '障害物', 'CAR': 'クルマ', 'PLANT': '植物', 'TRAFFIC LIGHT': '信号機',
-    '8 KEYS — TAP TO PLAY': '8 鍵 — タップして演奏', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - TAP TO PLAY': '8 鍵 — タップして演奏', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USBポート",
     "MICROCONTROLLER": "マイコン",

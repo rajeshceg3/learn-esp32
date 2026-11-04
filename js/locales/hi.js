@@ -6,7 +6,7 @@ export default {
     'BUZZER': 'बज़र', 'MOTOR': 'मोटर', 'SERVO': 'सर्वो', 'NIGHT LIGHT': 'नाइट लाइट',
     'LED BAR': 'LED बार', 'RGB LED': 'RGB LED', 'PRESS PAD': 'प्रेस पैड', 'TORCH': 'टॉर्च',
     'OBSTACLE': 'रुकावट', 'CAR': 'कार', 'PLANT': 'पौधा', 'TRAFFIC LIGHT': 'ट्रैफ़िक लाइट',
-    '8 KEYS — TAP TO PLAY': '8 कुंजियाँ — बजाने के लिए टैप करें', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - TAP TO PLAY': '8 कुंजियाँ — बजाने के लिए टैप करें', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB पोर्ट",
     "MICROCONTROLLER": "माइक्रोकंट्रोलर",

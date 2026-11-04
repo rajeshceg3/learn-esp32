@@ -6,7 +6,7 @@ export default {
     'BUZZER': 'זמזם', 'MOTOR': 'מנוע', 'SERVO': 'סרוו', 'NIGHT LIGHT': 'אור לילה',
     'LED BAR': 'שורת LED', 'RGB LED': 'LED RGB', 'PRESS PAD': 'משטח לחיצה', 'TORCH': 'פנס',
     'OBSTACLE': 'מכשול', 'CAR': 'מכונית', 'PLANT': 'צמח', 'TRAFFIC LIGHT': 'רמזור',
-    '8 KEYS — TAP TO PLAY': '8 קלידים — הקישו לנגן', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - TAP TO PLAY': '8 קלידים — הקישו לנגן', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "חיבור USB",
     "MICROCONTROLLER": "בקר",

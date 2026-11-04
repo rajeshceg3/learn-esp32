@@ -6,7 +6,7 @@ export default {
     'BUZZER': '부저', 'MOTOR': '모터', 'SERVO': '서보', 'NIGHT LIGHT': '무드등',
     'LED BAR': 'LED 바', 'RGB LED': 'RGB LED', 'PRESS PAD': '압력 패드', 'TORCH': '손전등',
     'OBSTACLE': '장애물', 'CAR': '자동차', 'PLANT': '식물', 'TRAFFIC LIGHT': '신호등',
-    '8 KEYS — TAP TO PLAY': '8 건반 — 탭하여 연주', 'HIGH': 'HIGH', 'LOW': 'LOW',
+    '8 KEYS - TAP TO PLAY': '8 건반 — 탭하여 연주', 'HIGH': 'HIGH', 'LOW': 'LOW',
 
     "USB PORT": "USB 포트",
     "MICROCONTROLLER": "마이크로컨트롤러",

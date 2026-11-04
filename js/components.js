@@ -340,14 +340,17 @@ export function toyCar() {
   return g;
 }
 export function pianoKeys(n = 8) {
-  const g = new THREE.Group();
-  const keys = [];
-  for (let i = 0; i < n; i++) {
-    const k = box(6.4, 2.6, 12, MAT.white, i * 7 - (n - 1) * 3.5, 1.3, 0);
-    g.add(k); keys.push(k);
+  const g=new THREE.Group(),keys=[];
+  const colors=[0xe65344,0xe99543,0xf0c54b,0x67a65a,0x48a3a1,0x518bc0,0x7772b8,0xb95b9e];
+  for(let i=0;i<n;i++){
+    const x=i*7-(n-1)*3.5;
+    g.add(ink(box(6,2.6,6,MAT.plastic,x,1.3,0)));
+    g.add(ink(box(5.6,.3,5.6,MAT.metal,x,2.75,0)));
+    const k=ink(cyl(2.15,2.15,2,new THREE.MeshStandardMaterial({color:colors[i%8],roughness:.4}),x,3.8,0,24));g.add(k);keys.push(k);
+    for(const z of[-3.3,3.3])g.add(box(.65,2,1.5,MAT.pinMetal,x,0,z));
   }
-  g.add(box(n * 7 + 2, 1.6, 16, MAT.plastic, 0, -.4, 0));
-  g.userData.keys = keys;
-  g.userData.press = (i, on) => { keys.forEach((k, j) => k.position.y = (j === i && on) ? .7 : 1.3); };
+  const rail=cyl(.4,.4,n*7,MAT.plastic,0,-.6,4.4,6);rail.rotation.z=Math.PI/2;g.add(rail);
+  g.userData.keys=keys;
+  g.userData.press=(i,on)=>keys.forEach((k,j)=>k.position.y=j===i&&on?3:3.8);
   return g;
 }
