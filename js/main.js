@@ -167,7 +167,14 @@ function rebuildTags() {
     const dot = document.createElement('span'); dot.className = 'tag-dot'; tagsEl.appendChild(dot);
     const d = document.createElement('button'); d.className = 'tag';
     d.innerHTML = `<span class="tag-ic">${ICON[t.i || 'pins']}</span><span class="tag-tx"><b>${trTag(t.label)}</b>${t.d ? `<i>${trTagDesc(t.label, t.d)}</i>` : ''}</span>`;
-    if (t.hold) {
+    if(t.drag){
+      d.style.touchAction='none';let startX=null,moved=false;
+      d.addEventListener('pointerdown',e=>{e.preventDefault();startX=e.clientX;moved=false;d.setPointerCapture(e.pointerId);cur.scene.tagDragStart?.(api);});
+      d.addEventListener('pointermove',e=>{if(startX===null)return;const dx=e.clientX-startX;if(Math.abs(dx)>5)moved=true;if(moved)cur.scene.tagDrag?.(dx,api);});
+      d.addEventListener('pointerup',()=>{if(startX!==null&&!moved)cur.scene.onClick?.(t.click,api);startX=null;});
+      d.addEventListener('pointercancel',()=>{startX=null;});d.addEventListener('lostpointercapture',()=>{startX=null;});
+      d.addEventListener('click',e=>{if(e.detail===0)cur.scene.onClick?.(t.click,api);});
+    } else if (t.hold) {
       d.style.touchAction='none';
       d.addEventListener('pointerdown',e=>{if(!state.running)return;e.preventDefault();d.setPointerCapture(e.pointerId);cur.scene.tagHold?.(t.click,true,api,e);});
       d.addEventListener('pointermove',e=>{if(d.hasPointerCapture(e.pointerId))cur.scene.holdMove?.(e,api);});
