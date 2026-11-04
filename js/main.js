@@ -125,6 +125,7 @@ function rebuildTags() {
     if (t.click) d.addEventListener('click', () => cur.scene.onClick?.(t.click, api));
     tagsEl.appendChild(d); tagDivs.push({ d, t });
   });
+  if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   // runtime HIGH/LOW tag
   const rt = document.createElement('div'); rt.className = 'tag live'; rt.id = 'runTag'; rt.style.display = 'none';
   tagsEl.appendChild(rt);
@@ -214,7 +215,7 @@ function pickAt(e) {
 }
 
 // ---------- part info popover ----------
-const partTag = document.createElement('div'); partTag.className = 'tag'; partTag.id = 'partTag'; partTag.style.display = 'none';
+const partTag = document.createElement('div'); partTag.className = 'tag live'; partTag.id = 'partTag'; partTag.style.display = 'none'; partTag.style.pointerEvents = 'none';
 tagsEl.appendChild(partTag);
 function openPartInfo(part) {
   openSheet('component', { title: part.label, desc: part.desc });
