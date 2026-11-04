@@ -297,7 +297,7 @@ void loop() {
 {
   id: 'temp', num: 11, title: 'Sense heat', heading: 'Sense heat',
   lede: 'The TMP36 turns temperature into a voltage: 0.5 V at 0 °C and 10 mV more for every degree. The ADC reads it, and a little maths gives degrees.',
-  features: [['wave', 'Analog voltage into GPIO32'], ['clock', 'Calibrate against your room'], ['hand', 'Warm the sensor with the torch']],
+  features: [['wave', 'Analog voltage into GPIO32'], ['clock', 'Calibrate against your room'], ['hand', 'Click the dryer to cycle scripted temperatures']],
   pinout: [['GPIO32', 'TMP36 out', '10 mV per °C plus a 500 mV offset.', '#1aa3a1'], ['3V3', 'Sensor supply', 'Low noise analog supply.', '#d64a3a'], ['GND', 'Ground', 'Third leg to ground.', '#2f3547']],
   example: [
     'Read the pin, scale to volts: <code>v = raw * 3.3 / 4095</code>.',

@@ -192,6 +192,26 @@ export function npn() {
   [-1.9, 0, 1.9].forEach(x => g.add(cyl(.3, .3, 6, MAT.pinMetal, x, -1.5, 1, 6)));
   return g;
 }
+// Original handheld dryer: broad barrel, vented rear, tapered nozzle and angled grip.
+export function heatGun() {
+  const g=new THREE.Group();
+  const teal=new THREE.MeshStandardMaterial({color:0x66b6ad,roughness:.45});
+  const dark=new THREE.MeshStandardMaterial({color:0x293445,roughness:.6});
+  g.add(ink(box(20,11,11,teal,0,17,0)));
+  g.add(ink(box(3.2,11.5,11.5,dark,11.2,17,0)));
+  g.add(ink(box(7,7,8,dark,-13,17,0)));
+  // A recessed outlet and raised protective rim.
+  g.add(box(.3,5,6,MAT.chip,-16.6,17,0));
+  for(const z of[-3.7,3.7])g.add(box(1,6.8,.6,MAT.metalDark,-16.8,17,z));
+  for(const y of[13.8,20.2])g.add(box(1,.6,8,MAT.metalDark,-16.8,y,0));
+  for(let y=13;y<=21;y+=2)g.add(box(.35,.65,8,MAT.chip,12.9,y,0));
+  const grip=ink(box(5.8,10,6,teal,3.2,7.2,0));grip.rotation.z=-.18;g.add(grip);
+  g.add(ink(cyl(4.5,4.9,1.5,dark,4,1.4,0,20)));
+  g.add(box(1.1,3,3,MAT.red,-.1,9,0));
+  const cord=new THREE.CatmullRomCurve3([new THREE.Vector3(5,1.5,0),new THREE.Vector3(11,.8,1),new THREE.Vector3(15,.7,4)]);
+  g.add(new THREE.Mesh(new THREE.TubeGeometry(cord,12,.45,6,false),dark));
+  return g;
+}
 export function tmp36() {
   const g = new THREE.Group();
   g.add(box(5, 5, 4.2, new THREE.MeshStandardMaterial({ color: 0x3a3f52, roughness: .4 }), 0, 2.5, 0));

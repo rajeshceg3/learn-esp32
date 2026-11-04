@@ -255,15 +255,17 @@ motor: {
 temp: {
   build(s) {
     const t = C.tmp36(); t.position.copy(bb(14, 2)); s.add(t, 'tmp');
+    const dryer=C.heatGun();dryer.position.set(91,0,7);s.add(dryer,'heat');
     s.wires.push(wireTo(pin('D32'), bb(14, 4), WIRE.green, 13, 'D32'), wireTo(pin('3V3'), bb(11, 1), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(17, 1), WIRE.navy, 12, 'GND'));
     s.tags = [ { at: pin('D32'), label: 'GPIO32 · ADC', i: 'wave', d: 'Reads the sensor voltage.' }, { at: bb(14, 2).add(V(0, 8, 0)), label: 'TMP36', click: 'tmp', i: 'info', d: 'Outputs 10 mV per °C.' } ];
-    s.onClick = (w, api) => { if (w === 'tmp') api._warm = ((api._warm ?? 1) + 1) % 3; };
+    s.tags.push({at:V(91,25,7),label:'HEAT',click:'heat',i:'bolt',d:'Click to cycle the scripted temperature.'});
+    s.onClick = (w, api) => { if (w === 'tmp'||w==='heat') {api._warm = ((api._warm ?? 1) + 1) % 3;s.refs.heat.position.x=91-(api._warm===2?8:0);} };
   },
   sim: api => {
     api._warm = 1; let acc = 0; const temps = [12, 24, 38];
     return {
       running: false,
-      start() { this.running = true; api.serial('Reading the TMP36. Click it for a different room.'); },
+      start() { this.running = true; api.serial('Scripted TMP36 reading. Click the sensor or dryer to change temperature.'); },
       stop() { this.running = false; },
       tick(dt) { if (!this.running) return; acc += dt;
         if (acc > .9) { acc = 0; api.line?.(11); const tc = temps[api._warm]; api.serial(`${tc.toFixed(1)} °C  (raw ${Math.round((tc / 100 + .5) / 3.3 * 4095)})`); } },
