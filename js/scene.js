@@ -134,8 +134,19 @@ export function buildBoard() {
   const mod = new THREE.Group();
   mod.add(ink(box(19, 1.2, 19, new THREE.MeshStandardMaterial({ color: 0x1c2136, roughness: .55 }), 0, .6, 0)));
   const can = ink(box(17, 2.4, 13, MAT.metal, 0, 2.4, 2.6), 0x2a3040); mod.add(can);
-  // antenna meander lines
-  for (let i = 0; i < 4; i++) mod.add(box(14, .3, .8, MAT.metal, 0, 1.35, -7.2 + i * 2.2));
+  // Printed antenna at the exposed end of the radio module.
+  const copper = new THREE.MeshStandardMaterial({color:0xc7a95f,metalness:.35,roughness:.6});
+  for (let i = 0; i < 4; i++) {
+    mod.add(box(13, .14, .35, copper, 0, 1.28, -8.1 + i * 1.5));
+    if(i<3)mod.add(box(.35,.14,1.85,copper,i%2? -6.3:6.3,1.28,-7.35+i*1.5));
+  }
+  // Original typographic radio-can marking, not a copied manufacturer image.
+  const mc=document.createElement('canvas');mc.width=512;mc.height=384;const mctx=mc.getContext('2d');
+  mctx.fillStyle='#d9d2c4';mctx.fillRect(0,0,512,384);mctx.fillStyle='#535963';mctx.textAlign='center';
+  mctx.font='500 43px monospace';mctx.fillText('ESP32',256,114);mctx.font='28px monospace';mctx.fillText('WROOM-32',256,169);
+  mctx.font='19px monospace';mctx.fillText('Wi-Fi + Bluetooth',256,218);mctx.strokeStyle='#7c817f';mctx.lineWidth=2;mctx.strokeRect(40,52,432,225);
+  const mt=new THREE.CanvasTexture(mc);mt.colorSpace=THREE.SRGBColorSpace;mt.anisotropy=8;
+  const ml=new THREE.Mesh(new THREE.PlaneGeometry(16.6,12.6),new THREE.MeshStandardMaterial({map:mt,roughness:.6,metalness:.25}));ml.rotation.x=-Math.PI/2;ml.position.set(0,3.61,2.6);mod.add(ml);
   mod.position.set(14, top, 0);
   g.add(mod); reg(can, 'module', 'ESP32-WROOM-32', 'The brain: dual-core 240 MHz chip with Wi-Fi and Bluetooth radios under the can.');
   A('module', 14, top + 4, 0);
@@ -163,6 +174,11 @@ export function buildBoard() {
   // CP2102 USB-UART bridge (QFN)
   const uart = ink(box(5, .9, 5, MAT.chip, -12, top + .45, 0), 0x3a4358); g.add(uart);
   reg(uart, 'uart', 'USB-UART bridge', 'Turns USB into serial so your computer can talk to the ESP32.');
+  // QFN bridge perimeter pads.
+  for(let j=0;j<6;j++)for(const side of [-1,1]){
+    g.add(box(.55,.22,.35,MAT.pinMetal,-13.85+j*.74,top+.12,side*2.65));
+    g.add(box(.35,.22,.55,MAT.pinMetal,-12+side*2.65,top+.12,-1.85+j*.74));
+  }
   // regulator
   const regM = ink(box(6.5, 2.2, 6.5, MAT.chip, -6, top + 1.1, 7.6), 0x3a4358); g.add(regM);
   reg(regM, 'reg', '3.3 V regulator', 'Steps the 5 V USB supply down to the 3.3 V the ESP32 runs on.');
@@ -175,7 +191,14 @@ export function buildBoard() {
 
   // passives sprinkle
   const pass = [[-3, -6, 0], [0.5, -7.6, 0], [-9, -7.4, 90], [-15, 6.8, 0], [-17.5, -7.8, 90], [5.4, -6.6, 0], [7, 7, 90], [-0.5, 6.4, 0]];
-  pass.forEach(([x, z, rot]) => g.add(ink(box(1.6, .5, .8, MAT.chip, x, top + .25, z, rot * Math.PI / 180), 0x3a4358)));
+  pass.forEach(([x, z, rot]) => {
+    const part=new THREE.Group();part.position.set(x,top,z);part.rotation.y=rot*Math.PI/180;
+    part.add(box(1.8,.18,1.0,MAT.pinMetal,0,.09,0));
+    part.add(ink(box(1.1,.55,.8,MAT.chip,0,.34,0),0x3a4358));g.add(part);
+  });
+  // Regulator solder pads and package tab.
+  for(let j=0;j<3;j++)g.add(box(.8,.25,1.8,MAT.pinMetal,-8.2+j*2.2,top+.12,11));
+  g.add(box(3.8,.22,1.5,MAT.pinMetal,-6,top+.11,3.9));
 
   // headers: 2 x 15 pins
   const headerGroup = new THREE.Group();

@@ -423,3 +423,28 @@ svg{display:block}
  .stage-corner{display:none}.toolbar{padding-inline:10px;gap:6px;min-width:286px}
  .stage-wrap{margin-inline:12px;border-radius:14px}
 }
+
+/* Independent drafting surface: fixed isometric spacing, distinct from the page backdrop. */
+.stage-wrap{background-color:var(--bg);background-image:repeating-linear-gradient(30deg,transparent 0 21px,rgba(183,153,108,.3) 21px 22px),repeating-linear-gradient(150deg,transparent 0 21px,rgba(183,153,108,.3) 21px 22px);background-position:center}
+.stage-wrap.no-grid{background-image:none}
+@media(max-width:1023px){
+ .bg-grid{background:var(--bg)}
+ .tag:not(.live):not(#partTag){padding:3px 7px;border-radius:6px;font-size:11px;letter-spacing:.045em;line-height:1.3}
+ .tag:not(.live):not(#partTag)::before{display:none}
+ .tag-dot{position:absolute;width:15px;height:15px;border-radius:50%;border:3px solid var(--teal);background:#e8fff6;box-shadow:0 0 0 1px rgba(24,33,61,.25);transform:translate(-50%,-50%);pointer-events:none;z-index:1}
+}
+
+@media(max-width:1023px){
+ .lesson-rail{padding-inline:12px;gap:12px}
+ .lesson-card{width:198px;height:74px;border-radius:8px;scroll-snap-align:center;padding:7px;gap:8px}
+ .lesson-card:first-child{width:252px}
+ .lesson-card .thumb{width:60px;height:60px}
+ .lesson-card:first-child .thumb{width:96px;height:64px}
+ .lesson-card .lt{font-size:14px;letter-spacing:.035em;text-align:start}
+ .lesson-card.on{border-color:var(--teal-deep)}
+ .lesson-card.on .chev{color:var(--teal-deep)}
+}
+
+@media(max-width:1023px){.lesson-card .lt{flex:none;max-width:118px;font-size:14px;white-space:normal}.lesson-card:not(:first-child){gap:8px}.lesson-card:not(:first-child) .thumb{width:45px}.lesson-card:not(:first-child) .lt{white-space:nowrap}.lesson-card:first-child .lt{max-width:114px}}
+
+@media(max-width:1023px){.rail-wrap{position:relative;display:block}.rail-nav{position:absolute;top:calc(50% - 15px);z-index:2;background:var(--card);width:30px;height:30px;border-radius:50%}.rail-nav:first-child{left:0}.rail-nav:last-child{right:0}.lesson-rail{scroll-snap-type:none}.lesson-card .chev{margin-inline-start:auto}}

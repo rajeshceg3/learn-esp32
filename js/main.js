@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: mobile-header-progress-20261104
+// Build: drafting-grid-labels-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -26,7 +26,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true 
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xf6eddd);
+scene.background = null; // let the independent drafting grid show behind the transparent scene
 const camera = new THREE.PerspectiveCamera(30, 1, 1, 2000);
 
 const hemi = new THREE.HemisphereLight(0xfff4e0, 0xcbb894, 1.05); scene.add(hemi);
@@ -41,7 +41,7 @@ const fill = new THREE.DirectionalLight(0xdfe8ff, .55); fill.position.set(-80, 6
 const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: .14 }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 const grid = new THREE.GridHelper(600, 60, 0xd8c5a8, 0xe3d3ba);
-grid.material.transparent = true; grid.material.opacity = .5; grid.position.y = .05; scene.add(grid);
+grid.visible = false; // screen-space grid stays legible through camera changes
 
 // ---------- camera rig ----------
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
@@ -166,7 +166,11 @@ function placeTags() {
       cx = ax + (ax < r.width * .52 ? -(w / 2 + 32) : (w / 2 + 32));
       cy = ay - h / 2 - 40;
       if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
-    } else { cx = ax; cy = ay - 26; }
+    } else {
+      // Attach a large pin marker to the physical part, with its compact label beside it.
+      const right = ax + w + 14 < r.width - 6;
+      cx = ax + (right ? 1 : -1) * (w / 2 + 10); cy = ay - 1;
+    }
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
@@ -270,7 +274,7 @@ function loadLesson(i, keepTab) {
   $('#panel').classList.remove('open');
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
+  rig.tAz = i === 0 ? 1.0 : (innerWidth < 1024 ? .65 : -.62); rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -327,7 +331,7 @@ function frameScene(snap) {
     if (Math.abs(need - 1) < .005) break;
   }
   dist *= 1.015;
-  if (!bboard.visible && aspect < 1) dist *= .88; // board-only lesson on portrait: fill the frame like the reference (near-plane perspective clips if tighter)
+  if (!bboard.visible && aspect < 1) dist *= .98; // board-only lesson on portrait: fill the frame like the reference (near-plane perspective clips if tighter)
   rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
@@ -488,7 +492,11 @@ function renderRail() {
   // explicit prev/next tap arrows like the reference rail
   $('#railPrev').onclick = () => rail.scrollBy({left: -rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
   $('#railNext').onclick = () => rail.scrollBy({left: rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
-  requestAnimationFrame(() => rail.querySelector('.lesson-card.on')?.scrollIntoView({ behavior: 'auto', block: 'nearest', inline: 'center' }));
+  requestAnimationFrame(() => {
+    const active=rail.querySelector('.lesson-card.on');if(!active)return;
+    if(innerWidth<1024 && document.dir!=='rtl')rail.scrollLeft=state.lesson===0 ? 0 : active.offsetLeft-rail.offsetLeft-rail.clientWidth*.38;
+    else active.scrollIntoView({behavior:'auto',block:'nearest',inline:'center'});
+  });
   // fill thumbs lazily
   rail.querySelectorAll('img[data-thumb]').forEach(img => {
     const i = +img.dataset.thumb;
@@ -543,7 +551,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
+  if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : (innerWidth < 1024 ? .65 : -.62); rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
@@ -655,7 +663,8 @@ document.addEventListener('pointerdown', e => {
 });
 
 function applySettings() {
-  grid.visible = state.settings.grid;
+  grid.visible = false;
+  canvas.parentElement.classList.toggle('no-grid', !state.settings.grid);
   schPanel.setOpen(!!state.settings.schematic);
   rebuildTags();
   if (!state.settings.sound) tone(0);

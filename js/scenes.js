@@ -3,8 +3,8 @@ import * as THREE from 'three';
 import { MAT, box, cyl, pinLocal } from './scene.js';
 import * as C from './components.js';
 
-export const BOARD_POS = new THREE.Vector3(-46, 0, 6);
-export const BB_POS = new THREE.Vector3(46, 0, 10);
+export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
+export const BB_POS = new THREE.Vector3(38, 0, 0);
 export const WIRE = { red: 0xd64a3a, navy: 0x2f3547, orange: 0xe8913a, green: 0x3fbf6a, yellow: 0xe8c53a, purple: 0x6a4fa3, white: 0xf2efe6, teal: 0x1aa3a1 };
 const bb = (col, row) => C.bbHole(col, row).add(BB_POS);
 const pin = name => pinLocal(name).add(BOARD_POS);
