@@ -314,6 +314,7 @@ function frameScene(snap) {
     if (Math.abs(need - 1) < .005) break;
   }
   dist *= 1.015;
+  if (!bboard.visible && aspect < 1) dist *= .86; // board-only lesson on portrait: fill the frame like the reference
   rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
@@ -584,7 +585,14 @@ function openSheet(kind, data, anchor) {
   sh.classList.add('open');
   if (innerWidth >= 1024) {
     const top = anchor ? anchor.getBoundingClientRect().top - 6 : 100;
-    sh.style.top = Math.min(innerHeight - 220, Math.max(64, top)) + 'px';
+    sh.style.top = Math.max(12, top) + 'px';
+    sh.style.maxHeight = 'none';
+    requestAnimationFrame(() => { // clamp so the whole popover stays in view
+      const hh = sh.offsetHeight;
+      const maxTop = Math.max(12, innerHeight - hh - 12);
+      sh.style.top = Math.min(Math.max(12, top), maxTop) + 'px';
+      sh.style.maxHeight = (innerHeight - 24) + 'px';
+    });
   }
 }
 document.addEventListener('pointerdown', e => {
