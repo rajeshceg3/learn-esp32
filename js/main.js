@@ -734,6 +734,7 @@ function openSheet(kind, data, anchor) {
   if (state.sheet === kind && !data) { closeSheet(); return; }
   if(!state.sheet){sheetOpener=anchor||document.activeElement;if(!sheetOpener||sheetOpener===document.body){sheetOpener=canvas;canvas.tabIndex=0;}}
   state.sheet = kind;
+  $('#sheetClose').setAttribute('aria-label',T('close_panel'));$('#sheetClose').title=T('close_panel')+' (Esc)';
   if(innerWidth<1024){sh.style.top='auto';sh.style.maxHeight='calc(100dvh - 100px)';}
   if (kind === 'components') {
     title.textContent = T('components'); sub.textContent = `12 ${T('in_view')}`;
@@ -780,8 +781,8 @@ function openSheet(kind, data, anchor) {
     </button>`).join('');
     body.querySelectorAll('.lang-row').forEach(r => r.onclick = () => setLang(r.dataset.c));
   } else if (kind === 'thermal') {
-    title.textContent='HAIRDRYER';sub.textContent='Scripted heat source';
-    body.innerHTML=`<div class="comp-desc">Drag it closer to the sensor or farther away, or switch it off.</div><label class="set-row" for="heatDistance"><span>Distance</span><output id="heatDistanceValue">${Math.round(api._heatDistance)} cm</output></label><input id="heatDistance" type="range" min="5" max="40" step="1" value="${Math.round(api._heatDistance)}" style="width:100%;accent-color:var(--teal)"><label class="set-row" for="heatPower"><span>Hairdryer switched on</span><input id="heatPower" type="checkbox" role="switch" ${api._heat?'checked':''}></label><button type="button" class="inspector-focus" id="heatFocus">⊙ Zoom to it</button>`;
+    title.textContent=T('heat_title');sub.textContent=T('heat_subtitle');
+    body.innerHTML=`<div class="comp-desc">${T('heat_description')}</div><label class="set-row" for="heatDistance"><span>${T('heat_distance')}</span><output id="heatDistanceValue" dir="ltr">${Math.round(api._heatDistance)} cm</output></label><input id="heatDistance" type="range" min="5" max="40" step="1" value="${Math.round(api._heatDistance)}" style="width:100%;accent-color:var(--teal)"><label class="set-row" for="heatPower"><span>${T('heat_power')}</span><input id="heatPower" type="checkbox" role="switch" ${api._heat?'checked':''}></label><button type="button" class="inspector-focus" id="heatFocus">⊙ ${T('focus_component')}</button>`;
     body.querySelector('#heatDistance').oninput=e=>{api.setHeatDistance(e.target.value,api);body.querySelector('#heatDistanceValue').textContent=e.target.value+' cm';};
     body.querySelector('#heatPower').onchange=e=>{api._heat=e.target.checked;};
     body.querySelector('#heatFocus').onclick=()=>focusComponent(cur.scene.refs.heat);
