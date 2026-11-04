@@ -1,5 +1,5 @@
 // Learn ESP32 - app shell. Original code.
-// Build: compact-code-mobile-depth-20261104
+// Build: run-continuity-i18n-controls-20261104
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
@@ -13,7 +13,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const state = {
   lesson: 0, tab: 'overview', running: false, sim: null, scene: null,
   settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, schematic: false, lang: 'en' },
-  done: new Set(), sheet: null, startedAt: 0, timing: [500, 500],
+  done: new Set(), sheet: null, startedAt: 0, timing: [500, 500], logs: [], activeLine: 0,
 };
 try { Object.assign(state.settings, JSON.parse(localStorage.getItem('esp32:settings') || '{}'));
   (JSON.parse(localStorage.getItem('esp32:done') || '[]')).forEach(i => state.done.add(i)); } catch {}
@@ -99,6 +99,7 @@ const api = {
   serial: t => log(t), tone,
   setBuiltin: on => { board.builtinLed.material = on ? new THREE.MeshStandardMaterial({ color: 0x5aa0ec, emissive: 0x2a6ae0, emissiveIntensity: 1.8 }) : MAT.blueLed; },
   line: n => {
+    state.activeLine = n;
     document.querySelectorAll('#panelBody .code-line').forEach((el, i) => {
       const active = i + 1 === n; el.classList.toggle('active', active);
       if (active) { const pre = el.closest('.code-pre'); if (pre && (el.offsetTop < pre.scrollTop || el.offsetTop + el.offsetHeight > pre.scrollTop + pre.clientHeight)) pre.scrollTop = el.offsetTop - pre.clientHeight / 2; }
@@ -264,7 +265,7 @@ function loadLesson(i, keepTab) {
   schPanel.setLesson(LESSONS[i].id, trLesson(LESSONS[i]).heading);
   $('#panel').classList.remove('open');
   stopSim();
-  state.lesson = i; state.timing = [500, 500];
+  state.lesson = i; state.timing = [500, 500]; state.logs = [];
   rig.tAz = i === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
   lessonGroup.clear();
   const ls = new LessonScene();
@@ -357,11 +358,11 @@ function renderPanel() {
     renderPanel();
   });
   const body = $('#panelBody');
-  const cardHead = (name) => `<div class="lesson-head"><div class="lesson-title">${name}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>`;
+  const cardHead = (name) => `<div class="lesson-head"><div class="lesson-title">${name}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>`;
   const code = () => { let i=0; return state.lesson === 1 ? L.code.replace(/delay\(500\)/g, () => `delay(${state.timing[i++]})`) : L.code; };
   let h = '';
   if (state.tab === 'overview') {
-    h = `<div class="lesson-head"><div class="lesson-title">${L.heading.toUpperCase()}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
+    h = `<div class="lesson-head"><div class="lesson-title">${L.heading.toUpperCase()}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <p class="lesson-lede">${L.lede}</p>
       <ul class="feature-list">${L.features.map(([ic, tx]) => `<li><span class="fi">${ICON[ic]}</span><span>${tx}</span></li>`).join('')}</ul>`;
   } else if (state.tab === 'pinout') {
@@ -369,18 +370,18 @@ function renderPanel() {
   } else if (state.tab === 'example') {
     h = cardHead(T('tab_example')) + `<div class="example">${L.example.map(p => `<p>${p}</p>`).join('')}</div>`;
   } else {
-    h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
+    h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card">${h}</div>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
-      <button class="icon-btn" id="btnCodeFs" title="Fullscreen code">${ICON.expand}</button>
-      <button class="icon-btn" id="btnCopy" title="Copy code"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
-      <button class="icon-btn primary" id="btnRun" title="Run sketch"><svg viewBox="0 0 24 24" fill="currentColor" id="runIcon"><path d="M8 5v14l11-7z"/></svg></button>
+      <button class="icon-btn" id="btnCodeFs" title="${T('fullscreen_code')}" aria-label="${T('fullscreen_code')}">${ICON.expand}</button>
+      <button class="icon-btn" id="btnCopy" title="${T('copy_code')}" aria-label="${T('copy_code')}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg></button>
+      <button class="icon-btn primary ${state.running ? 'is-running' : ''}" id="btnRun" title="${T(state.running ? 'stop' : 'run')}" aria-label="${T(state.running ? 'stop' : 'run')}"><svg viewBox="0 0 24 24" fill="currentColor" id="runIcon"><path d="M8 5v14l11-7z"/></svg></button>
     </span></div>
     <div class="code-pre">${hl(code())}</div>
-    <div class="console-head" ${state.running ? '' : 'hidden'}><span class="serial-dot"></span><b>${T('serial_monitor')}</b><span id="serialStatus">${T('running')}</span><button id="consoleStop" class="icon-btn" title="Stop sketch">×</button></div>
+    <div class="console-head" ${state.running ? '' : 'hidden'}><span class="serial-dot"></span><b>${T('serial_monitor')}</b><span id="serialStatus">${T('running')}</span><button id="consoleStop" class="icon-btn" title="${T('stop')}" aria-label="${T('stop')}">×</button></div>
     <div class="console" id="console" ${state.running ? '' : 'hidden'}></div>
   </div>`;
   body.innerHTML = h;
@@ -397,17 +398,22 @@ function renderPanel() {
     const lines = [...document.querySelectorAll('.code-pre .code-line')].filter(e=>/delay\(/.test(e.textContent));
     lines.forEach((el, i) => {
       const num = el.querySelector('.tok-num'); if (!num) return;
-      const bt = document.createElement('button'); bt.className='code-param'; bt.textContent=state.timing[i]; bt.title='Change delay (ms)'; num.replaceWith(bt);
+      const bt = document.createElement('button'); bt.className='code-param'; bt.textContent=state.timing[i]; bt.title=T('change_delay'); bt.setAttribute('aria-label',T('change_delay')); num.replaceWith(bt);
       bt.onclick=()=>{ const choices=[100,200,500,900,1000,1500]; state.timing[i]=choices[(choices.indexOf(state.timing[i])+1)%choices.length]; bt.textContent=state.timing[i]; cur.sim?.setTiming?.(...state.timing); };
     });
   };
   mountParams();
   $('#consoleStop').onclick=()=>stopSim();
+  for (const [t, cls] of state.logs) appendLog(t, cls);
+  api.line(state.activeLine);
   if(state.running) $('#runIcon').innerHTML='<rect x="6" y="6" width="12" height="12" rx="2"/>';
   $('#btnCopy').onclick = () => { navigator.clipboard?.writeText(code()); log(T('copied'), 'sys'); };
   $('#btnRun').onclick = () => state.running ? stopSim() : startSim();
 }
 function log(t, cls = '') {
+  state.logs.push([t,cls]); if(state.logs.length>40) state.logs.shift(); appendLog(t, cls);
+}
+function appendLog(t, cls = '') {
   const c = $('#console'); if (!c) return;
   const d = document.createElement('div'); d.className = 'c-line ' + (cls ? 'c-' + cls : ''); d.textContent = t;
   c.appendChild(d); c.scrollTop = c.scrollHeight;
@@ -418,9 +424,9 @@ function log(t, cls = '') {
 function startSim() {
   if (state.running) return;
   state.running = true; api.line?.(0); state.startedAt = performance.now();
-  document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML='';
+  document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
   $('#serialStatus').textContent=T('running');
-  $('#btnRun').classList.add('is-running');
+  $('#btnRun').classList.add('is-running'); $('#btnRun').title=T('stop'); $('#btnRun').setAttribute('aria-label',T('stop'));
   cur.sim?.setTiming?.(...state.timing);
   $('#runIcon').innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
   log(T('uploading'), 'sys');
@@ -432,7 +438,7 @@ function startSim() {
 function stopSim() {
   if (!state.running) return;
   state.running = false; api.line?.(0);
-  $('#btnRun')?.classList.remove('is-running');
+  $('#btnRun')?.classList.remove('is-running'); if($('#btnRun')) { $('#btnRun').title=T('run'); $('#btnRun').setAttribute('aria-label',T('run')); }
   if ($('#serialStatus')) $('#serialStatus').textContent=T('stopped');
   const ic = $('#runIcon'); if (ic) ic.innerHTML = '<path d="M8 5v14l11-7z"/>';
   cur.sim?.stop(); tone(0);
@@ -529,7 +535,7 @@ const toolbar = $('#toolbar');
 toolbar.innerHTML = [
   ['reset', 'Reset view', 'reset'], ['rotL', 'Turn left', 'rotL'], ['minus', 'Zoom out', 'minus'], ['plus', 'Zoom in', 'plus'],
   ['info', 'About this view', 'info'], ['up3d', 'Reset angle', 'up3d'], ['waveT', 'Current flow', 'waveT'],
-].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${a}">${ICON[ic]}</button>`).join('');
+].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
   if (k === 'reset') { rig.tAz = state.lesson === 0 ? 1.0 : (innerWidth < 1024 ? -.8 : -.62); rig.tPol = state.lesson > 0 && innerWidth < 1024 ? .65 : 1.07; frameScene(); }
@@ -544,6 +550,7 @@ toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
 
 // ---------- navs ----------
 function renderNavs() {
+  const toolKeys=['reset_view','turn_left','zoom_out','zoom_in','about_view','reset_angle','flow']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],
     ['lessons', 'Lessons', 'lessons', () => $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' })],
@@ -553,16 +560,16 @@ function renderNavs() {
     ['lang', 'Language', 'globe', el => openSheet('language', null, el), 'EN'],
   ];
   $('#bottomnav').innerHTML = items.map(([k, a, ic, , badge]) =>
-    `<button class="nav-btn" data-k="${k}" aria-label="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
-  $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="Expand sidebar" title="Expand">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
-    `<button class="nav-btn" data-k="${k}" aria-label="${a}" title="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
+    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
+  $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="${T('expand_sidebar')}" title="${T('expand_sidebar')}">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
+    `<button class="nav-btn" data-k="${k}" aria-label="${T('nav_' + k)}" title="${T('nav_' + k)}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
   document.querySelectorAll('.nav-btn[data-k]').forEach(b => { const fn = items.find(x => x[0] === b.dataset.k)?.[3]; b.onclick = () => fn?.(b); });
   const tog = $('#sidebar .side-toggle');
   tog.onclick = () => {
     const sb = $('#sidebar'), on = sb.classList.toggle('expanded');
     $('#app').classList.toggle('side-open', on);
     tog.innerHTML = on ? ICON.chevL : ICON.chevR;
-    tog.setAttribute('aria-label', on ? 'Collapse sidebar' : 'Expand sidebar');
+    tog.setAttribute('aria-label', T(on ? 'collapse_sidebar' : 'expand_sidebar'));
     setTimeout(() => { resize(); frameScene(); }, 60);
     setTimeout(() => { resize(); frameScene(); }, 350);
   };
