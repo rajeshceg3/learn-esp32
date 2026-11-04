@@ -6,29 +6,30 @@ const ledBody = c => new THREE.MeshStandardMaterial({ color: c, roughness: .25, 
 export const LED_COLORS = { red: 0xe8392e, yellow: 0xf2c23a, green: 0x3fbf6a, blue: 0x3d7be0, white: 0xf2efe6 };
 
 // ---------- breadboard ----------
-// Compact 24-column board uses logical columns 3..26 of the 30-column wiring grid.
+// Centered 24/18-column boards use logical columns 3..26 / 6..23 of the wiring grid.
 // Keep every mounted part and wire endpoint in the same physical location.
 export const BB = { cols: 24, rows: 10, pitch: 2.54, w: 24 * 2.54 + 9, d: 10 * 2.54 + 9 };
 export function bbHole(col, row) { // col 0..29, row 0..9 (0..4 top half, 5..9 bottom)
   return new THREE.Vector3((col - 14.5) * BB.pitch, 8.6, (row - (BB.rows - 1) / 2) * BB.pitch);
 }
-export function breadboard() {
+export function breadboard(cols=24) {
+  const dims={...BB,cols,w:cols*BB.pitch+9};
   const g = new THREE.Group();
-  g.add(ink(box(BB.w, 8.5, BB.d, new THREE.MeshBasicMaterial({color:0xeee9de}), 0, 4.25, 0)));
+  g.add(ink(box(dims.w, 8.5, BB.d, new THREE.MeshBasicMaterial({color:0xeee9de}), 0, 4.25, 0)));
   // Dark extruded edge strokes retain their weight at oblique camera angles.
   const em=new THREE.MeshBasicMaterial({color:0x333642});
-  for(const yy of[0,8.5])for(const zz of[-BB.d/2,BB.d/2]){const e=cyl(.16,.16,BB.w,em,0,yy,zz,6);e.rotation.z=Math.PI/2;g.add(e)}
-  for(const yy of[0,8.5])for(const xx of[-BB.w/2,BB.w/2]){const e=cyl(.16,.16,BB.d,em,xx,yy,0,6);e.rotation.x=Math.PI/2;g.add(e)}
-  for(const xx of[-BB.w/2,BB.w/2])for(const zz of[-BB.d/2,BB.d/2])g.add(cyl(.16,.16,8.5,em,xx,4.25,zz,6));
+  for(const yy of[0,8.5])for(const zz of[-BB.d/2,BB.d/2]){const e=cyl(.16,.16,dims.w,em,0,yy,zz,6);e.rotation.z=Math.PI/2;g.add(e)}
+  for(const yy of[0,8.5])for(const xx of[-dims.w/2,dims.w/2]){const e=cyl(.16,.16,BB.d,em,xx,yy,0,6);e.rotation.x=Math.PI/2;g.add(e)}
+  for(const xx of[-dims.w/2,dims.w/2])for(const zz of[-BB.d/2,BB.d/2])g.add(cyl(.16,.16,8.5,em,xx,4.25,zz,6));
   // groove down the middle
-  g.add(box(BB.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
+  g.add(box(dims.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
   // holes texture
   const cv = document.createElement('canvas'); cv.width = 512; cv.height = 176;
   const c = cv.getContext('2d'); c.fillStyle = '#f4ead6'; c.fillRect(0, 0, 512, 176);
   // Use the physical 2.54mm grid for both canvas recesses and mounted parts.
-  const hx=i=>((i-(BB.cols-1)/2)*BB.pitch/BB.w+.5)*512;
+  const hx=i=>((i-(dims.cols-1)/2)*BB.pitch/dims.w+.5)*512;
   const hy=j=>((j-(BB.rows-1)/2)*BB.pitch/BB.d+.5)*176;
-  for(let i=0;i<BB.cols;i++)for(let j=0;j<BB.rows;j++){
+  for(let i=0;i<dims.cols;i++)for(let j=0;j<BB.rows;j++){
     const x=hx(i),y=hy(j);c.fillStyle='#bdb5a7';c.fillRect(x-3.2,y-2.8,6.4,5.6);
     c.fillStyle='#343741';c.fillRect(x-2.2,y-2.2,4.4,3.8);
   }
@@ -36,9 +37,9 @@ export function breadboard() {
   c.fillStyle='#c45f50';c.fillRect(8,7,496,1.4);c.fillRect(8,168,496,1.4);
   c.fillStyle='#66829c';c.fillRect(8,10,496,1.4);c.fillRect(8,164.5,496,1.4);
   c.fillStyle='#ded7c9';c.fillRect(7,84,498,8);c.strokeStyle='#b9b2a6';c.strokeRect(7,84,498,8);
-  c.fillStyle='#958c7d';c.font='7px monospace';c.textAlign='center';for(let i=0;i<BB.cols;i+=5)c.fillText(String(i+4),hx(i),161);
+  c.fillStyle='#958c7d';c.font='7px monospace';c.textAlign='center';for(let i=0;i<dims.cols;i+=5)c.fillText(String(i+(30-dims.cols)/2+1),hx(i),161);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
-  const topM = new THREE.Mesh(new THREE.PlaneGeometry(BB.w, BB.d), new THREE.MeshBasicMaterial({ map: tex }));
+  const topM = new THREE.Mesh(new THREE.PlaneGeometry(dims.w, BB.d), new THREE.MeshBasicMaterial({ map: tex }));
   topM.rotation.x = -Math.PI / 2; topM.position.y = 8.62; topM.receiveShadow = true;
   g.add(topM);
   return g;

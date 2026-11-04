@@ -3,7 +3,7 @@
 import * as THREE from 'three';
 import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
-import { SCENES, BOARD_POS, BB_POS } from './scenes.js';
+import { SCENES, BOARD_POS, BB_POS, setLessonLayout } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
 import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
 import { translateRuntime } from './runtime-i18n.js';
@@ -108,7 +108,9 @@ addEventListener('keydown', e => {
 
 // ---------- board + lesson scene ----------
 const board = buildBoard(); board.group.position.copy(BOARD_POS); scene.add(board.group);
-const bboard = C.breadboard(); bboard.position.copy(BB_POS); scene.add(bboard);
+let bboard = C.breadboard(); bboard.position.copy(BB_POS); scene.add(bboard);
+// Keep two owned meshes rather than rebuilding textures on every lesson switch.
+const breadboardViews={24:bboard};
 const lessonGroup = new THREE.Group(); scene.add(lessonGroup);
 
 const ray = new THREE.Raycaster(); const mouseV = new THREE.Vector2();
@@ -413,10 +415,20 @@ function loadLesson(i, keepTab) {
   $('#sheet').classList.remove('open');state.sheet=null;
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 || ([1,3].includes(i) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
+  rig.tAz = i === 0 || ([3].includes(i) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
   clearComponentFocus();lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
+  setLessonLayout(LESSONS[i].id);
+  board.group.position.copy(BOARD_POS);
+  const cols = LESSONS[i].id === 'blink' ? 18 : 24;
+  bboard.visible = false;
+  if (!breadboardViews[cols]) {
+    breadboardViews[cols] = C.breadboard(cols);
+    scene.add(breadboardViews[cols]);
+  }
+  bboard = breadboardViews[cols];
+  bboard.position.copy(BB_POS);
   bboard.visible = LESSONS[i].sim !== 'builtin';
   def.build(ls);
   lessonGroup.add(ls.root);
@@ -722,7 +734,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 || ([1,3].includes(state.lesson) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
+  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 || ([3].includes(state.lesson) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);

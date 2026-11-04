@@ -7,6 +7,11 @@ import {POT_HELP} from './i18n.js';
 export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
 export const WIRE = { red: 0xd64a3a, navy: 0x2f3547, orange: 0xe8913a, green: 0x3fbf6a, yellow: 0xe8c53a, purple: 0x6a4fa3, white: 0xf2efe6, teal: 0x1aa3a1 };
+export function setLessonLayout(id) {
+  const compact = id === 'blink';
+  BOARD_POS.set(compact ? -28 : -38, 0, compact ? 16 : 25);
+  BB_POS.set(compact ? 29 : 38, 0, compact ? -6 : 0);
+}
 const bb = (col, row) => C.bbHole(col, row).add(BB_POS);
 const pin = name => pinLocal(name).add(BOARD_POS);
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
@@ -39,7 +44,7 @@ blink: {
   build(s) {
     const led = C.led5mm(C.LED_COLORS.red); led.position.copy(bb(14, 2)); s.add(led, 'led');
     const res = C.resistor(220); res.position.copy(bb(16, 2)); res.position.z += 1.27; s.add(res, 'resistor');
-    s.wires.push(wireTo(pin('D26'), bb(11, 2), WIRE.orange, 15, 'D26'), wireTo(pin('GND'), bb(19, 4), WIRE.navy, 12, 'GND'));
+    s.wires.push(wireTo(pin('D26'), bb(11, 2), WIRE.orange, 23, 'D26'), wireTo(pin('GND'), bb(19, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D26'), label: 'GPIO26', i: 'bolt', d: 'Your sketch switches it HIGH and LOW.' }, { at: pin('GND'), label: 'GND', i: 'plug', d: 'The return path: current flows back here.' },
       { at: bb(14, 2).add(V(0, 10, 0)), label: 'LED', click: 'led', i: 'bulb', d: 'Lights up whenever GPIO26 goes HIGH.' },
