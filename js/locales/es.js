@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Planta inteligente', heading: 'Planta inteligente',
       lede: 'Un sensor capacitivo en la tierra dice cuán húmeda está, y una pequeña pantalla OLED lo convierte en un porcentaje y un estado de ánimo. Riega la planta y mírala sonreír.',
-      features: ['Sonda capacitiva en GPIO34', 'OLED por I²C en GPIO 21/22', 'Mueve el deslizador para regar'],
+      features: ['Sonda capacitiva en GPIO34', 'OLED por I²C en GPIO 21/22', "Haz clic en la planta o la regadera para regar"],
       pinout: [['Humedad', 'Tierra seca lee alto, húmeda lee bajo.'], ['SDA · SCL', 'El bus I²C de la OLED.'], ['Alimentación', 'Ambos módulos funcionan a 3,3 V.']],
       example: [
         'Las sondas capacitivas no se corroen como las resistivas: se pueden dejar en la maceta.',
@@ -235,15 +235,11 @@ export default {
     },
     force: {
       title: 'Sentir la fuerza', heading: 'Sentir la fuerza',
-      lede: 'Una resistencia sensible a la fuerza es una almohadilla fina cuya resistencia cae de millones de ohmios a unos pocos cientos al apretarla. Aprieta, y el ESP32 lo sabe.',
-      features: ['Lectura de divisor en GPIO35', 'La barra LED muestra el apretón', 'Mantén pulsada la almohadilla'],
-      pinout: [['Divisor FSR', 'Aprieta más fuerte, lee más alto.'], ['Barra LED', 'Tres LEDs muestran el nivel.'], ['Extremos del divisor', 'FSR arriba, 10 kΩ abajo.']],
-      example: [
-        'Como el sensor de luz, el FSR forma un divisor con una resistencia fija de 10 kΩ.',
-        'La lectura no es lineal, pero para "¿alguien aprieta?" es más que suficiente.',
-        'Los umbrales dividen el rango en bandas: una por LED.',
-      ],
-      specs: [['Rango de fuerza', '0,2 – 20 N'], ['Resistencia', '> 1 MΩ abierto · ≈ 300 Ω apretado'], ['Resistencia fija', '10 kΩ'], ['Respuesta', '< 10 ms']],
+      lede: "El FSR cambia de resistencia al presionarlo. El ESP32 lee el divisor, mueve la aguja con un servo y hace sonar un piezo.",
+      features: ["GPIO35 lee el divisor FSR", "GPIO13 mueve la aguja del servo", "Haz clic en PRESS PAD para recorrer cinco niveles"],
+      pinout: [["Divisor FSR", "FSR a 3V3; resistencia de 10 kΩ de la señal a GND."], ["Servo · 50 Hz", "Alimenta el servo con una fuente adecuada de 5 V."], ["Zumbador piezoeléctrico", "Suena si la lectura es mayor que 3071."], ["Alimentación", "FSR a 3,3 V; servo a 5 V. Une todas las masas."]],
+      example: ["Al presionar baja la resistencia del FSR y sube la tensión del divisor de 10 kΩ.", "Lectura relativa de 0–4095, no gramos calibrados.", "A 50 Hz y 12 bits, 205–410 cuentas producen pulsos de aproximadamente 1–2 ms.", "La simulación recorre cinco niveles programados. No ejecuta el código del editor."],
+      specs: [["ADC", "0–4095"], ["Divisor FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Zumbador piezoeléctrico", "> 3071 / 4095"]],
     },
     project: {
       title: 'Montar un proyecto', heading: 'Sensor de aparcamiento',

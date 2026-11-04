@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Schlaue Pflanze', heading: 'Schlaue Pflanze',
       lede: 'Ein kapazitiver Sensor in der Erde sagt, wie feucht sie ist, und ein kleines OLED-Display macht daraus Prozente und eine Stimmung. Gieß die Pflanze und sieh sie lächeln.',
-      features: ['Kapazitive Sonde an GPIO34', 'OLED über I²C an GPIO 21/22', 'Schieb den Regler zum Gießen'],
+      features: ['Kapazitive Sonde an GPIO34', 'OLED über I²C an GPIO 21/22', "Klicke Pflanze oder Gießkanne zum Gießen"],
       pinout: [['Feuchtigkeit', 'Trockene Erde liest hoch, nasse niedrig.'], ['SDA · SCL', 'Der I²C-Bus des OLEDs.'], ['Versorgung', 'Beide Module laufen mit 3,3 V.']],
       example: [
         'Kapazitive Sonden korrodieren nicht wie resistive — sie dürfen im Topf bleiben.',
@@ -235,15 +235,11 @@ export default {
     },
     force: {
       title: 'Kraft spüren', heading: 'Kraft spüren',
-      lede: 'Ein kraftempfindlicher Widerstand ist ein dünnes Pad, dessen Widerstand beim Drücken von Millionen Ohm auf wenige hundert fällt. Drück zu, und der ESP32 weiß es.',
-      features: ['Teiler-Messung an GPIO35', 'LED-Leiste zeigt den Druck', 'Pad gedrückt halten zum Pressen'],
-      pinout: [['FSR-Teiler', 'Fester drücken, höher lesen.'], ['LED-Leiste', 'Drei LEDs zeigen den Pegel.'], ['Teiler-Enden', 'FSR oben, 10 kΩ unten.']],
-      example: [
-        'Wie der Lichtsensor bildet der FSR einen Teiler mit einem festen 10-kΩ-Widerstand.',
-        'Der Messwert ist nicht linear, aber für „drückt jemand?" mehr als genug.',
-        'Schwellen teilen den Bereich in Bänder — eines pro LED.',
-      ],
-      specs: [['Kraftbereich', '0,2 – 20 N'], ['Widerstand', '> 1 MΩ offen · ≈ 300 Ω gedrückt'], ['Fester Widerstand', '10 kΩ'], ['Reaktion', '< 10 ms']],
+      lede: "Der FSR ändert unter Druck seinen Widerstand. Der ESP32 liest den Spannungsteiler, bewegt den Zeiger per Servo und lässt einen Piezo ertönen.",
+      features: ["GPIO35 liest den FSR-Spannungsteiler", "GPIO13 bewegt den Servo-Zeiger", "Klicke PRESS PAD für fünf Druckstufen"],
+      pinout: [["FSR-Spannungsteiler", "FSR an 3V3; 10-kΩ-Widerstand vom Signal an GND."], ["Servo · 50 Hz", "Servo aus einer geeigneten 5-V-Quelle versorgen."], ["Piezo-Summer", "Tönt bei einem Messwert größer als 3071."], ["Versorgung", "FSR mit 3,3 V; Servo mit 5 V. Alle Massen verbinden."]],
+      example: ["Druck senkt den FSR-Widerstand und erhöht die Spannung am 10-kΩ-Teiler.", "Relativer Messwert von 0–4095, keine kalibrierten Gramm.", "Bei 50 Hz und 12 Bit ergeben 205–410 Schritte etwa 1–2 ms lange Pulse.", "Die Simulation wechselt zwischen fünf vorgegebenen Stufen. Sie führt den Editorcode nicht aus."],
+      specs: [["ADC", "0–4095"], ["FSR-Spannungsteiler", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Piezo-Summer", "> 3071 / 4095"]],
     },
     project: {
       title: 'Ein Projekt bauen', heading: 'Einparkhilfe',

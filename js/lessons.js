@@ -425,9 +425,9 @@ void loop() {
   id: 'force', num:15, title:'Feel the force', heading:'Test your strength',
   lede:'An FSR changes resistance under pressure. A voltage divider feeds GPIO35, a servo moves the meter needle, and a piezo sounds above the mark.',
   features:[['wave','GPIO35 reads the FSR divider'],['gear','GPIO13 moves the servo needle'],['hand','Click PRESS PAD to cycle scripted pressure levels']],
-  pinout:[['GPIO35','FSR divider','FSR to 3V3,10 kΩ resistor from signal to GND.','#1aa3a1'],['GPIO13','Servo signal','50 Hz pulses; servo power from a suitable5 V supply.','#e8913a'],['GPIO19','Piezo buzzer','Sounds above75% of the ADC range.','#6a4fa3'],['3V3 · VIN · GND','Supplies','FSR on3.3 V; servo on5 V. Join all grounds.','#d64a3a']],
-  example:['The10 kΩ resistor pulls the divider down. Pressing lowers FSR resistance, raising the voltage.','<code>analogRead(35)</code> gives0–4095 on the classic ESP32. This is a relative reading, not calibrated grams.','At50 Hz and12-bit resolution,205–410 counts give about1–2 ms servo pulses.','The scripted simulation cycles five pressure levels. The editor code is not executed.'],
-  specs:[['ADC','0–4095'],['Divider','10 kΩ'],['Servo signal','GPIO13 ·50 Hz'],['Bell threshold','3071 /4095']],
+  pinout:[['GPIO35','FSR divider','FSR to 3V3, 10 kΩ resistor from signal to GND.','#1aa3a1'],['GPIO13','Servo signal','50 Hz pulses; servo power from a suitable 5 V supply.','#e8913a'],['GPIO19','Piezo buzzer','Sounds above 75% of the ADC range.','#6a4fa3'],['3V3 · VIN · GND','Supplies','FSR on 3.3 V; servo on 5 V. Join all grounds.','#d64a3a']],
+  example:['The 10 kΩ resistor pulls the divider down. Pressing lowers FSR resistance, raising the voltage.','<code>analogRead(35)</code> gives 0–4095 on the classic ESP32. This is a relative reading, not calibrated grams.','At 50 Hz and 12-bit resolution, 205–410 counts give about 1–2 ms servo pulses.','The scripted simulation cycles five pressure levels. The editor code is not executed.'],
+  specs:[['ADC','0–4095'],['Divider','10 kΩ'],['Servo signal','GPIO13 · 50 Hz'],['Bell threshold','> 3071 / 4095']],
   code:
 `const int FSR = 35, SERVO = 13, BELL = 19;
 

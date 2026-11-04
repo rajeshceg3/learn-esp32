@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Akıllı bitki', heading: 'Akıllı bitki',
       lede: 'Topraktaki kapasitif sensör ne kadar nemli olduğunu söyler; küçük bir OLED ekran bunu yüzdeye ve bir ifadeye çevirir. Bitkiyi sula, gülümsemesini izle.',
-      features: ['GPIO34’te kapasitif prob', 'GPIO 21/22’de I²C ile OLED', 'Sulamak için kaydırıcıyı oynat'],
+      features: ['GPIO34’te kapasitif prob', 'GPIO 21/22’de I²C ile OLED', "Sulamak için bitkiye veya sulama kabına tıklayın"],
       pinout: [['Nem girişi', 'Kuru toprak yüksek, ıslak toprak düşük okur.'], ['SDA · SCL', 'OLED’in I²C veri yolu.'], ['Besleme', 'İki modül de 3,3 V ile çalışır.']],
       example: [
         'Kapasitif problar rezistif olanlar gibi paslanmaz — saksıda bırakmak güvenli.',
@@ -235,15 +235,11 @@ export default {
     },
     force: {
       title: 'Kuvveti hisset', heading: 'Kuvveti hisset',
-      lede: 'Kuvvete duyarlı direnç (FSR), bastıkça direnci milyonlarca ohmdan birkaç yüze düşen ince bir peddir. Sıkıştır, ESP32 anlasın.',
-      features: ['GPIO35’te bölücü okuması', 'LED çubuğu sıkışı gösterir', 'Basmak için pedi basılı tut'],
-      pinout: [['FSR bölücü', 'Daha sert bas, daha yüksek oku.'], ['LED çubuğu', 'Üç LED seviyeyi gösterir.'], ['Bölücü uçları', 'Üstte FSR, altta 10 kΩ.']],
-      example: [
-        'Işık sensörü gibi, FSR de sabit bir 10 kΩ dirençle bölücü kurar.',
-        'Okuma doğrusal değildir ama "biri basıyor mu?" sorusu için fazlasıyla yeter.',
-        'Eşikler aralığı bandlara böler — her LED’e bir tane.',
-      ],
-      specs: [['Kuvvet aralığı', '0,2 – 20 N'], ['Direnç', '> 1 MΩ açık · ≈ 300 Ω basılı'], ['Sabit direnç', '10 kΩ'], ['Tepki', '< 10 ms']],
+      lede: "FSR direnci basınçla değişir. ESP32 bölücüyü okur, servo ile ibreyi hareket ettirir ve piezoyu çalar.",
+      features: ["GPIO35 FSR bölücüsünü okur", "GPIO13 servo ibresini hareket ettirir", "Beş düzey arasında geçmek için PRESS PAD’e tıklayın"],
+      pinout: [["FSR bölücüsü", "FSR 3V3’e; sinyalden GND’ye 10 kΩ direnç."], ["Servo · 50 Hz", "Servoyu uygun bir 5 V kaynaktan besleyin."], ["Piezo ses üretici", "Okuma 3071’den büyükse çalar."], ["Besleme", "FSR 3,3 V; servo 5 V. Tüm toprakları birleştirin."]],
+      example: ["Basınç FSR direncini düşürür ve 10 kΩ bölücünün gerilimini yükseltir.", "0–4095 arası bağıl okuma; kalibre edilmiş gram değildir.", "50 Hz ve 12 bitte 205–410 sayım yaklaşık 1–2 ms darbeler verir.", "Simülasyon beş önceden belirlenmiş düzeyi dolaşır. Editör kodunu çalıştırmaz."],
+      specs: [["ADC", "0–4095"], ["FSR bölücüsü", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Piezo ses üretici", "> 3071 / 4095"]],
     },
     project: {
       title: 'Proje yap', heading: 'Park sensörü',

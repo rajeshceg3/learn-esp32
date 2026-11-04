@@ -361,7 +361,7 @@ force: {
   sim:api=>{api._f=0;let acc=0,last=-1;return{running:false,
     start(){this.running=true;api.serial('Scripted strength meter. Click PRESS PAD to cycle pressure.');},
     stop(){this.running=false;api.forceMeter(0);api.tone(0);},
-    tick(dt){if(!this.running)return;const v=api._f/4;api.forceMeter(v);api.line?.(13);if(api._f!==last){last=api._f;api.tone(v>=.75?880:0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${Math.round(v*4095)} · bell ${v>=.75?'ON':'OFF'}`);}}
+    tick(dt){if(!this.running)return;const v=api._f/4;api.forceMeter(v);api.line?.(13);if(api._f!==last){last=api._f;api.tone(Math.round(v*4095)>3071?880:0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${Math.round(v*4095)} · bell ${Math.round(v*4095)>3071?'ON':'OFF'}`);}}
   };},
 },
 project: {

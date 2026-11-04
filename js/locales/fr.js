@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Plante connectée', heading: 'Plante connectée',
       lede: 'Un capteur capacitif dans la terre dit à quel point elle est humide, et un petit écran OLED transforme ça en pourcentage et en humeur. Arrosez la plante, regardez-la sourire.',
-      features: ['Sonde capacitive sur GPIO34', 'OLED en I²C sur GPIO 21/22', 'Déplacez le curseur pour arroser'],
+      features: ['Sonde capacitive sur GPIO34', 'OLED en I²C sur GPIO 21/22', "Cliquez sur la plante ou l’arrosoir pour arroser"],
       pinout: [['Humidité', 'Terre sèche : lecture haute ; humide : basse.'], ['SDA · SCL', 'Le bus I²C de l’OLED.'], ['Alimentation', 'Les deux modules tournent en 3,3 V.']],
       example: [
         'Les sondes capacitives ne se corrodent pas comme les résistives — elles peuvent rester dans le pot.',
@@ -235,15 +235,11 @@ export default {
     },
     force: {
       title: 'Sentir la force', heading: 'Sentir la force',
-      lede: 'Une résistance sensible à la force est un pad fin dont la résistance chute de millions d’ohms à quelques centaines quand on appuie. Pressez, et l’ESP32 le sait.',
-      features: ['Lecture du pont sur GPIO35', 'La barre de LEDs montre la pression', 'Maintenez le pad pour presser'],
-      pinout: [['Pont FSR', 'Plus on appuie, plus la lecture monte.'], ['Barre de LEDs', 'Trois LEDs indiquent le niveau.'], ['Extrémités du pont', 'FSR en haut, 10 kΩ en bas.']],
-      example: [
-        'Comme le capteur de lumière, le FSR forme un pont avec une résistance fixe de 10 kΩ.',
-        'La lecture n’est pas linéaire, mais pour « quelqu’un appuie-t-il ? » c’est largement suffisant.',
-        'Des seuils découpent la plage en bandes — une par LED.',
-      ],
-      specs: [['Plage de force', '0,2 – 20 N'], ['Résistance', '> 1 MΩ au repos · ≈ 300 Ω pressée'], ['Résistance fixe', '10 kΩ'], ['Réponse', '< 10 ms']],
+      lede: "La résistance du FSR change sous la pression. L’ESP32 lit le diviseur, déplace l’aiguille avec un servo et fait sonner un piézo.",
+      features: ["GPIO35 lit le diviseur FSR", "GPIO13 déplace l’aiguille du servo", "Cliquez sur PRESS PAD pour parcourir cinq niveaux"],
+      pinout: [["Diviseur FSR", "FSR sur 3V3 ; résistance de 10 kΩ entre signal et GND."], ["Servo · 50 Hz", "Alimentez le servo avec une source 5 V adaptée."], ["Avertisseur piézo", "Sonne si la mesure dépasse 3071."], ["Alimentations", "FSR sous 3,3 V ; servo sous 5 V. Reliez toutes les masses."]],
+      example: ["La pression réduit la résistance du FSR et augmente la tension du diviseur de 10 kΩ.", "Mesure relative de 0–4095, pas des grammes étalonnés.", "À 50 Hz et 12 bits, 205–410 pas donnent des impulsions d’environ 1–2 ms.", "La simulation parcourt cinq niveaux prédéfinis. Elle ne lance pas le code de l’éditeur."],
+      specs: [["ADC", "0–4095"], ["Diviseur FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Avertisseur piézo", "> 3071 / 4095"]],
     },
     project: {
       title: 'Construire un projet', heading: 'Capteur de parking',

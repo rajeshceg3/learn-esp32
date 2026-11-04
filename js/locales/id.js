@@ -224,7 +224,7 @@ export default {
     plant: {
       title: 'Tanaman pintar', heading: 'Tanaman pintar',
       lede: 'Sensor kapasitif di tanah mengatakan seberapa basah tanahnya, dan layar OLED kecil mengubahnya jadi persentase dan suasana hati. Siram tanamannya, lihat ia tersenyum.',
-      features: ['Probe kapasitif di GPIO34', 'OLED lewat I²C di GPIO 21/22', 'Geser slider untuk menyiram'],
+      features: ['Probe kapasitif di GPIO34', 'OLED lewat I²C di GPIO 21/22', "Klik tanaman atau penyiram untuk menyiram"],
       pinout: [['Masukan kelembapan', 'Tanah kering terbaca tinggi, basah terbaca rendah.'], ['SDA · SCL', 'Bus I²C milik OLED.'], ['Suplai modul', 'Kedua modul berjalan pada 3,3 V.']],
       example: [
         'Probe kapasitif tidak berkarat seperti yang resistif — aman ditinggal di pot.',
@@ -235,15 +235,11 @@ export default {
     },
     force: {
       title: 'Rasakan tekanan', heading: 'Rasakan tekanan',
-      lede: 'Resistor peka tekanan (FSR) adalah bantalan tipis yang resistansinya turun dari jutaan ohm ke beberapa ratus saat ditekan. Tekan, dan ESP32 tahu.',
-      features: ['Pembacaan pembagi di GPIO35', 'Barisan LED menunjukkan tekanan', 'Tahan bantalan untuk menekan'],
-      pinout: [['Pembagi FSR', 'Tekan lebih keras, baca lebih tinggi.'], ['Barisan LED', 'Tiga LED menunjukkan level.'], ['Ujung pembagi', 'FSR di atas, 10 kΩ di bawah.']],
-      example: [
-        'Seperti sensor cahaya, FSR membentuk pembagi dengan resistor tetap 10 kΩ.',
-        'Pembacaannya tidak linear, tapi untuk "ada yang menekan?" sudah lebih dari cukup.',
-        'Ambang membagi rentang menjadi pita — satu per LED.',
-      ],
-      specs: [['Rentang gaya', '0,2 – 20 N'], ['Resistansi', '> 1 MΩ terbuka · ≈ 300 Ω ditekan'], ['Resistor tetap', '10 kΩ'], ['Respons', '< 10 ms']],
+      lede: "Hambatan FSR berubah saat ditekan. ESP32 membaca pembagi, menggerakkan jarum dengan servo, dan membunyikan piezo.",
+      features: ["GPIO35 membaca pembagi FSR", "GPIO13 menggerakkan jarum servo", "Klik PRESS PAD untuk menggilir lima tingkat"],
+      pinout: [["Pembagi FSR", "FSR ke 3V3; resistor 10 kΩ dari sinyal ke GND."], ["Servo · 50 Hz", "Beri daya servo dari sumber 5 V yang sesuai."], ["Buzzer piezo", "Berbunyi jika pembacaan lebih dari 3071."], ["Catu daya", "FSR pada 3,3 V; servo pada 5 V. Satukan semua ground."]],
+      example: ["Tekanan menurunkan hambatan FSR dan menaikkan tegangan pembagi 10 kΩ.", "Pembacaan relatif 0–4095, bukan gram terkalibrasi.", "Pada 50 Hz dan 12 bit, 205–410 hitungan menghasilkan pulsa sekitar 1–2 ms.", "Simulasi menggilir lima tingkat terprogram. Kode editor tidak dijalankan."],
+      specs: [["ADC", "0–4095"], ["Pembagi FSR", "10 kΩ"], ["Servo", "GPIO13 · 50 Hz"], ["Buzzer piezo", "> 3071 / 4095"]],
     },
     project: {
       title: 'Bangun proyek', heading: 'Sensor parkir',
