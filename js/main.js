@@ -248,8 +248,8 @@ function frameScene(snap) {
   const ca = Math.abs(Math.cos(rig.az)), sa = Math.abs(Math.sin(rig.az));
   const halfW = (sz.x * ca + sz.z * sa) / 2;
   const halfH = (sz.y + (sz.x * sa + sz.z * ca) * .45) / 2;
-  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 0.84 : 1.05) + 12;
-  rig.tTarget.set(c.x + (aspect < 1 ? -5 : 0), aspect < 1 ? Math.min(-2, c.y * .2 - 6) : Math.max(2, c.y * .55), c.z);
+  const dist = Math.max(halfW / (tanV * aspect), halfH / tanV) * (aspect < 1 ? 1.0 : 0.92) + 10;
+  rig.tTarget.set(c.x, aspect < 1 ? Math.min(-2, c.y * .2 - 6) : Math.max(2, c.y * .55), c.z);
   rig.tDist = THREE.MathUtils.clamp(dist, 120, 700);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
@@ -286,7 +286,7 @@ function renderPanel() {
   const body = $('#panelBody');
   let h = '';
   if (state.tab === 'overview') {
-    h = `<div class="lesson-head"><div class="lesson-title">${L.heading.toUpperCase()}</div></div>
+    h = `<div class="lesson-head"><div class="lesson-title">${L.heading.toUpperCase()}</div><button class="icon-btn fs-btn" id="btnFs" title="Fullscreen lesson">${ICON.expand}</button></div>
       <p class="lesson-lede">${L.lede}</p>
       <ul class="feature-list">${L.features.map(([ic, tx]) => `<li><span class="fi">${ICON[ic]}</span><span>${tx}</span></li>`).join('')}</ul>`;
   } else if (state.tab === 'pinout') {
@@ -305,6 +305,10 @@ function renderPanel() {
     <div class="console" id="console"><div class="c-line c-sys">${T('console_idle')}</div></div>
   </div>`;
   body.innerHTML = h;
+  $('#btnFs') && ($('#btnFs').onclick = () => {
+    const p = $('#panel'), on = p.classList.toggle('full');
+    $('#btnFs').innerHTML = on ? ICON.collapse : ICON.expand;
+  });
   $('#btnCopy').onclick = () => { navigator.clipboard?.writeText(L.code); log(T('copied'), 'sys'); };
   $('#btnRun').onclick = () => state.running ? stopSim() : startSim();
 }
@@ -408,6 +412,10 @@ const ICON = {
   up3d: I('<path d="M12 3l7 4v10l-7 4-7-4V7l7-4z"/><path d="M12 11l7-4M12 11v10M12 11L5 7"/>'),
   waveT: I('<path d="M2 12h3l2-6 3 12 3-12 2 6h7"/>'),
   check: I('<path d="M4 12l5 5L20 7"/>'),
+  expand: I('<path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/>'),
+  collapse: I('<path d="M4 14h6v6M20 10h-6V4M10 14l-7 7M14 10l7-7"/>'),
+  chevR: I('<path d="M9 6l6 6-6 6"/>'),
+  chevL: I('<path d="M15 6l-6 6 6 6"/>'),
 };
 
 // ---------- toolbar ----------
@@ -418,12 +426,12 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${a}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { rig.tTarget.set(8, 4, 8); rig.tAz = -.62; rig.tPol = 1.02; rig.tDist = innerWidth < 1024 ? 215 : 235; }
+  if (k === 'reset') { rig.tAz = -.62; rig.tPol = 1.07; frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
   if (k === 'plus') rig.tDist = Math.max(90, rig.tDist * .87);
-  if (k === 'up3d') { rig.tAz = -.62; rig.tPol = 1.02; }
+  if (k === 'up3d') { rig.tAz = -.62; rig.tPol = 1.07; }
   if (k === 'info') openPartInfo({ label: 'Learn ESP32', desc: 'Sixteen interactive lessons on the ESP32: wire it, run the code, watch it work. Design inspired by Learn Arduino by Dilum Sanjaya; this is an original ESP32 implementation.' });
   if (k === 'waveT') { state.settings.flow = !state.settings.flow; b.classList.toggle('on', state.settings.flow); saveSettings(); }
 });
@@ -440,9 +448,15 @@ function renderNavs() {
   ];
   $('#bottomnav').innerHTML = items.map(([k, a, ic, , badge]) =>
     `<button class="nav-btn" data-k="${k}" aria-label="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span>${badge ? `<span class="nav-badge" id="langBadge">${badge}</span>` : ''}</button>`).join('');
-  $('#sidebar').innerHTML = `<button class="side-toggle" aria-label="Expand sidebar" style="display:none"></button>` + items.slice(0, 6).map(([k, a, ic]) =>
-    `<button class="nav-btn" data-k="${k}" aria-label="${a}" title="${a}">${ICON[ic]}</button>`).join('');
-  document.querySelectorAll('.nav-btn[data-k]').forEach(b => b.onclick = items.find(x => x[0] === b.dataset.k)[3]);
+  $('#sidebar').innerHTML = `<button class="nav-btn side-toggle" data-k="toggle" aria-label="Expand sidebar" title="Expand">${ICON.chevR}</button>` + items.slice(0, 6).map(([k, a, ic]) =>
+    `<button class="nav-btn" data-k="${k}" aria-label="${a}" title="${a}">${ICON[ic]}<span class="nl">${T('nav_' + k)}</span></button>`).join('');
+  document.querySelectorAll('.nav-btn[data-k]').forEach(b => b.onclick = items.find(x => x[0] === b.dataset.k)?.[3]);
+  const tog = $('#sidebar .side-toggle');
+  tog.onclick = () => {
+    const sb = $('#sidebar'), on = sb.classList.toggle('expanded');
+    tog.innerHTML = on ? ICON.chevL : ICON.chevR;
+    tog.setAttribute('aria-label', on ? 'Collapse sidebar' : 'Expand sidebar');
+  };
 }
 
 // ---------- sheets ----------
