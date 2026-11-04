@@ -134,6 +134,8 @@ export function buildBoard() {
   const mod = new THREE.Group();
   mod.add(ink(box(19, 1.2, 19, new THREE.MeshStandardMaterial({ color: 0x1c2136, roughness: .55 }), 0, .6, 0)));
   const can = ink(box(17, 2.4, 13, MAT.metal, 0, 2.4, 2.6), 0x2a3040); mod.add(can);
+  // Castellated module pads follow both long edges of the radio board.
+  for(let i=0;i<9;i++)for(const x of[-9.4,9.4])mod.add(box(.55,.2,1.1,MAT.pinMetal,x,1.26,-7.3+i*1.8));
   // Printed antenna at the exposed end of the radio module.
   const copper = new THREE.MeshStandardMaterial({color:0xc7a95f,metalness:.35,roughness:.6});
   for (let i = 0; i < 4; i++) {
@@ -154,7 +156,12 @@ export function buildBoard() {
   // USB micro port (left edge)
   const usb = new THREE.Group();
   usb.add(ink(box(7.5, 3.2, 6, MAT.metal, 0, 1.6, 0), 0x2a3040));
-  usb.add(box(6.2, 1.8, 4.6, MAT.chip, -0.4, 1.5, 0));
+  // Open socket faces the board's left edge; dark mouth and tongue sit
+  // outside the shell instead of being hidden inside an opaque block.
+  usb.add(ink(box(.15,1.9,5.7,MAT.chip,-3.82,1.5,0),0x141a2e));
+  usb.add(box(.18,.42,4.5,MAT.plastic,-3.93,1.15,0));
+  for(let i=0;i<5;i++)usb.add(box(.2,.15,.35,MAT.pinMetal,-4.04,1.42,-1.6+i*.8));
+  for(const z of[-2.7,2.7])usb.add(box(1.1,.15,.4,MAT.metalDark,-1.8,3.25,z));
   usb.position.set(-BOARD.W / 2 + 1.4, top, 0);
   g.add(usb); reg(usb.children[0], 'usb', 'Micro-USB port', 'Uploads code and powers the board from your computer.');
   A('usb', -BOARD.W / 2 + 1.4, top + 3.4, 0);
@@ -164,6 +171,7 @@ export function buildBoard() {
     const t = new THREE.Group();
     t.add(ink(box(4.6, 1.2, 4.6, MAT.plastic, 0, .6, 0)));
     t.add(ink(box(3, 1.6, 3, MAT.metalDark, 0, 1.6, 0), 0x0e1220));
+    for(const xx of[-2.1,2.1])t.add(box(.6,.22,3.4,MAT.pinMetal,xx,.65,0));
     t.position.set(x, top, z); g.add(t);
     reg(t.children[1], id, label, desc);
   };
