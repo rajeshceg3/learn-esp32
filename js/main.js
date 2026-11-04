@@ -451,8 +451,10 @@ function appendLog(t, cls = '') {
 }
 
 // ---------- run / stop ----------
+let runGeneration=0;
 function startSim() {
   if (state.running) return;
+  const generation=++runGeneration,lesson=state.lesson;
   state.running = true; api.line?.(0); state.startedAt = performance.now();
   document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
   $('#serialStatus').textContent=T('running');
@@ -462,7 +464,7 @@ function startSim() {
   log(T('uploading'), 'sys');
   cur.sim.start();
   setTimeout(() => { // mark lesson done after a real run
-    if (state.running) { state.done.add(state.lesson); saveSettings(); renderRail(); updateProgress(); }
+    if (state.running && generation===runGeneration && lesson===state.lesson) { state.done.add(lesson); saveSettings(); renderRail(); updateProgress(); }
   }, 3000);
 }
 function stopSim() {
