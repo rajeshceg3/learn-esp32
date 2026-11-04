@@ -215,6 +215,10 @@ function placeTags() {
         const p={'8 KEYS - HOLD TO PLAY':[.83,.81],'BUZZER':[.83,.19],'KEY INPUTS':[.18,.81],'GND RAIL':[.49,.19]}[t.label];
         if(p){cx=r.width*p[0];cy=r.height*p[1]}
       }
+      if(state.lesson===13){
+        const p={'SOIL · GPIO34':[.17,.23],'I²C · 21/22':[.45,.17],'OLED':[.7,.22],'PLANT':[.51,.82],'WATER':[.84,.82]}[t.label];
+        if(p){cx=r.width*p[0];cy=r.height*p[1]}
+      }
       if (cy - h / 2 < 8) cy = ay + h / 2 + 40;
     } else {
       // Attach a large pin marker to the physical part, with its compact label beside it.
@@ -224,6 +228,10 @@ function placeTags() {
         const p={'KEY INPUTS':[.23,.34],'BUZZER':[.77,.34],'GND RAIL':[.23,.65],'8 KEYS - HOLD TO PLAY':[.7,.65]}[t.label];
         if(p){cx=r.width*p[0];cy=r.height*p[1]}
       }
+    }
+    if(!wide&&state.lesson===13){
+      const p={'SOIL · GPIO34':[.2,.34],'I²C · 21/22':[.2,.65],'OLED':[.6,.34],'PLANT':[.55,.65],'WATER':[.85,.65]}[t.label];
+      if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
     d._x = cx; d._y = cy;
   });

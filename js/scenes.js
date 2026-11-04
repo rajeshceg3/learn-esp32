@@ -337,12 +337,18 @@ plant: {
     const ol = C.oled(); ol.rotation.x=Math.PI/2;ol.position.copy(bb(14,5));ol.position.y=21;s.add(ol,'oled');
     s.wires.push(wireTo(pin('D34'), bb(10, 5), WIRE.green, 14, 'D34'), wireTo(pin('D21'), bb(11, 6), WIRE.purple, 14, 'D21'), wireTo(pin('D22'), bb(12, 7), WIRE.yellow, 14, 'D22'), wireTo(pin('3V3'), bb(17, 4), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(18, 8), WIRE.navy, 12, 'GND'));
     s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34', i: 'wave', d: 'Reads soil moisture.' }, { at: pin('D21'), label: 'I²C · 21/22', i: 'pins', d: 'Bus that drives the OLED display.' }, { at: bb(14, 5).add(V(0, 22, 0)), label: 'OLED', i: 'info', d: 'Shows the moisture level.' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant', hold:true, i: 'hand', d: 'Hold to water; release to let the soil dry.' } ];
-    s.tags.push({at:V(103,15,11),label:'WATER',click:'water',hold:true,i:'hand',d:'Hold to water; release to let the soil dry.'});
+    s.tags.push({at:V(103,15,11),dyn:'water',label:'WATER',click:'water',hold:true,i:'hand',d:'Hold to water; release to let the soil dry.'});
     s.api.oledDraw = fn => s.refs.oled.userData.draw(fn);
     s.tagHold=(w,on,api)=>{if(w==='water'||w==='plant')api._watering=on;};
     s.holdStart=(ray,api)=>{if(!ray.intersectObjects([s.refs.water,s.refs.plant],true).length)return false;api._watering=true;return true;};
     s.holdEnd=api=>{api._watering=false;};
-    s.api.waterPose=on=>{s.refs.water.rotation.z=on?.45:0;};
+    const drops=[];const waterMat=new THREE.MeshStandardMaterial({color:0x6bb5dc,transparent:true,opacity:.85,roughness:.2});
+    for(let i=0;i<9;i++){const drop=new THREE.Mesh(new THREE.SphereGeometry(.55,8,6),waterMat);drop.scale.y=1.7;drop.visible=false;drop.position.set(76,20,4);s.root.add(drop);drops.push(drop);}
+    let waterTime=0;
+    s.api.waterPose=(on,dt=0)=>{
+      waterTime+=dt;s.refs.water.rotation.z=on?.45:0;s.refs.water.position.set(on?94:103,on?24:0,on?4:11);
+      drops.forEach((d,i)=>{d.visible=on;const t=(waterTime*1.7+i/9)%1;d.position.set(76.3+Math.sin(i*2.4)*.7,26.5-t*11.2,4+Math.cos(i*2.4)*.7);});
+    };
   },
   sim: api => {
     api._watering=false;api._moisture=52;let acc=0;
@@ -351,7 +357,7 @@ plant: {
       running:false,
       start(){this.running=true;api.serial('Scripted soil monitor. Hold the plant or WATER to water; release to let it dry.');},
       stop(){this.running=false;api._watering=false;api.waterPose?.(false);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='10px monospace';c.fillText('ESP32',46,34);});},
-      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering);acc+=dt;if(acc>.5){acc=0;api.line?.(23);const m=Math.round(api._moisture);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 13px monospace';c.fillText('SOIL '+m+'%',26,26);c.font='10px monospace';c.fillText(face(m),34,46);});api.serial(`soil moisture = ${m}%`);}}
+      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering,dt);acc+=dt;if(acc>.5){acc=0;api.line?.(23);const m=Math.round(api._moisture);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 13px monospace';c.fillText('SOIL '+m+'%',26,26);c.font='10px monospace';c.fillText(face(m),34,46);});api.serial(`soil moisture = ${m}%`);}}
     };
   },
 },
