@@ -84,8 +84,8 @@ export function rgbLed() {
 export function resistor(ohms = 220) {
   const g = new THREE.Group();
   const body = box(6.5, 2.3, 2.3, new THREE.MeshStandardMaterial({ color: 0xd9b380, roughness: .6 }), 0, 1.6, 0);
-  g.add(body);
-  const bands = { 220: [0xc02020, 0x704018, 0x704018], 1000: [0x704018, 0x202020, 0xc02020], 10000: [0x704018, 0x202020, 0xd07020] }[ohms] || [0xc02020, 0x704018, 0x704018];
+  g.add(ink(body));
+  const bands = { 220: [0xc02020, 0xc02020, 0x704018], 1000: [0x704018, 0x202020, 0xc02020], 10000: [0x704018, 0x202020, 0xd07020] }[ohms] || [0xc02020, 0xc02020, 0x704018];
   bands.forEach((c, i) => g.add(box(.9, 2.4, 2.4, new THREE.MeshStandardMaterial({ color: c }), -1.8 + i * 1.2, 1.6, 0)));
   const l1 = cyl(.32, .32, 9, MAT.pinMetal, 0, 0, 0, 6); l1.rotation.z = Math.PI / 2; l1.position.set(-5.4, 1.6, 0);
   const l2 = l1.clone(); l2.position.x = 5.4; g.add(l1, l2);
@@ -94,8 +94,10 @@ export function resistor(ohms = 220) {
 }
 export function pushButton() {
   const g = new THREE.Group();
-  g.add(box(6, 3, 6, MAT.plastic, 0, 1.5, 0));
-  const cap = cyl(1.9, 1.9, 1.6, MAT.red, 0, 3.6, 0); g.add(cap);
+  g.add(ink(box(6, 3, 6, MAT.plastic, 0, 1.5, 0)));
+  g.add(ink(box(5.6,.28,5.6,MAT.metal,0,3.08,0)));
+  for(const x of[-2.2,2.2])for(const z of[-2.2,2.2])g.add(cyl(.3,.3,.16,MAT.metalDark,x,3.3,z,8));
+  const cap = ink(cyl(1.9, 1.9, 1.6, MAT.red, 0, 3.6, 0),0x4a2530,35); g.add(cap);
   [[-2.4, -2.4], [2.4, -2.4], [-2.4, 2.4], [2.4, 2.4]].forEach(([x, z]) => g.add(cyl(.32, .32, 5, MAT.pinMetal, x, -2, z, 6)));
   g.userData.cap = cap;
   g.userData.setPressed = p => { cap.position.y = p ? 2.9 : 3.6; };
@@ -105,15 +107,20 @@ export function potentiometer() {
   const g = new THREE.Group();
   g.add(box(10, 4.5, 10, new THREE.MeshStandardMaterial({ color: 0x35507a, roughness: .5 }), 0, 2.2, 0));
   const knob = cyl(3.4, 3.4, 3.2, MAT.plastic, 0, 6, 0); g.add(knob);
-  const line = box(.7, .4, 3, MAT.white, 0, 7.7, -1); knob.add ? null : 0; g.add(line); line.position.set(0, 7.8, -1);
+  const line = box(.7, .4, 3, MAT.white, 0, 7.7, -1); knob.add(line); line.position.set(0,1.8,-1);
+  ink(knob,0x141a2e,35);
+  for(let i=0;i<14;i++){const a=i*Math.PI*2/14;const rib=box(.3,2.5,.5,MAT.chip,Math.sin(a)*3.4,0,Math.cos(a)*3.4,a);knob.add(rib);}
   [-2.54, 0, 2.54].forEach(x => g.add(cyl(.32, .32, 5, MAT.pinMetal, x, -2, 4, 6)));
-  g.userData.setAngle = a => { knob.rotation.y = a; line.rotation.y = a; };
+  g.userData.setAngle = a => { knob.rotation.y = a; };
   return g;
 }
 export function ldr() {
   const g = new THREE.Group();
   const face = cyl(2.6, 2.6, 1.2, new THREE.MeshStandardMaterial({ color: 0xd8a25a, roughness: .5 }), 0, 3.4, 0); g.add(face);
-  const line = box(.5, .3, 4.4, new THREE.MeshStandardMaterial({ color: 0x7a4020 }), 0, 4.05, 0); g.add(line);
+  ink(face,0x49382a,35);
+  const trackMat=new THREE.MeshBasicMaterial({color:0x7a4020});
+  const track=[[-1.7,-1.5],[1.1,-1.5],[1.1,-.8],[-1.1,-.8],[-1.1,0],[1.1,0],[1.1,.8],[-1.1,.8],[-1.1,1.5],[1.7,1.5]];
+  for(let i=1;i<track.length;i++){const [x1,z1]=track[i-1],[x2,z2]=track[i];const seg=box(Math.abs(x2-x1)+.23,.1,Math.abs(z2-z1)+.23,trackMat,(x1+x2)/2,4.06,(z1+z2)/2);g.add(seg);}
   g.add(cyl(.32, .32, 5, MAT.pinMetal, -1.8, 0, 0, 6), cyl(.32, .32, 5, MAT.pinMetal, 1.8, 0, 0, 6));
   return g;
 }
@@ -121,14 +128,20 @@ export function ultrasonic() {
   const g = new THREE.Group();
   g.add(box(22, 1.6, 11, new THREE.MeshStandardMaterial({ color: 0x2a56a3, roughness: .55 }), 0, 4.4, 0));
   const e1 = cyl(4, 4, 7, MAT.metalDark, -6.4, 8.6, 0); const e2 = e1.clone(); e2.position.x = 6.4;
-  g.add(e1, e2);
+  g.add(ink(e1,0x303847,35),ink(e2,0x303847,35));
+  const meshCanvas=document.createElement('canvas');meshCanvas.width=128;meshCanvas.height=128;const mc=meshCanvas.getContext('2d');
+  mc.fillStyle='#d4d2c9';mc.fillRect(0,0,128,128);mc.strokeStyle='#666e79';mc.lineWidth=2;
+  for(let i=0;i<128;i+=8){mc.beginPath();mc.moveTo(i,0);mc.lineTo(i,128);mc.moveTo(0,i);mc.lineTo(128,i);mc.stroke();}
+  const meshTex=new THREE.CanvasTexture(meshCanvas);meshTex.colorSpace=THREE.SRGBColorSpace;
+  for(const x of[-6.4,6.4]){g.add(cyl(3.45,3.45,.12,MAT.chip,x,12.14,0,32));const disk=new THREE.Mesh(new THREE.CircleGeometry(3.1,32),new THREE.MeshBasicMaterial({map:meshTex}));disk.rotation.x=-Math.PI/2;disk.position.set(x,12.22,0);g.add(disk);}
+
   g.add(box(4, 2.4, 3, MAT.metal, 0, 6.4, -3.6));
   g.userData.emitters = [e1, e2];
   return g;
 }
 export function buzzer() {
   const g = new THREE.Group();
-  g.add(cyl(6, 6, 5.5, MAT.plastic, 0, 2.8, 0));
+  g.add(ink(cyl(6, 6, 5.5, MAT.plastic, 0, 2.8, 0),0x141a2e,35));
   g.add(cyl(2, 2, .6, MAT.chip, 0, 5.7, 0));
   g.add(cyl(.32, .32, 5, MAT.pinMetal, -3.8, -1.5, 0, 6), cyl(.32, .32, 5, MAT.pinMetal, 3.8, -1.5, 0, 6));
   return g;

@@ -46,7 +46,7 @@ blink: {
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
     s.api.ledColor = c => s.refs.led.userData.setColor(c);
-    s.api.setResistor = o => { const r = s.refs.resistor, n = C.resistor(o); n.position.copy(r.position); s.add(n, 'resistor'); };
+    s.api.setResistor = o => { const r = s.refs.resistor, n = C.resistor(o); n.position.copy(r.position); r.removeFromParent();s.add(n, 'resistor'); };
     const cols = [0xe8392e, 0xf2c23a, 0x3fbf6a, 0x3d7be0, 0xf2efe6], ohms = [220, 1000, 10000];
     s.onClick = (what, api) => {
       if (what === 'led') { api._ci = ((api._ci ?? 0) + 1) % cols.length; api.ledColor(cols[api._ci]); }
