@@ -228,8 +228,9 @@ export default {
       pinout: [['Umidade', 'Solo seco lê alto, úmido lê baixo.'], ['SDA · SCL', 'O barramento I²C da OLED.'], ['Alimentação', 'Ambos os módulos rodam a 3,3 V.']],
       example: [
         'Sondas capacitivas não corróem como as resistivas — podem ficar no vaso.',
-        '<code>Wire.begin(21, 22)</code> inicia o I²C nos pinos padrão do ESP32.',
-        'Mapeie a leitura de seco..úmido para 0..100% e escolha uma carinha para a tela.',
+        '<code>Wire.begin(21, 22, 400000)</code> inicia o I²C nos pinos padrão do ESP32.',
+        "Meça as tensões seca/úmida e ajuste DRY_MV/WET_MV. São milivolts, não contagens ADC. Limite a 0–100%.",
+        "Instale Adafruit SSD1306 e Adafruit GFX com dependências. Confira o endereço 0x3C/0x3D e os pull-ups I²C em 3,3 V. clearDisplay() limpa o buffer; display() o envia. A simulação é programada.",
       ],
       specs: [['Saída da sonda', '≈ 1,2 V úmido – 2,5 V seco'], ['OLED', 'SSD1306, 128×64'], ['Endereço I²C', '0x3C'], ['Velocidade', '400 kHz']],
     },

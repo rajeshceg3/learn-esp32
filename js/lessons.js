@@ -400,22 +400,44 @@ void loop() {
   pinout: [['GPIO34', 'Moisture in', 'Dry soil reads high, wet reads low.', '#1aa3a1'], ['GPIO21 · 22', 'SDA · SCL', 'The OLED’s I²C bus.', '#6a4fa3'], ['3V3 · GND', 'Module supply', 'Both modules run at 3.3 V.', '#d64a3a']],
   example: [
     'Capacitive probes don’t corrode like resistive ones — safe to leave in the pot.',
-    '<code>Wire.begin(21, 22)</code> starts I²C on the ESP32’s default pins.',
-    'Map the raw reading from dry..wet to 0..100% and pick a face for the screen.',
+    '<code>Wire.begin(21, 22, 400000)</code> starts I²C on the ESP32’s default pins.',
+    'Measure dry/wet probe voltages and replace DRY_MV/WET_MV. Millivolts are not raw ADC counts; constrain the result to 0–100%.',
+    'Install Adafruit SSD1306 and Adafruit GFX with dependencies. Check the OLED address (0x3C or 0x3D) and 3.3 V I²C pull-ups. clearDisplay() clears the buffer; display() sends it. The simulation is scripted.',
   ],
   specs: [['Probe output', '≈ 1.2 V wet – 2.5 V dry'], ['OLED', 'SSD1306, 128×64'], ['I²C address', '0x3C'], ['Bus speed', '400 kHz']],
   code:
-`#include <Wire.h>
+`// Install Adafruit SSD1306 and Adafruit GFX with dependencies.
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 const int SOIL = 34;
+const int DRY_MV = 2500, WET_MV = 1200; // Calibrate your probe.
+const uint8_t OLED_ADDR = 0x3C; // Check your module: some use 0x3D.
+Adafruit_SSD1306 oled(128, 64, &Wire, -1);
 
 void setup() {
-  Wire.begin(21, 22);   // SDA, SCL
   Serial.begin(115200);
+  analogSetPinAttenuation(SOIL, ADC_11db);
+  Wire.begin(21, 22, 400000);
+  if (!oled.begin(SSD1306_SWITCHCAPVCC, OLED_ADDR, true, false)) {
+    Serial.println("OLED init failed");
+    while (true) delay(100);
+  }
+  oled.setTextColor(SSD1306_WHITE);
 }
 
 void loop() {
-  int raw = analogRead(SOIL);
-  int moisture = map(raw, 2500, 1200, 0, 100);
+  int mv = analogReadMilliVolts(SOIL);
+  int moisture = constrain(map(mv, DRY_MV, WET_MV, 0, 100), 0L, 100L);
+  const char* mood = moisture < 30 ? "THIRSTY :(" :
+                     moisture < 65 ? "OK :|" : "HAPPY :)";
+  oled.clearDisplay();
+  oled.setTextSize(2);
+  oled.setCursor(0, 0);
+  oled.print(moisture); oled.println("%");
+  oled.setTextSize(1);
+  oled.setCursor(0, 32); oled.print(mood);
+  oled.display(); // Send the completed frame to the screen.
   Serial.println(moisture);
   delay(500);
 }`,

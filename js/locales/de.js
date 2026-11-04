@@ -228,8 +228,9 @@ export default {
       pinout: [['Feuchtigkeit', 'Trockene Erde liest hoch, nasse niedrig.'], ['SDA · SCL', 'Der I²C-Bus des OLEDs.'], ['Versorgung', 'Beide Module laufen mit 3,3 V.']],
       example: [
         'Kapazitive Sonden korrodieren nicht wie resistive — sie dürfen im Topf bleiben.',
-        '<code>Wire.begin(21, 22)</code> startet I²C auf den Standardpins des ESP32.',
-        'Skaliere den Messwert von trocken..nass auf 0..100 % und wähle ein Gesicht fürs Display.',
+        '<code>Wire.begin(21, 22, 400000)</code> startet I²C auf den Standardpins des ESP32.',
+        "Trocken-/Nassspannung messen und DRY_MV/WET_MV anpassen. Millivolt sind keine ADC-Schritte. Auf 0–100 % begrenzen.",
+        "Adafruit SSD1306 und Adafruit GFX mit Abhängigkeiten installieren. Adresse 0x3C/0x3D und I²C-Pull-ups an 3,3 V prüfen. clearDisplay() leert den Puffer; display() sendet ihn. Die Simulation ist vorgegeben.",
       ],
       specs: [['Sondenausgang', '≈ 1,2 V nass – 2,5 V trocken'], ['OLED', 'SSD1306, 128×64'], ['I²C-Adresse', '0x3C'], ['Bus-Takt', '400 kHz']],
     },

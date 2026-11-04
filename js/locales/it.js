@@ -228,8 +228,9 @@ export default {
       pinout: [['Umidità', 'Terreno secco legge alto, umido legge basso.'], ['SDA · SCL', 'Il bus I²C dell’OLED.'], ['Alimentazione', 'Entrambi i moduli vanno a 3,3 V.']],
       example: [
         'Le sonde capacitive non si corrodono come quelle resistive — possono restare nel vaso.',
-        '<code>Wire.begin(21, 22)</code> avvia l’I²C sui pin predefiniti dell’ESP32.',
-        'Mappa la lettura da secco..umido a 0..100% e scegli una faccina per lo schermo.',
+        '<code>Wire.begin(21, 22, 400000)</code> avvia l’I²C sui pin predefiniti dell’ESP32.',
+        "Misura le tensioni asciutta/bagnata e regola DRY_MV/WET_MV. Sono millivolt, non conteggi ADC. Limita a 0–100%.",
+        "Installa Adafruit SSD1306 e Adafruit GFX con dipendenze. Controlla indirizzo 0x3C/0x3D e pull-up I²C a 3,3 V. clearDisplay() cancella il buffer; display() lo invia. La simulazione è predefinita.",
       ],
       specs: [['Uscita sonda', '≈ 1,2 V umido – 2,5 V secco'], ['OLED', 'SSD1306, 128×64'], ['Indirizzo I²C', '0x3C'], ['Velocità bus', '400 kHz']],
     },

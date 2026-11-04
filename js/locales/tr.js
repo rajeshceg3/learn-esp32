@@ -228,8 +228,9 @@ export default {
       pinout: [['Nem girişi', 'Kuru toprak yüksek, ıslak toprak düşük okur.'], ['SDA · SCL', 'OLED’in I²C veri yolu.'], ['Besleme', 'İki modül de 3,3 V ile çalışır.']],
       example: [
         'Kapasitif problar rezistif olanlar gibi paslanmaz — saksıda bırakmak güvenli.',
-        '<code>Wire.begin(21, 22)</code>, ESP32’nin varsayılan pinlerinde I²C’yi başlatır.',
-        'Okumayı kuru..ıslak aralığından 0..100%’e ölçekle ve ekran için bir yüz seç.',
+        '<code>Wire.begin(21, 22, 400000)</code>, ESP32’nin varsayılan pinlerinde I²C’yi başlatır.',
+        "Kuru/ıslak gerilimleri ölçüp DRY_MV/WET_MV değerlerini ayarlayın. Bunlar milivolttur, ADC sayımı değildir. Sonucu %0–100 ile sınırlayın.",
+        "Adafruit SSD1306 ve Adafruit GFX’i bağımlılıklarıyla kurun. 0x3C/0x3D adresini ve 3,3 V I²C pull-up dirençlerini kontrol edin. clearDisplay() tamponu temizler; display() gönderir. Simülasyon önceden programlanmıştır.",
       ],
       specs: [['Prob çıkışı', '≈ 1,2 V ıslak – 2,5 V kuru'], ['OLED', 'SSD1306, 128×64'], ['I²C adresi', '0x3C'], ['Veri yolu hızı', '400 kHz']],
     },

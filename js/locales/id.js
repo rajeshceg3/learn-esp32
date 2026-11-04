@@ -228,8 +228,9 @@ export default {
       pinout: [['Masukan kelembapan', 'Tanah kering terbaca tinggi, basah terbaca rendah.'], ['SDA · SCL', 'Bus I²C milik OLED.'], ['Suplai modul', 'Kedua modul berjalan pada 3,3 V.']],
       example: [
         'Probe kapasitif tidak berkarat seperti yang resistif — aman ditinggal di pot.',
-        '<code>Wire.begin(21, 22)</code> memulai I²C pada pin bawaan ESP32.',
-        'Petakan pembacaan dari kering..basah ke 0..100% dan pilih wajah untuk layar.',
+        '<code>Wire.begin(21, 22, 400000)</code> memulai I²C pada pin bawaan ESP32.',
+        "Ukur tegangan kering/basah dan atur DRY_MV/WET_MV. Ini milivolt, bukan hitungan ADC. Batasi hasil ke 0–100%.",
+        "Pasang Adafruit SSD1306 dan Adafruit GFX beserta dependensinya. Periksa alamat 0x3C/0x3D dan pull-up I²C ke 3,3 V. clearDisplay() membersihkan buffer; display() mengirimkannya. Simulasi terprogram.",
       ],
       specs: [['Keluaran probe', '≈ 1,2 V basah – 2,5 V kering'], ['OLED', 'SSD1306, 128×64'], ['Alamat I²C', '0x3C'], ['Kecepatan bus', '400 kHz']],
     },
