@@ -1,0 +1,24 @@
+Learn ESP32 - third-party notices
+
+three.js
+MIT license. Copyright 2010-2025 Three.js Authors.
+Full notice: vendor/THREE-LICENSE.txt
+
+Barlow and Barlow Semi Condensed
+Copyright 2017 The Barlow Project Authors.
+SIL Open Font License 1.1.
+Full notices: fonts/Barlow-OFL.txt and fonts/BarlowSemiCondensed-OFL.txt
+Source: https://github.com/google/fonts/blob/main/ofl/barlow/OFL.txt
+Source: https://github.com/google/fonts/blob/main/ofl/barlowsemicondensed/OFL.txt
+
+JetBrains Mono
+Copyright 2020 The JetBrains Mono Project Authors.
+SIL Open Font License 1.1.
+Full notice: fonts/JetBrainsMono-OFL.txt
+Source: https://github.com/google/fonts/blob/main/ofl/jetbrainsmono/OFL.txt
+
+Design inspiration: Learn Arduino by Dilum Sanjaya.
+https://learn-arduino-red.vercel.app/
+The ESP32 lesson text, models, circuit drawings, decorative SVG and app code
+are independently implemented. Inspiration attribution is not a claim of
+endorsement or permission to reuse that site's code or assets.
