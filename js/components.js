@@ -294,11 +294,27 @@ export function oled() {
   g.userData.draw(c => { c.fillStyle = '#9fd8ff'; c.font = '10px monospace'; c.fillText('ESP32', 46, 34); });
   return g;
 }
+export function pottedPlant() {
+  const g=new THREE.Group(),clay=new THREE.MeshStandardMaterial({color:0xb86e45,roughness:.8}),green=new THREE.MeshStandardMaterial({color:0x4d9d60,roughness:.65,side:THREE.DoubleSide});
+  g.add(ink(cyl(9,6.9,13,clay,0,7,0,32)));g.add(ink(cyl(9.9,9.9,2.5,clay,0,13.7,0,32)));g.add(ink(cyl(7.5,7.5,1.4,clay,0,.9,0,32)));
+  g.add(cyl(9,9,.5,new THREE.MeshStandardMaterial({color:0x805435,roughness:1}),0,15.1,0,32));
+  for(let i=0;i<8;i++){const a=i*2.4,r=3+i%3;g.add(cyl(.6,.8,.4,MAT.cream,Math.sin(a)*r,15.5,Math.cos(a)*r,7));}
+  for(let i=0;i<7;i++){
+    const a=i*2.4,len=13+(i%3)*4,bend=3+(i%2)*2;
+    const stem=new THREE.CatmullRomCurve3([new THREE.Vector3(0,15,0),new THREE.Vector3(Math.sin(a)*2,22,Math.cos(a)*2),new THREE.Vector3(Math.sin(a)*bend,24+len*.35,Math.cos(a)*bend)]);g.add(new THREE.Mesh(new THREE.TubeGeometry(stem,10,.35,6,false),green));
+    const leaf=new THREE.Shape();leaf.moveTo(0,0);leaf.bezierCurveTo(-5,len*.4,-3,len*.8,0,len);leaf.bezierCurveTo(5,len*.7,5,len*.3,0,0);
+    const mesh=new THREE.Mesh(new THREE.ShapeGeometry(leaf,16),green);mesh.position.set(Math.sin(a)*bend,20+len*.15,Math.cos(a)*bend);mesh.rotation.set(.2,a,Math.sin(a)*-.3);g.add(ink(mesh));
+    const vein=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,0,.08),new THREE.Vector3(0,len*.93,.08)]);mesh.add(new THREE.Line(vein,new THREE.LineBasicMaterial({color:0x2e6744})));
+  }return g;
+}
+export function wateringCan(){
+ const g=new THREE.Group(),blue=new THREE.MeshStandardMaterial({color:0x467eb5,roughness:.45});g.add(ink(cyl(5,5,10,blue,0,5,0,24)));g.add(ink(cyl(5.2,5.2,1,blue,0,10,0,24)));g.add(cyl(3.5,3.5,.4,MAT.metalDark,0,10.6,0,24));
+ const spout=cyl(.8,1.5,13,blue,-9,7,0,12);spout.rotation.z=1.1;g.add(ink(spout));const head=cyl(2,2,.7,MAT.metal,-14.8,10,0,16);head.rotation.z=-1.1;g.add(ink(head));
+ const handle=new THREE.Mesh(new THREE.TorusGeometry(4.5,.8,8,24,Math.PI*1.5),blue);handle.position.set(3,6,0);g.add(ink(handle));return g;
+}
 export function soilProbe() {
-  const g = new THREE.Group();
-  g.add(box(14, 1, 34, new THREE.MeshStandardMaterial({ color: 0xb33a2e, roughness: .5 }), 0, .5, 0));
-  g.add(box(14, 1.6, 8, MAT.chip, 0, 1.2, -13));
-  return g;
+ const g=new THREE.Group();g.add(ink(box(5,25,1,MAT.chip,0,8,0)));g.add(box(3.6,7,1.3,MAT.plastic,0,19,0));g.add(box(2.2,3,1.6,MAT.metalDark,0,20,0));
+ for(const x of[-1,1])g.add(box(.3,14,.2,MAT.metal,x,4,.65));return g;
 }
 export function fsr() {
   const g = new THREE.Group();

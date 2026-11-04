@@ -322,20 +322,15 @@ stepper: {
 },
 plant: {
   build(s) {
-    const pot = new THREE.Group();
-    pot.add(cyl(8, 6.4, 9, new THREE.MeshStandardMaterial({ color: 0xb96b45, roughness: .8 }), 0, 4.5, 0));
-    pot.add(cyl(7.4, 7.4, 1.2, new THREE.MeshStandardMaterial({ color: 0x4a3524, roughness: 1 }), 0, 8.6, 0));
-    [[0, .5], [2.1, .45], [4.2, .55], [1, .3], [3.1, .35]].forEach(([ry, rx]) => {
-      const l = new THREE.Mesh(new THREE.SphereGeometry(3.2, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4d9a51, roughness: .6 }));
-      l.scale.set(1, 2.1, .45); l.position.set(Math.sin(ry) * 2.4, 13, Math.cos(ry) * 2.4); l.rotation.set(rx, ry, 0); pot.add(l);
-    });
-    pot.position.set(76, 0, 4); s.add(pot, 'plant');
-    const probe = C.soilProbe(); probe.position.set(76, 6.4, 4); probe.rotation.y = .4; s.add(probe, 'probe');
-    const ol = C.oled(); ol.position.copy(bb(14, 5)); s.add(ol, 'oled');
+    const pot=C.pottedPlant();pot.position.set(76,0,4);s.add(pot,'plant');
+    const can=C.wateringCan();can.position.set(103,0,11);s.add(can,'water');
+    const probe = C.soilProbe(); probe.position.set(72, 6.4, 9); probe.rotation.y = .4; s.add(probe, 'probe');
+    const ol = C.oled(); ol.rotation.x=Math.PI/2;ol.position.copy(bb(14,5));ol.position.y=21;s.add(ol,'oled');
     s.wires.push(wireTo(pin('D34'), bb(10, 5), WIRE.green, 14, 'D34'), wireTo(pin('D21'), bb(11, 6), WIRE.purple, 14, 'D21'), wireTo(pin('D22'), bb(12, 7), WIRE.yellow, 14, 'D22'), wireTo(pin('3V3'), bb(17, 4), WIRE.red, 15, '3V3'), wireTo(pin('GND'), bb(18, 8), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34', i: 'wave', d: 'Reads soil moisture.' }, { at: pin('D21'), label: 'I²C · 21/22', i: 'pins', d: 'Bus that drives the OLED display.' }, { at: bb(14, 5).add(V(0, 9, 0)), label: 'OLED', i: 'info', d: 'Shows the moisture level.' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant', i: 'hand', d: 'Click to water it.' } ];
+    s.tags = [ { at: pin('D34'), label: 'SOIL · GPIO34', i: 'wave', d: 'Reads soil moisture.' }, { at: pin('D21'), label: 'I²C · 21/22', i: 'pins', d: 'Bus that drives the OLED display.' }, { at: bb(14, 5).add(V(0, 22, 0)), label: 'OLED', i: 'info', d: 'Shows the moisture level.' }, { at: V(76, 18, 4), label: 'PLANT', click: 'plant', i: 'hand', d: 'Click to water it.' } ];
+    s.tags.push({at:V(103,15,11),label:'WATER',click:'water',i:'hand',d:'Click to water the plant.'});
     s.api.oledDraw = fn => s.refs.oled.userData.draw(fn);
-    s.onClick = (w, api) => { if (w === 'plant') api._wet = ((api._wet ?? 1) + 1) % 3; };
+    s.onClick = (w, api) => { if (w === 'plant'||w === 'water') api._wet = ((api._wet ?? 1) + 1) % 3; };
   },
   sim: api => {
     api._wet = 1; let acc = 0; const levels = [18, 52, 88];

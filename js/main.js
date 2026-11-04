@@ -504,7 +504,7 @@ function thumbFor(i) {
   const hero = { board: null, blink: 'led', button: 'btn', pot: 'pot', rgb: 'rgb', light: 'lamp', distance: 'us', sound: 'bz', piano: 'keys', motor: 'motor', temp: 'heat', servo: 'servo', stepper: 'stepper', plant: 'plant', force: 'fsr', project: 'tl' }[LESSONS[i].id];
   let m;
   if (LESSONS[i].id === 'board') { const b = buildBoard(); m = b.group; m.scale.setScalar(.8); }
-  else m = { led: C.led5mm(0xe8392e), btn: C.pushButton(), pot: C.potentiometer(), rgb: C.rgbLed(), ldr: C.ldr(), lamp: C.deskLamp(), us: C.ultrasonic(), bz: C.buzzer(), keys: C.pianoKeys(8), motor: C.dcMotor(), tmp: C.tmp36(), heat: C.heatGun(), servo: C.servo(), stepper: C.stepper(), plant: (() => { const p = new THREE.Group(); p.add(cyl(8, 6.4, 9, new THREE.MeshStandardMaterial({ color: 0xb96b45 }), 0, 4.5, 0)); const l = new THREE.Mesh(new THREE.SphereGeometry(3.4, 10, 8), new THREE.MeshStandardMaterial({ color: 0x4d9a51 })); l.scale.set(1, 2.2, .5); l.position.y = 13; p.add(l); return p; })(), fsr: C.fsr(), tl: C.trafficLight() }[hero];
+  else m = { led: C.led5mm(0xe8392e), btn: C.pushButton(), pot: C.potentiometer(), rgb: C.rgbLed(), ldr: C.ldr(), lamp: C.deskLamp(), us: C.ultrasonic(), bz: C.buzzer(), keys: C.pianoKeys(8), motor: C.dcMotor(), tmp: C.tmp36(), heat: C.heatGun(), servo: C.servo(), stepper: C.stepper(), plant: C.pottedPlant(), fsr: C.fsr(), tl: C.trafficLight() }[hero];
   m.traverse(o => { if(o.isMesh && o.geometry) { const edge = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry,55),new THREE.LineBasicMaterial({color:0x19243c}));o.add(edge); } });
   ts.add(m);
   const bb6 = new THREE.Box3().setFromObject(m); const c6 = bb6.getCenter(new THREE.Vector3()); const sz = bb6.getSize(new THREE.Vector3()).length();
