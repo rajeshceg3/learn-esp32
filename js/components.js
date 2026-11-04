@@ -13,23 +13,26 @@ export function bbHole(col, row) { // col 0..29, row 0..9 (0..4 top half, 5..9 b
 }
 export function breadboard() {
   const g = new THREE.Group();
-  g.add(ink(box(BB.w, 8.5, BB.d, MAT.bread, 0, 4.25, 0)));
+  g.add(ink(box(BB.w, 8.5, BB.d, new THREE.MeshBasicMaterial({color:0xeee9de}), 0, 4.25, 0)));
   // groove down the middle
   g.add(box(BB.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
   // holes texture
   const cv = document.createElement('canvas'); cv.width = 512; cv.height = 176;
   const c = cv.getContext('2d'); c.fillStyle = '#f4ead6'; c.fillRect(0, 0, 512, 176);
-  c.fillStyle = '#4d4c49';
-  for (let i = 0; i < 30; i++) for (let j = 0; j < 10; j++) {
-    c.beginPath(); c.arc(14 + i * 16.4, 12 + j * 16.4, 2.6, 0, 7); c.fill();
+  // Use the physical 2.54mm grid for both canvas recesses and mounted parts.
+  const hx=i=>((i-(BB.cols-1)/2)*BB.pitch/BB.w+.5)*512;
+  const hy=j=>((j-(BB.rows-1)/2)*BB.pitch/BB.d+.5)*176;
+  for(let i=0;i<BB.cols;i++)for(let j=0;j<BB.rows;j++){
+    const x=hx(i),y=hy(j);c.fillStyle='#bdb5a7';c.fillRect(x-3.2,y-2.8,6.4,5.6);
+    c.fillStyle='#343741';c.fillRect(x-2.2,y-2.2,4.4,3.8);
   }
-  c.fillStyle = 'rgba(200,60,50,.65)'; c.fillRect(8, 2, 496, 2); c.fillRect(8, 172, 496, 2);
-  c.fillStyle = 'rgba(60,90,200,.65)'; c.fillRect(8, 6, 496, 2); c.fillRect(8, 168, 496, 2);
-  // Recessed centre channel and row guides are original canvas artwork.
-  c.fillStyle='#ded3bf';c.fillRect(8,82,496,12);c.strokeStyle='#b9ad98';c.lineWidth=1;c.strokeRect(8,82,496,12);
-  c.fillStyle='#8a8173';c.font='8px monospace';c.textAlign='center';for(let i=0;i<30;i+=5)c.fillText(String(i+1),14+i*16.4,167);
+  c.strokeStyle='#b8b0a0';c.lineWidth=1;c.strokeRect(5,4,502,168);
+  c.fillStyle='#c45f50';c.fillRect(8,7,496,1.4);c.fillRect(8,168,496,1.4);
+  c.fillStyle='#66829c';c.fillRect(8,10,496,1.4);c.fillRect(8,164.5,496,1.4);
+  c.fillStyle='#ded7c9';c.fillRect(7,84,498,8);c.strokeStyle='#b9b2a6';c.strokeRect(7,84,498,8);
+  c.fillStyle='#958c7d';c.font='7px monospace';c.textAlign='center';for(let i=0;i<30;i+=5)c.fillText(String(i+1),hx(i),161);
   const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
-  const topM = new THREE.Mesh(new THREE.PlaneGeometry(BB.w, BB.d), new THREE.MeshStandardMaterial({ map: tex, roughness: .7 }));
+  const topM = new THREE.Mesh(new THREE.PlaneGeometry(BB.w, BB.d), new THREE.MeshBasicMaterial({ map: tex }));
   topM.rotation.x = -Math.PI / 2; topM.position.y = 8.62; topM.receiveShadow = true;
   g.add(topM);
   return g;

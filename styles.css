@@ -552,3 +552,7 @@ svg{display:block}
  .panel.full .tab-card{height:auto;min-height:0}.panel.full .info-content{height:auto;overflow:visible}.code-card.full{padding-top:0}
 }
 @media(min-width:1024px){.code-card:not(.full):has(.console:not([hidden])) .code-pre{max-height:64px}}
+
+/* Original etched circuit frame, kept behind all controls. */
+@media(min-width:1024px){.bg-grid{background:var(--bg)}.bg-traces{width:100%;height:100%;opacity:.8}.stage-corner{display:none}.stage-wrap{background-image:repeating-linear-gradient(26deg,transparent 0 25px,rgba(183,153,108,.21) 25px 26px),repeating-linear-gradient(136deg,transparent 0 28px,rgba(183,153,108,.21) 28px 29px)}.stage-vignette{box-shadow:inset 0 0 75px 30px var(--bg)}}
+@media(max-width:1023px){.bg-traces{display:none}}

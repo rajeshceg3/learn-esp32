@@ -280,7 +280,7 @@ function loadLesson(i, keepTab) {
   $('#panel').classList.remove('open');
   stopSim();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 ? 1.0 : .65; rig.tPol = i > 0 && innerWidth < 1024 ? .65 : 1.07;
+  rig.tAz = i === 0 ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
   lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
