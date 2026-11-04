@@ -411,3 +411,15 @@ svg{display:block}
 @media(max-width:1023px){.sheet{left:10px;right:10px;bottom:18px;max-height:90%;border:1px solid var(--line);border-radius:13px}.sheet-body{padding:6px 16px 14px}.comp-row{border-bottom:0;padding-top:8px;padding-bottom:8px}.comp-name{font-size:15px}.comp-desc{font-size:14px}}
 @media(max-width:1023px){.sheet:not(.open){visibility:hidden}.sheet.open{visibility:visible}}
 .lesson-card .thumb{object-fit:contain;background:transparent}
+@media(max-width:1023px){
+ .topbar{padding:14px 12px 6px;row-gap:12px;min-height:128px}
+ .brand{gap:9px}.brand-logo{width:65px;height:36px}.brand-name{font-size:21px;font-weight:600;letter-spacing:.14em}.brand-tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;margin-top:4px}
+ .progress-pill{display:grid;grid-template-columns:30px minmax(80px,1fr) auto;grid-template-rows:auto 10px;column-gap:10px;row-gap:2px;padding:7px 12px;border-radius:9px;flex-basis:250px}
+ .progress-pill .book{grid-column:1;grid-row:1/3;width:26px;height:26px}
+ .progress-pill .progress-label{grid-column:2/4;grid-row:1;font-size:14px;letter-spacing:0}
+ .progress-pill .progress-bar{grid-column:2;grid-row:2;order:initial;width:100%;height:9px}
+ .progress-pill .progress-count{grid-column:3;grid-row:2;order:initial;font-size:13px;line-height:10px}
+ .clock{font-size:12px;line-height:1.35}
+ .stage-corner{display:none}.toolbar{padding-inline:10px;gap:6px;min-width:286px}
+ .stage-wrap{margin-inline:12px;border-radius:14px}
+}
