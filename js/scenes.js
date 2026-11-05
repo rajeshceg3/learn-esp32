@@ -341,12 +341,21 @@ servo: {
     s.onClick = (w, api) => { if (w === 'servo') api._rate = ((api._rate ?? 0) + 1) % 3; };
   },
   sim: api => {
-    let t = 0; api._rate = 0; const rates = [.7, 1.2, 2];
+    let t = 0, teaching = null, angle = 0; api._rate = 0; const rates = [.7, 1.2, 2];
     return {
       running: false,
-      start() { this.running = true; api.serial('Sweeping 0 → 180 → 0. Click the servo to change speed.'); },
-      stop() { this.running = false; api.servo(0); },
-      tick(dt) { if (!this.running) return; t += dt * rates[api._rate];
+      start() { teaching=null;t=0;this.running = true; api.serial('Sweeping 0 → 180 → 0. Click the servo to change speed.'); },
+      stop() { this.running = false; teaching=null;angle=0;api.servo(0); },
+      teach(stage,busy,reduced) {
+        this.running=false;
+        const end=stage===2?-Math.PI:0;
+        if(!busy||reduced||stage<2){teaching=null;angle=end;api.servo(angle);}
+        else if(!teaching||teaching.stage!==stage)teaching={stage,from:angle,to:end,elapsed:0};
+        api.line?.(stage<0?0:[4,8,9,13][stage]);
+      },
+      tick(dt) {
+        if(teaching){teaching.elapsed+=dt;const progress=Math.min(1,teaching.elapsed/.555);angle=teaching.from+(teaching.to-teaching.from)*progress;api.servo(angle);if(progress===1)teaching=null;return;}
+        if (!this.running) return; t += dt * rates[api._rate];
         api.line?.(Math.cos(t*1.4)>0?9:13); api.servo(-(Math.sin(t * 1.4) * .5 + .5) * Math.PI); },
     };
   },

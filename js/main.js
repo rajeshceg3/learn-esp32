@@ -511,11 +511,19 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
+const isGuidedLesson=()=>['blink','servo'].includes(LESSONS[state.lesson]?.id);
+const isServoGuide=()=>LESSONS[state.lesson]?.id==='servo';
 const blinkGuide = new LearningSteps(5, stage => {
-  if(state.lesson===1&&!state.running)cur.sim?.teach?.(stage);
+  if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion);
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isServoGuide())return [
+    ['Configure the signal', 'This example configures GPIO13 for 50 Hz, 12-bit pulses. No sweep has run.'],
+    ['Start at 0 degrees', 'The example sends its starting pulse value. The simulated horn stays at 0 degrees until you continue.'],
+    ['Sweep outward once', 'The example increases its angle toward 180 degrees. This stage ends there and waits for you.'],
+    ['Return once', 'The example decreases its angle to 0 degrees, then waits. Replay to review the sequence.'],
+  ][stage]||['Explore one sweep at a time','One press runs one part of this browser simulation, then waits. Real servo endpoints need calibration.'];
   return [
     ['Configure the output', 'GPIO26 is ready to drive the LED. The loop has not started.'],
     ['HIGH: light the LED', 'The output goes HIGH. Current passes through the resistor and LED.'],
@@ -525,22 +533,22 @@ function blinkStageCopy(stage) {
   ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
 }
 function updateBlinkGuide() {
-  document.documentElement.classList.toggle('blink-learning',state.lesson===1);
+  document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const box=$('#blinkGuide');if(!box)return;
-  const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage);
+  const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage),last=blinkGuide.count-1;
   box.dataset.stage=stage;box.dataset.busy=String(busy);
-  $('#guideProgress').textContent=stage<0?'0 / 5':`${stage+1} / 5`;
+  $('#guideProgress').textContent=`${Math.max(0,stage+1)} / ${blinkGuide.count}`;
   $('#guideTitle').textContent=title;$('#guideCopy').textContent=copy;
-  $('#guideNext').setAttribute('aria-disabled',String(busy||stage===4));
-  $('#guideNext').textContent=busy?'Running this step…':stage===4?'Loop complete':'Next step';
+  $('#guideNext').setAttribute('aria-disabled',String(busy||stage===last));
+  $('#guideNext').textContent=busy?'Running this step…':stage===last?'Loop complete':'Next step';
   $('#guidePrevious').disabled=busy||stage<0;
   box.classList.toggle('is-busy',busy);
 }
 function nextBlinkStage() {
-  if(state.lesson!==1||blinkGuide.busy||blinkGuide.stage===4)return;
+  if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300);
+  blinkGuide.advance(isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -550,7 +558,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   $('#stageWrap > #blinkGuide')?.remove();
-  document.documentElement.classList.toggle('blink-learning',state.lesson===1);
+  document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
   document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
@@ -575,7 +583,7 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(state.lesson===1)h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="Blink lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
@@ -593,10 +601,11 @@ function renderPanel() {
     <div class="console" id="console" ${state.running ? '' : 'hidden'}></div>
   </div>`;
   body.innerHTML = h;
-  if(state.lesson===1){
+  if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
+    blinkGuide.count=isServoGuide()?4:5;
     updateBlinkGuide();
-    if(!state.running)cur.sim?.teach?.(blinkGuide.stage);
+    if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion);
     $('#guideNext').onclick=nextBlinkStage;
     for(const b of document.querySelectorAll('#blinkGuide button')) b.addEventListener('keydown',e=>{if(e.repeat&&['Enter',' '].includes(e.key))e.preventDefault();});
     $('#guideReset').onclick=()=>{stopSim();blinkGuide.reset();};
