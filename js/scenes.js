@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { MAT, box, cyl, pinLocal } from './scene.js';
 import * as C from './components.js';
 import {POT_HELP} from './i18n.js';
+import {plantFrame} from './plant-learning.js';
 
 export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
@@ -435,11 +436,23 @@ plant: {
   sim: api => {
     api._watering=false;api._moisture=52;let acc=0;
     const face=m=>m<30?'WATER ME!':m>85?'TOO WET!':'HAPPY :)';
+    const standby=()=>api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='10px monospace';c.fillText('ESP32',46,34);});
+    const draw=(m,mood)=>api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 20px monospace';c.fillText(m+'%',5,21);c.strokeRect(4,28,120,8);c.fillRect(5,29,Math.trunc(m*118/100),6);c.font='bold 12px monospace';c.fillText(mood,5,56);});
     return {
       running:false,
       start(){this.running=true;api.serial('Scripted soil monitor. Hold the plant or WATER to water; release to let it dry.');},
-      stop(){this.running=false;api._watering=false;api.waterPose?.(false);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='10px monospace';c.fillText('ESP32',46,34);});},
-      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering,dt);acc+=dt;if(acc>.5){acc=0;api.line?.(23);const m=Math.round(api._moisture);api.oledDraw(c=>{c.fillStyle='#9fd8ff';c.font='bold 20px monospace';c.fillText(m+'%',5,21);c.strokeRect(4,28,120,8);c.fillRect(5,29,Math.round(m*118/100),6);c.font='bold 12px monospace';c.fillText(face(m),5,56);});api.serial(`soil moisture = ${m}%`);}}
+      stop(){this.running=false;api._watering=false;api.waterPose?.(false);standby();},
+      teach(stage,busy,reduced,sample=1850){
+        this.running=false;api._watering=false;api.waterPose?.(false);
+        const f=plantFrame(sample);
+        // Reconstruct both states on Previous/reset: the offscreen buffer does
+        // not reach the physical scene display until oled.display(), stage 5.
+        api._plantBuffer=stage>=4?{...f}:null;
+        api._plantScreen=stage>=5?{...f}:null;
+        if(stage>=5)draw(f.moisture,f.mood);else standby();
+        api.line?.(stage<0?0:[10,22,23,24,26,34,36][stage]);
+      },
+      tick(dt){if(!this.running)return;api._moisture=Math.max(0,Math.min(100,api._moisture+(api._watering?9:-.6)*dt));api.waterPose?.(api._watering,dt);acc+=dt;if(acc>.5){acc=0;api.line?.(34);const m=Math.round(api._moisture);draw(m,face(m));api.serial(`soil moisture = ${m}%`);}}
     };
   },
 },
