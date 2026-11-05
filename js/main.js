@@ -248,6 +248,10 @@ function placeTags() {
         if(p){cx=r.width*p[0];cy=r.height*p[1]}
       }
     }
+    if(innerWidth>=1024&&LESSONS[state.lesson]?.id==='motor'){
+      const p=(wide?{'GPIO27 · PWM':[.17,.20],'2N2222':[.50,.18],'MOTOR':[.83,.30]}:{'GPIO27 · PWM':[.22,.16],'2N2222':[.65,.30],'MOTOR':[.78,.49]})[t.label];
+      if(p){cx=r.width*p[0];cy=r.height*p[1]}
+    }
     if(!wide&&state.lesson===13){
       const p={'SOIL · GPIO34':[.2,.34],'I²C · 21/22':[.2,.65],'OLED':[.6,.34],'PLANT':[.55,.65],'WATER':[.85,.65]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
