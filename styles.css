@@ -644,3 +644,9 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  .stage-wrap > .blink-guide .guide-explanation p{font-size:14px;line-height:1.35;margin-bottom:10px}
  .stage-wrap > .blink-guide .guide-continuous{margin-top:4px;min-height:36px}
 }
+
+/* Keep learning controls in their own desktop column above the lesson rail. */
+@media(min-width:1024px){
+ .blink-learning .panel{min-height:0;overflow:hidden}
+ .blink-learning .panel-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:12px}
+}
