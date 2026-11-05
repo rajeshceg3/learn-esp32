@@ -515,16 +515,26 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
-const isGuidedLesson=()=>['blink','servo','motor','temp'].includes(LESSONS[state.lesson]?.id);
-let thermalSample=24;
+const isGuidedLesson=()=>['blink','servo','motor','temp','stepper'].includes(LESSONS[state.lesson]?.id);
+let thermalSample=24, wheelTarget=3;
+const isWheelGuide=()=>LESSONS[state.lesson]?.id==='stepper';
 const isThermalGuide=()=>LESSONS[state.lesson]?.id==='temp';
 const isMotorGuide=()=>LESSONS[state.lesson]?.id==='motor';
 const isServoGuide=()=>LESSONS[state.lesson]?.id==='servo';
 const blinkGuide = new LearningSteps(5, stage => {
-  if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion,thermalSample);
+  if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion,isWheelGuide()?wheelTarget:thermalSample);
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isWheelGuide())return [
+    ['Prepare the wheel', 'Start at segment 0. Configure the button pull-up and driver. This is a browser example, not hardware execution.'],
+    ['Read a new press', 'The example reads GPIO4 LOW: the button is pressed. The wheel has not moved.'],
+    ['Check the guard', 'This is a new press and the wheel is idle, so the movement branch may run. No movement is queued yet.'],
+    ['Calculate the distance', `Target ${wheelTarget}, starting at 0: ahead = (${wheelTarget} - 0 + 8) % 8 = ${wheelTarget}. Move 2048 + ${wheelTarget} × 256 = ${2048+wheelTarget*256} nominal steps.`],
+    ['Queue the move', `Queue ${2048+wheelTarget*256} nominal steps and remember target ${wheelTarget}. Queuing does not turn the wheel. Physical position is still segment 0.`],
+    ['Run the queued move', `The browser illustrates one turn plus ${wheelTarget} segments, then holds at segment ${wheelTarget}. Its easing is illustrative, not measured motor acceleration.`],
+    ['Release and hold', `GPIO4 returns HIGH. The wheel stays at segment ${wheelTarget}. Replay or choose another target to review.`],
+  ][stage]||['Follow one prize-wheel move', 'Choose a target, then read, check, calculate, queue and move one action at a time. Random spins remain separate exploration.'];
   if(isThermalGuide())return [
     ['Prepare a sample', 'GPIO27 starts LOW. This chosen example is separate from the free heat exploration.'],
     ['Read the sample voltage', `The example sensor value is ${500+thermalSample*10} mV. No conversion or fan decision has run.`],
@@ -557,7 +567,7 @@ function blinkStageCopy(stage) {
   ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
 }
 function updateBlinkGuide() {
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const box=$('#blinkGuide');if(!box)return;
   const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage),last=blinkGuide.count-1;
@@ -573,7 +583,7 @@ function nextBlinkStage() {
   if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
+  blinkGuide.advance(isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -583,7 +593,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   $('#stageWrap > #blinkGuide')?.remove();
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
@@ -609,12 +619,13 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
     ${isThermalGuide()?`<label class="guide-sample" for="guideSample">Example sample <select id="guideSample"><option value="24" ${thermalSample===24?'selected':''}>24 C (below threshold)</option><option value="34" ${thermalSample===34?'selected':''}>34 C (above threshold)</option></select></label>`:''}
+    ${isWheelGuide()?`<label class="guide-sample" for="guideSample">Target segment <select id="guideSample">${Array.from({length:8},(_,n)=>`<option value="${n}" ${wheelTarget===n?'selected':''}>${n}${n===0?' (one full turn)':''}</option>`).join('')}</select></label>`:''}
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
-    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()?'Explore continuously':'Watch the full loop'}</button>
+    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()||isWheelGuide()?'Explore continuously':'Watch the full loop'}</button>
   </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
@@ -630,9 +641,10 @@ function renderPanel() {
   body.innerHTML = h;
   if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
-    blinkGuide.count=isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
+    blinkGuide.count=isWheelGuide()?7:isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
     updateBlinkGuide();
-    if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion,thermalSample);
+    if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion,isWheelGuide()?wheelTarget:thermalSample);
+    if(isWheelGuide())$('#guideSample').onchange=e=>{wheelTarget=Number(e.target.value);stopSim();blinkGuide.reset();};
     if(isThermalGuide())$('#guideSample').onchange=e=>{thermalSample=Number(e.target.value);stopSim();blinkGuide.reset();};
     $('#guideNext').onclick=nextBlinkStage;
     for(const b of document.querySelectorAll('#blinkGuide button')) b.addEventListener('keydown',e=>{if(e.repeat&&['Enter',' '].includes(e.key))e.preventDefault();});
