@@ -515,14 +515,24 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
-const isGuidedLesson=()=>['blink','servo','motor'].includes(LESSONS[state.lesson]?.id);
+const isGuidedLesson=()=>['blink','servo','motor','temp'].includes(LESSONS[state.lesson]?.id);
+let thermalSample=24;
+const isThermalGuide=()=>LESSONS[state.lesson]?.id==='temp';
 const isMotorGuide=()=>LESSONS[state.lesson]?.id==='motor';
 const isServoGuide=()=>LESSONS[state.lesson]?.id==='servo';
 const blinkGuide = new LearningSteps(5, stage => {
-  if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion);
+  if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion,thermalSample);
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isThermalGuide())return [
+    ['Prepare a sample', 'GPIO27 starts LOW. This chosen example is separate from the free heat exploration.'],
+    ['Read the sample voltage', `The example sensor value is ${500+thermalSample*10} mV. No conversion or fan decision has run.`],
+    ['Convert to Celsius', `(${500+thermalSample*10} - 500) / 10 = ${thermalSample} degrees C in this example mapping.`],
+    ['Compare with 30 degrees', `${thermalSample} > 30 is ${thermalSample>30?'true':'false'}. The fan output has not been written yet.`],
+    ['Write the fan output', `The example writes GPIO27 ${thermalSample>30?'HIGH: fan on':'LOW: fan off'}. The browser holds this state between steps.`],
+    ['Wait at this output', 'delay(200) keeps the output for 200 ms, then waits for you. Choose another sample or replay.'],
+  ][stage]||['Follow one thermostat sample','Choose an example sample, then read, convert, compare and write. This is a browser model, not a hardware reading.'];
   if(isMotorGuide())return [
     ['Configure motor PWM', 'This example configures GPIO27 for 5 kHz, 8-bit PWM. The simulated motor is stopped.'],
     ['Set the fast speed', 'The example writes duty 200 out of 255. The browser shows the faster motor state, then holds the frame.'],
@@ -547,6 +557,7 @@ function blinkStageCopy(stage) {
   ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
 }
 function updateBlinkGuide() {
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const box=$('#blinkGuide');if(!box)return;
   const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage),last=blinkGuide.count-1;
@@ -562,7 +573,7 @@ function nextBlinkStage() {
   if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
+  blinkGuide.advance(isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -572,6 +583,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   $('#stageWrap > #blinkGuide')?.remove();
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
@@ -597,11 +609,12 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
+    ${isThermalGuide()?`<label class="guide-sample" for="guideSample">Example sample <select id="guideSample"><option value="24" ${thermalSample===24?'selected':''}>24 C (below threshold)</option><option value="34" ${thermalSample===34?'selected':''}>34 C (above threshold)</option></select></label>`:''}
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
-    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()?'Explore continuously':'Watch the full loop'}</button>
+    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()?'Explore continuously':'Watch the full loop'}</button>
   </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
@@ -617,9 +630,10 @@ function renderPanel() {
   body.innerHTML = h;
   if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
-    blinkGuide.count=isMotorGuide()?7:isServoGuide()?4:5;
+    blinkGuide.count=isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
     updateBlinkGuide();
-    if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion);
+    if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion,thermalSample);
+    if(isThermalGuide())$('#guideSample').onchange=e=>{thermalSample=Number(e.target.value);stopSim();blinkGuide.reset();};
     $('#guideNext').onclick=nextBlinkStage;
     for(const b of document.querySelectorAll('#blinkGuide button')) b.addEventListener('keydown',e=>{if(e.repeat&&['Enter',' '].includes(e.key))e.preventDefault();});
     $('#guideReset').onclick=()=>{stopSim();blinkGuide.reset();};

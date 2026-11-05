@@ -650,3 +650,13 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  .blink-learning .panel{min-height:0;overflow:hidden}
  .blink-learning .panel-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding-bottom:12px}
 }
+
+.guide-sample{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px}.guide-sample select{min-height:36px;max-width:100%;font:inherit;background:var(--card);border:1px solid var(--line);border-radius:6px;padding:5px}
+@media(max-width:1023px){
+ .thermal-learning .stage-wrap{min-height:640px}
+ .thermal-learning #stage,.thermal-learning .leaders,.thermal-learning .tags,.thermal-learning .stage-vignette{height:calc(100% - 365px)}
+ .thermal-learning .stage-wrap .toolbar{bottom:370px}.thermal-learning .stage-wrap .stage-credit{bottom:369px}
+ .thermal-learning .guide-sample{font-size:12px;gap:5px}.thermal-learning .guide-sample select{width:170px}
+}
+/* Focus/scroll targets must clear the fixed phone navigation. */
+@media(max-width:1023px){html.thermal-learning{scroll-padding-bottom:80px}.thermal-learning .blink-guide{scroll-margin-bottom:80px}}
