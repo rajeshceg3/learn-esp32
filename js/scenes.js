@@ -66,6 +66,12 @@ blink: {
       start() { this.running = true; t = 0; on = false; api.serial('Uploading… done. Blinking on GPIO26.'); },
       stop() { this.running = false; on = false; api.setLed(false); api.tag(null); api.flow('D26', false); },
       setTiming(a, b) { dur = [a, b]; },
+      // Guided teaching never starts the autonomous clock.
+      teach(stage) { this.running=false; t=0;
+        on=stage===1||stage===2;
+        api.setLed(on); api.tag(stage<0?null:(on?'HIGH':'LOW')); api.flow('D26',on);
+        api.line?.(stage<0?0:[4,8,9,10,11][stage]);
+      },
       tick(dt) { if (!this.running) return; t += dt * 1000;
         if (t >= (on ? dur[0] : dur[1])) { t = 0; on = !on; api.setLed(on); api.tag(on ? 'HIGH' : 'LOW'); api.flow('D26', on); api.line?.(on ? 8 : 10); api.serial(`GPIO26 → ${on ? 'HIGH' : 'LOW'}`); } },
     };
