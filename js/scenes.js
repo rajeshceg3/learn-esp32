@@ -4,6 +4,7 @@ import { MAT, box, cyl, pinLocal } from './scene.js';
 import * as C from './components.js';
 import {POT_HELP} from './i18n.js';
 import {plantFrame} from './plant-learning.js';
+import {forceStage} from './force-learning.js';
 
 export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
@@ -466,7 +467,7 @@ force: {
     s.wires.push(wireTo(pin('D35'),V(46,1,19),WIRE.green,13,'D35'),wireTo(pin('3V3'),V(50,1,19),WIRE.red,15,'3V3'),wireTo(V(46,1,19),bb(13,2),WIRE.green,10),wireTo(bb(15,2),pin('GND'),WIRE.navy,12,'GND'),wireTo(pin('D13'),V(-18,3,-26),WIRE.orange,16,'D13'),wireTo(pin('VIN'),V(-15,3,-26),WIRE.red,17,'VIN'),wireTo(pin('GND'),V(-21,3,-26),WIRE.navy,18,'GND'),wireTo(pin('D19'),bb(8,2),WIRE.purple,13,'D19'),wireTo(pin('GND'),bb(10,2),WIRE.navy,12,'GND'));
     s.tags=[{at:V(-18,34,-27),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(48,2,29),label:'PRESS PAD',click:'fsr',hold:true,i:'hand',d:'Hold and drag down to press harder.'}];
     let pressureRaw=0;
-    s.tags.push({at:pin('D35'),label:'GPIO35 · ADC',i:'wave',value:()=>`GPIO35 = ${pressureRaw}`,d:'Scripted 12-bit pressure reading, 0–4095.'});
+    s.tags.push({at:pin('D35'),label:'GPIO35 · ADC',i:'wave',value:()=>`WRITTEN · ${pressureRaw}`,d:'Pressure sample currently written to the illustrated output, 0–4095.'});
     s.api.forceMeter=(v)=>{pressureRaw=Math.round(v*4095);s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
     let startY=0;
     const begin=(api,e)=>{startY=e?.clientY??0;api._pressing=true;api._pressureTarget=.12;};
@@ -475,9 +476,17 @@ force: {
     s.holdMove=(e,api)=>{api._pressureTarget=Math.max(.05,Math.min(1,.12+(e.clientY-startY)/100));};
     s.holdEnd=api=>{api._pressing=false;api._pressureTarget=0;};
   },
-  sim:api=>{api._pressureTarget=0;api._pressing=false;let value=0,best=0,acc=0,bell=0,rung=false;return{running:false,
-    start(){this.running=true;api.serial('Scripted strength meter. Hold PRESS PAD, drag down to press harder, release to reset pressure.');},
+  sim:api=>{api._pressureTarget=0;api._pressing=false;let value=0,best=0,acc=0,bell=0,rung=false,taughtStage=-2;return{running:false,
+    start(){taughtStage=-2;this.running=true;api.serial('Scripted strength meter. Hold PRESS PAD, drag down to press harder, release to reset pressure.');},
     stop(){this.running=false;api._pressing=false;api._pressureTarget=0;value=0;bell=0;api.forceMeter(0);api.tone(0);},
+    teach(stage,busy,reduced){
+      this.running=false;api._pressing=false;api._pressureTarget=0;
+      const v=forceStage(stage),changed=stage!==taughtStage;taughtStage=stage;
+      api.forceMeter(v.output/4095);
+      // Re-rendering must not replay a tone. Settling/reset/blur silences it.
+      if(changed&&busy&&v.bell)api.tone(1568);else if(!busy||!v.bell)api.tone(0);
+      api.line?.(stage<0?0:[5,12,13,14,16,20,12,15,12,18,12,16,20,22][stage]);
+    },
     tick(dt){if(!this.running)return;value+=(api._pressureTarget-value)*Math.min(dt*9,1);if(value<.001)value=0;best=Math.max(best,value);api.forceMeter(value);api.line?.(16);const raw=Math.round(value*4095);if(raw>3071&&!rung){api.tone(1568);bell=.4;rung=true;}if(raw<2662)rung=false;if(bell>0){bell-=dt;if(bell<=0)api.tone(0);}acc+=dt;if(acc>.3){acc=0;api.serial(`force = ${raw} · best ${Math.round(best*4095)}`);}}
   };},
 },

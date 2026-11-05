@@ -10,6 +10,7 @@ import { translateRuntime } from './runtime-i18n.js';
 import { createSchematicPanel } from './schematic.js';
 import { LearningSteps } from './learning-steps.js';
 import {plantFrame,PLANT_SAMPLES} from './plant-learning.js';
+import {FORCE_COPY,forceStage} from './force-learning.js';
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -257,6 +258,10 @@ function placeTags() {
       const p={'COILS · 14·27·26·25':[.22,.16],'BUTTON':[.76,.20],'STEPPER':[.76,.76]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
+    if(innerWidth>=1024&&LESSONS[state.lesson]?.id==='force'){
+      const p=(wide?{'STRENGTH':[.24,.12],'GPIO35 · ADC':[.20,.75],'PRESS PAD':[.78,.30]}:{'STRENGTH':[.32,.13],'GPIO35 · ADC':[.20,.76],'PRESS PAD':[.81,.27]})[t.label];
+      if(p){cx=r.width*p[0];cy=r.height*p[1]}
+    }
     if(innerWidth>=1024&&!wide&&isPlantGuide()){
       const p={'SOIL · GPIO34':[.2,.18],'I²C · 21/22':[.2,.74],'OLED':[.65,.18],'PLANT':[.45,.76],'WATER':[.82,.36]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
@@ -265,9 +270,9 @@ function placeTags() {
       const p={'SOIL · GPIO34':[.2,.34],'I²C · 21/22':[.2,.65],'OLED':[.6,.34],'PLANT':[.55,.65],'WATER':[.85,.65]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
-    if(state.lesson===14){
+    if(innerWidth<1024&&state.lesson===14){
       if(t.label==='GPIO35 · ADC'){cx=r.width*(wide?.2:.25);cy=r.height*(wide?.68:.65);}
-      if(!wide&&t.label==='PRESS PAD')cy=ay+36;
+      if(!wide&&t.label==='PRESS PAD'){cx=r.width*.82;cy=r.height*.52;}
     }
     d._x = cx; d._y = cy;
   });
@@ -524,8 +529,9 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
-const isGuidedLesson=()=>['blink','servo','motor','temp','stepper','plant'].includes(LESSONS[state.lesson]?.id);
+const isGuidedLesson=()=>['blink','servo','motor','temp','stepper','plant','force'].includes(LESSONS[state.lesson]?.id);
 let thermalSample=24, wheelTarget=3, plantSample=1850;
+const isForceGuide=()=>LESSONS[state.lesson]?.id==='force';
 const isPlantGuide=()=>LESSONS[state.lesson]?.id==='plant';
 const guideSample=()=>isPlantGuide()?plantSample:isWheelGuide()?wheelTarget:thermalSample;
 const isWheelGuide=()=>LESSONS[state.lesson]?.id==='stepper';
@@ -537,6 +543,10 @@ const blinkGuide = new LearningSteps(5, stage => {
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isForceGuide()){
+    const v=forceStage(stage),copy=FORCE_COPY[stage];
+    return copy?[copy[0],copy[1]+` State: raw ${v.raw??'pending'}, mapped duty ${v.duty??'pending'}, rung=${v.rung}, written output ${v.output}, bell ${v.bell&&blinkGuide.busy?'playing':'off'}.`]:['Follow a pressure history','One press runs one action, then holds. Read high, keep high, release below the rearm threshold, then press high again. Continuous held-pressure exploration is separate.'];
+  }
   if(isPlantGuide()){
     const f=plantFrame(plantSample);
     return [
@@ -590,7 +600,7 @@ function blinkStageCopy(stage) {
   ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
 }
 function updateBlinkGuide() {
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const box=$('#blinkGuide');if(!box)return;
   const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage),last=blinkGuide.count-1;
@@ -606,7 +616,7 @@ function nextBlinkStage() {
   if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(isPlantGuide()?(next===6?500:state.settings.reduceMotion?0:300):isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
+  blinkGuide.advance(isForceGuide()?([4,11].includes(next)?400:next===13?20:250):isPlantGuide()?(next===6?500:state.settings.reduceMotion?0:300):isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -616,7 +626,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   $('#stageWrap > #blinkGuide')?.remove();
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
@@ -642,14 +652,14 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isPlantGuide()?'Smart plant':isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isForceGuide()?'Force meter':isPlantGuide()?'Smart plant':isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
     ${isThermalGuide()?`<label class="guide-sample" for="guideSample">Example sample <select id="guideSample"><option value="24" ${thermalSample===24?'selected':''}>24 C (below threshold)</option><option value="34" ${thermalSample===34?'selected':''}>34 C (above threshold)</option></select></label>`:''}
     ${isWheelGuide()?`<label class="guide-sample" for="guideSample">Target segment <select id="guideSample">${Array.from({length:8},(_,n)=>`<option value="${n}" ${wheelTarget===n?'selected':''}>${n}${n===0?' (one full turn)':''}</option>`).join('')}</select></label>`:''}
     ${isPlantGuide()?`<label class="guide-sample" for="guideSample">Example voltage <select id="guideSample">${PLANT_SAMPLES.map(m=>`<option value="${m}" ${plantSample===m?'selected':''}>${m} mV${m===2800?' (dry clamp)':m===900?' (wet clamp)':''}</option>`).join('')}</select></label>`:''}
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
-    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()||isWheelGuide()||isPlantGuide()?'Explore continuously':'Watch the full loop'}</button>
+    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide()?'Explore continuously':'Watch the full loop'}</button>
   </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
@@ -665,7 +675,7 @@ function renderPanel() {
   body.innerHTML = h;
   if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
-    blinkGuide.count=isPlantGuide()?7:isWheelGuide()?7:isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
+    blinkGuide.count=isForceGuide()?FORCE_COPY.length:isPlantGuide()?7:isWheelGuide()?7:isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
     updateBlinkGuide();
     if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion,guideSample());
     if(isPlantGuide())$('#guideSample').onchange=e=>{plantSample=Number(e.target.value);stopSim();blinkGuide.reset();};
