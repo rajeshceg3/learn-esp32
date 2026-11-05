@@ -292,12 +292,20 @@ motor: {
     s.onClick = (w, api) => { if (w === 'motor') { api._si = ((api._si ?? 0) + 1) % speeds.length; api._speed = speeds[api._si]; } };
   },
   sim: api => {
-    api._speed = 14;
+    api._speed = 14; let teaching=null;
     return {
       running: false,
-      start() { this.running = true; api.serial('Motor on GPIO27. Click it to change speed.'); },
-      stop() { this.running = false; api.spin(0); api.flow('D27', false); },
-      tick(dt) { if (!this.running) return; api.line?.(api._speed===0?12:api._speed<10?10:8); api.spin(api._speed); api.tickMotor(dt); api.flow('D27', api._speed > 0); },
+      start() { teaching=null;this.running = true; api.serial('Motor on GPIO27. Click it to change speed.'); },
+      stop() { teaching=null;this.running = false; api.spin(0); api.flow('D27', false); },
+      teach(stage,busy,reduced) {
+        this.running=false;
+        const duty=stage<1?0:stage<3?200:stage<5?90:0;
+        api._speed=duty/200*22;
+        teaching=busy&&!reduced;
+        api.spin(teaching?api._speed:0);api.flow('D27',duty>0);
+        api.line?.(stage<0?0:[4,8,9,10,11,12,13][stage]);
+      },
+      tick(dt) { if(teaching){api.tickMotor(dt);return;}if (!this.running) return; api.line?.(api._speed===0?12:api._speed<10?10:8); api.spin(api._speed); api.tickMotor(dt); api.flow('D27', api._speed > 0); },
     };
   },
 },

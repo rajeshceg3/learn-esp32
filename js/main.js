@@ -511,13 +511,23 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
-const isGuidedLesson=()=>['blink','servo'].includes(LESSONS[state.lesson]?.id);
+const isGuidedLesson=()=>['blink','servo','motor'].includes(LESSONS[state.lesson]?.id);
+const isMotorGuide=()=>LESSONS[state.lesson]?.id==='motor';
 const isServoGuide=()=>LESSONS[state.lesson]?.id==='servo';
 const blinkGuide = new LearningSteps(5, stage => {
   if(isGuidedLesson()&&!state.running)cur.sim?.teach?.(stage,blinkGuide.busy,state.settings.reduceMotion);
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isMotorGuide())return [
+    ['Configure motor PWM', 'This example configures GPIO27 for 5 kHz, 8-bit PWM. The simulated motor is stopped.'],
+    ['Set the fast speed', 'The example writes duty 200 out of 255. The browser shows the faster motor state, then holds the frame.'],
+    ['Wait at the fast speed', 'delay(2000) keeps duty 200 for 2 seconds. This step finishes and waits for you.'],
+    ['Set the slower speed', 'The example writes duty 90 out of 255. The browser shows the slower state, then holds the frame.'],
+    ['Wait at the slower speed', 'delay(2000) keeps duty 90 for 2 seconds, then waits for your next press.'],
+    ['Stop the motor', 'The example writes duty 0. The simulated motor stops.'],
+    ['Wait while stopped', 'delay(1000) keeps duty 0 for 1 second. This loop is complete; replay when ready.'],
+  ][stage]||['Explore motor control one action at a time','One press runs one part of this browser model, then holds. The displayed program is not executed on hardware.'];
   if(isServoGuide())return [
     ['Configure the signal', 'This example configures GPIO13 for 50 Hz, 12-bit pulses. No sweep has run.'],
     ['Start at 0 degrees', 'The example sends its starting pulse value. The simulated horn stays at 0 degrees until you continue.'],
@@ -548,7 +558,7 @@ function nextBlinkStage() {
   if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
+  blinkGuide.advance(isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -583,11 +593,11 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isServoGuide()?'Servo':'Blink'} lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
-    <button type="button" id="guideContinuous" class="guide-continuous">Watch the full loop</button>
+    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()?'Explore continuously':'Watch the full loop'}</button>
   </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
@@ -603,7 +613,7 @@ function renderPanel() {
   body.innerHTML = h;
   if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
-    blinkGuide.count=isServoGuide()?4:5;
+    blinkGuide.count=isMotorGuide()?7:isServoGuide()?4:5;
     updateBlinkGuide();
     if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion);
     $('#guideNext').onclick=nextBlinkStage;
