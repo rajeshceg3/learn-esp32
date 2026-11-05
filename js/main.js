@@ -8,6 +8,7 @@ import { LESSONS, BOARD_SPECS } from './lessons.js';
 import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
 import { translateRuntime } from './runtime-i18n.js';
 import { createSchematicPanel } from './schematic.js';
+import { LearningSteps } from './learning-steps.js';
 
 const $ = s => document.querySelector(s);
 const sleep = ms => new Promise(r => setTimeout(r, ms));
@@ -415,6 +416,7 @@ function loadLesson(i, keepTab) {
   $('#panel').classList.remove('open');
   $('#sheet').classList.remove('open');state.sheet=null;
   stopSim();
+  blinkGuide.reset();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
   rig.tAz = i === 0 || ([3].includes(i) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
   clearComponentFocus();lessonGroup.clear();
@@ -508,9 +510,47 @@ function hl(code) {
   }).join('');
 }
 
+// One controller owns guided progress; panel rerenders do not advance it.
+const blinkGuide = new LearningSteps(5, stage => {
+  if(state.lesson===1&&!state.running)cur.sim?.teach?.(stage);
+  updateBlinkGuide();
+});
+function blinkStageCopy(stage) {
+  return [
+    ['Configure the output', 'GPIO26 is ready to drive the LED. The loop has not started.'],
+    ['HIGH: light the LED', 'The output goes HIGH. Current passes through the resistor and LED.'],
+    ['Wait with the LED on', `delay(${state.timing[0]}) holds this output for ${state.timing[0]} ms. Then it waits for you, not the next line.`],
+    ['LOW: turn the LED off', 'The output goes LOW. The LED is off; the next delay has not run.'],
+    ['Wait with the LED off', `delay(${state.timing[1]}) holds LOW for ${state.timing[1]} ms. This loop is complete. Replay when you are ready.`],
+  ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
+}
+function updateBlinkGuide() {
+  document.documentElement.classList.toggle('blink-learning',state.lesson===1);
+  const box=$('#blinkGuide');if(!box)return;
+  const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage);
+  box.dataset.stage=stage;box.dataset.busy=String(busy);
+  $('#guideProgress').textContent=stage<0?'0 / 5':`${stage+1} / 5`;
+  $('#guideTitle').textContent=title;$('#guideCopy').textContent=copy;
+  $('#guideNext').setAttribute('aria-disabled',String(busy||stage===4));
+  $('#guideNext').textContent=busy?'Running this step…':stage===4?'Loop complete':'Next step';
+  $('#guidePrevious').disabled=busy||stage<0;
+  box.classList.toggle('is-busy',busy);
+}
+function nextBlinkStage() {
+  if(state.lesson!==1||blinkGuide.busy||blinkGuide.stage===4)return;
+  if(state.running)stopSim();
+  const next=blinkGuide.stage+1;
+  blinkGuide.advance(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300);
+
+}
+addEventListener('blur',()=>blinkGuide.settle());
+document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.settle();});
+
 // ---------- panel ----------
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
+  $('#stageWrap > #blinkGuide')?.remove();
+  document.documentElement.classList.toggle('blink-learning',state.lesson===1);
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
   document.querySelectorAll('.tab').forEach(b => b.onclick = () => {
@@ -535,6 +575,12 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
+  if(state.lesson===1)h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="Blink lesson, step by step">
+    <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
+    <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
+    <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
+    <button type="button" id="guideContinuous" class="guide-continuous">Watch the full loop</button>
+  </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
       <button class="icon-btn" id="btnCodeFs" title="${T('fullscreen_code')}" aria-label="${T('fullscreen_code')}">${ICON.expand}</button>
@@ -547,6 +593,16 @@ function renderPanel() {
     <div class="console" id="console" ${state.running ? '' : 'hidden'}></div>
   </div>`;
   body.innerHTML = h;
+  if(state.lesson===1){
+    if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
+    updateBlinkGuide();
+    if(!state.running)cur.sim?.teach?.(blinkGuide.stage);
+    $('#guideNext').onclick=nextBlinkStage;
+    for(const b of document.querySelectorAll('#blinkGuide button')) b.addEventListener('keydown',e=>{if(e.repeat&&['Enter',' '].includes(e.key))e.preventDefault();});
+    $('#guideReset').onclick=()=>{stopSim();blinkGuide.reset();};
+    $('#guidePrevious').onclick=()=>{stopSim();blinkGuide.previous();};
+    $('#guideContinuous').onclick=()=>{blinkGuide.reset();startSim();};
+  }
   const grip=$('#consoleGrip'),serial=$('#console');
   const sizeSerial=v=>{const min=40,max=Math.max(min,Math.min(260,innerHeight*.3));state.consoleHeight=Math.round(Math.min(max,Math.max(min,v)));serial.style.height=state.consoleHeight+'px';grip.setAttribute('aria-valuemin',min);grip.setAttribute('aria-valuemax',Math.round(max));grip.setAttribute('aria-valuenow',state.consoleHeight);};
   if(state.consoleHeight!==null)sizeSerial(state.consoleHeight);
@@ -574,7 +630,7 @@ function renderPanel() {
     lines.forEach((el, i) => {
       const num = el.querySelector('.tok-num'); if (!num) return;
       const bt = document.createElement('button'); bt.className='code-param'; bt.textContent=state.timing[i]; bt.title=T('change_delay'); bt.setAttribute('aria-label',T('change_delay')); num.replaceWith(bt);
-      bt.onclick=()=>{ const choices=[100,200,500,900,1000,1500]; state.timing[i]=choices[(choices.indexOf(state.timing[i])+1)%choices.length]; bt.textContent=state.timing[i]; cur.sim?.setTiming?.(...state.timing); };
+      bt.onclick=()=>{ const choices=[100,200,500,900,1000,1500]; state.timing[i]=choices[(choices.indexOf(state.timing[i])+1)%choices.length]; bt.textContent=state.timing[i]; cur.sim?.setTiming?.(...state.timing); blinkGuide.settle(); updateBlinkGuide(); };
     });
   };
   mountParams();
@@ -600,6 +656,7 @@ let runGeneration=0;
 function startSim() {
   if (state.running) return;
   const generation=++runGeneration,lesson=state.lesson;
+  blinkGuide.reset();
   state.running = true; api.line?.(0); state.startedAt = performance.now();
   $('#consoleGrip').hidden=false;document.querySelector('.console-head').hidden=false; $('#console').hidden=false; $('#console').innerHTML=''; state.logs=[];
   $('#serialStatus').textContent=T('running');
@@ -926,6 +983,7 @@ document.addEventListener('pointerdown', e => {
 });
 
 function applySettings() {
+  document.documentElement.classList.toggle('reduce-motion',state.settings.reduceMotion);
   grid.visible = false;
   canvas.parentElement.classList.toggle('no-grid', !state.settings.grid);
   schPanel.setOpen(!!state.settings.schematic);
@@ -980,13 +1038,13 @@ function loop(now) {
   requestAnimationFrame(loop);
 }
 function resize() {
-  const w = canvas.parentElement.clientWidth, h = canvas.parentElement.clientHeight;
+  const w = canvas.clientWidth, h = canvas.clientHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
 new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); }).observe($('#stageWrap'));
-let rsT; addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(() => { frameScene(); renderRail(); }, 250); });
+let rsT; addEventListener('resize', () => { const guide=$('#blinkGuide'); if(guide){if(innerWidth<1024)$('#stageWrap').append(guide);else $('#panelBody').insertBefore(guide,$('#panelBody .code-card'));} clearTimeout(rsT); rsT = setTimeout(() => { resize(); frameScene(); renderRail(); }, 250); });
 
 // ---------- boot ----------
 async function boot() {

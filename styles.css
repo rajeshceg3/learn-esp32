@@ -619,3 +619,28 @@ svg{display:block}
 .wiring-cue{position:absolute;inset-inline:12px;bottom:66px;margin:auto;max-width:420px;z-index:5;border:1px solid #a96832;border-radius:7px;background:#fff4df;color:#69411f;padding:7px 10px;font-family:var(--cond);font-size:12px;line-height:1.3;cursor:pointer;text-align:start;box-shadow:0 3px 10px #52331b12}
 .wiring-cue[hidden]{display:none}.wiring-cue:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
 @media(min-width:1024px){.wiring-cue{bottom:68px;max-width:480px}}
+
+/* Learner-paced blink: teaching controls, not another floating scene overlay. */
+.blink-guide{margin:14px 0;border:1px solid var(--line,#d5d5c8);border-radius:10px;background:var(--card,#fffdf6);padding:16px;color:var(--ink,#283330)}
+.guide-top{display:flex;justify-content:space-between;gap:12px;font:600 12px Barlow,sans-serif;color:var(--teal,#1a7778)}
+.guide-explanation{min-height:110px}.guide-explanation h3{font:600 21px 'Barlow Semi Condensed',sans-serif;margin:12px 0 6px}.guide-explanation p{font:15px/1.5 Barlow,sans-serif;margin:0 0 14px}
+.guide-controls{display:flex;gap:8px}.guide-controls button{min-height:44px;border:1px solid #becac2;border-radius:8px;padding:8px 12px;background:#fffdf6;color:#243e38;font:600 15px Barlow,sans-serif;cursor:pointer}
+.guide-controls #guideNext{flex:1;background:#216e64;color:#fff;border-color:#216e64;transition:transform .2s cubic-bezier(.2,1.8,.5,1),box-shadow .2s;box-shadow:0 3px 0 #13483f}
+.guide-controls #guideNext:active{transform:translateY(3px) scale(.97);box-shadow:none}.guide-controls button:disabled{opacity:.5;cursor:default}.guide-controls button:focus-visible,.guide-continuous:focus-visible{outline:3px solid #c37236;outline-offset:3px}
+.guide-continuous{margin-top:12px;padding:7px 0;border:0;background:transparent;text-decoration:underline;color:#265f56;font:14px Barlow,sans-serif;min-height:44px;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.guide-controls #guideNext{transition:none}.guide-controls #guideNext:active{transform:none}}
+html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion .guide-controls #guideNext:active{transform:none}
+
+.guide-controls button[aria-disabled=true]{opacity:.5;cursor:default}
+
+@media(max-width:1023px){
+ .blink-learning .stage-wrap{height:calc(100svh - 210px);min-height:500px;max-height:710px}
+ .blink-learning #stage,.blink-learning .leaders,.blink-learning .tags,.blink-learning .stage-vignette{height:calc(100% - 245px);bottom:auto}
+ .blink-learning .stage-wrap .toolbar{bottom:250px}
+ .blink-learning .stage-wrap .stage-credit{bottom:249px}
+ .stage-wrap > .blink-guide{position:absolute;bottom:0;left:0;right:0;margin:0;border-radius:0;border-width:1px 0 0;padding:12px 14px;background:var(--card,#fffdf6);z-index:12}
+ .stage-wrap > .blink-guide .guide-explanation{min-height:84px}
+ .stage-wrap > .blink-guide .guide-explanation h3{font-size:19px;margin-top:8px}
+ .stage-wrap > .blink-guide .guide-explanation p{font-size:14px;line-height:1.35;margin-bottom:10px}
+ .stage-wrap > .blink-guide .guide-continuous{margin-top:4px;min-height:36px}
+}
