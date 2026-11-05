@@ -382,17 +382,30 @@ stepper: {
     ['D14','D27','D26','D25'].forEach((p,i)=>s.wires.push(wireTo(pin(p),bb(10+i,5),[WIRE.orange,WIRE.yellow,WIRE.green,WIRE.purple][i],13,p)));
     s.wires.push(wireTo(pin('VIN'),bb(16,6),WIRE.red,15,'VIN'),wireTo(pin('GND'),bb(17,7),WIRE.navy,12,'GND'),wireTo(pin('D4'),bb(8,2),WIRE.white,14,'D4'),wireTo(pin('GND'),bb(10,3),WIRE.navy,10,'GND'));
     s.tags=[{at:pin('D14'),label:'COILS · 14·27·26·25',i:'pins',d:'Four coils energised in sequence.'},{at:V(76,18,0),label:'STEPPER',i:'gear',d:'2048 steps per turn.'},{at:bb(9,2).add(V(0,8,0)),label:'BUTTON',click:'btn',i:'hand',d:'Press to spin the wheel.'}];
+    let wheelStatus='STEPPER';s.tags[1].value=()=>wheelStatus;
+    s.api.wheelReadout=text=>{wheelStatus=text;};
     s.api.stepper=a=>s.refs.stepper.userData.setAngle(a);
     s.api.pressButton=on=>s.refs.btn.userData.setPressed(on);
     s.onClick=(w,api)=>{if(w==='btn')api.spinWheel?.();};
   },
   sim: api => {
-    let a=0,from=0,target=0,t=0,busy=false,at=0;
+    let a=0,from=0,target=0,t=0,busy=false,at=0,teaching=false,taughtStage=-2,taughtTarget=-1;
+    const baseAngle=-Math.PI/2+Math.PI/8;
     const prizes=['200','100','50','JACKPOT','1000','2×','500','AGAIN'];
     const sim={running:false,
-      start(){this.running=true;api.serial('Press the button to spin the wheel!');},
-      stop(){this.running=false;busy=false;api.pressButton(false);},
-      tick(dt){if(!this.running||!busy)return;t=Math.min(4,t+dt);const u=t/4,e=u*u*(3-2*u);a=from+(target-from)*e;api.stepper(a);api.pressButton(t<.18);api.line?.(16);if(t>=4){busy=false;api.serial('Landed on '+prizes[at]);}},
+      start(){teaching=false;taughtStage=-2;this.running=true;api.wheelReadout?.('STEPPER · explore');api.serial('Press the button to spin the wheel!');},
+      stop(){teaching=false;taughtStage=-2;this.running=false;busy=false;api.pressButton(false);},
+      teach(stage,active,reduced,destination=3){
+        const next=Math.max(0,Math.min(7,Math.round(destination))), changed=stage!==taughtStage||next!==taughtTarget;
+        this.running=false;busy=false;at=stage>=4?next:0;target=baseAngle+Math.PI*2+next*Math.PI/4;
+        teaching=stage===5&&active&&!reduced;
+        if(changed){t=0;a=baseAngle;taughtStage=stage;taughtTarget=next;}
+        if(stage<5)a=baseAngle;else if(!teaching)a=target;
+        api.stepper(a);api.pressButton(stage>=1&&stage<6);
+        api.wheelReadout?.(stage<4?'STEPPER · at 0':stage===4?`QUEUED · ${2048+next*256} steps`:stage===5&&teaching?`MOVING · target ${next}`:`STEPPER · at ${next}`);
+        api.line?.(stage<0?0:[9,15,16,18,19,23,22][stage]);
+      },
+      tick(dt){if(teaching){t=Math.min(1.6,t+dt);const u=t/1.6,e=u*u*(3-2*u);a=baseAngle+(target-baseAngle)*e;api.stepper(a);return;}if(!this.running||!busy)return;t=Math.min(4,t+dt);const u=t/4,e=u*u*(3-2*u);a=from+(target-from)*e;api.stepper(a);api.pressButton(t<.18);api.line?.(16);if(t>=4){busy=false;api.serial('Landed on '+prizes[at]);}},
     };
     api.spinWheel=()=>{if(!sim.running||busy)return;busy=true;t=0;from=a;const next=Math.floor(Math.random()*8);const desired=-(next*Math.PI/4+Math.PI/8)-Math.PI/2;const delta=((desired-a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);target=a+Math.PI*2+delta;at=next;api.pressButton(true);api.serial('Spinning…');};
     return sim;
