@@ -686,3 +686,9 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  #stageWrap.board-intro .toolbar{left:10px;right:240px;bottom:8px;width:auto;transform:none;justify-content:space-around;gap:0;padding:3px}
  #stageWrap.board-intro .stage-credit,#stageWrap.board-intro .view-hint{display:none}
 }
+/* Localized part names must stay inside their own button, including side docks. */
+#boardAnnotationDock .board-part-button .tag-tx{min-width:0;max-width:100%}
+#boardAnnotationDock .board-part-button b{display:block;max-width:100%;white-space:normal;overflow-wrap:anywhere;word-break:normal}
+@media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
+ #stageWrap.board-intro #stage,#stageWrap.board-intro .tags,#stageWrap.board-intro .leaders,#stageWrap.board-intro .stage-vignette{left:0;right:auto}
+}

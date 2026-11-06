@@ -51,7 +51,26 @@ grid.visible = false; // screen-space grid stays legible through camera changes
 
 // ---------- camera rig ----------
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
+let boardFitBounds=null,boardFitKey=null;
+function keepBoardInView(){
+  if(state.lesson!==0)return;
+  const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
+  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);}
+  const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
+  rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
+  rig.tTarget.z=THREE.MathUtils.clamp(rig.tTarget.z,center.z-14,center.z+14);
+  const width=canvas.clientWidth||1,height=canvas.clientHeight||1;camera.aspect=width/height;camera.updateProjectionMatrix();
+  const probe=camera.clone();
+  let distance=rig.tDist;
+  for(let i=0;i<5;i++){
+    probe.position.set(rig.tTarget.x+distance*Math.sin(rig.tPol)*Math.sin(rig.tAz),rig.tTarget.y+distance*Math.cos(rig.tPol),rig.tTarget.z+distance*Math.sin(rig.tPol)*Math.cos(rig.tAz));probe.lookAt(rig.tTarget);probe.updateMatrixWorld(true);
+    let need=1;for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}
+    if(need<=1.005)break;distance*=need*1.015;
+  }
+  rig.tDist=distance;boardFitKey=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');
+}
 function applyCam(dt) {
+  keepBoardInView();
   const k = state.settings.reduceMotion ? 1 : 1 - Math.exp(-dt * 9);
   rig.az += (rig.tAz - rig.az) * k; rig.pol += (rig.tPol - rig.pol) * k; rig.dist += (rig.tDist - rig.dist) * k;
   rig.target.lerp(rig.tTarget, k);
@@ -93,7 +112,7 @@ canvas.addEventListener('pointermove', e => {
   }
 });
 canvas.addEventListener('pointerup', e => { if(heldScenePointer===e.pointerId){releaseScenePointer();return;} if(objectDrag?.id===e.pointerId){if(objectDrag.moved<6)pickAt(e);objectDrag=null;return;} if(heldPianoPointer===e.pointerId){releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
-canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); idle.t = 0; }, { passive: false });
+canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); keepBoardInView();idle.t = 0; }, { passive: false });
 canvas.addEventListener('pointercancel',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;});
 canvas.addEventListener('lostpointercapture',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;});
 addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();});
@@ -485,6 +504,7 @@ function loadLesson(i, keepTab) {
 }
 
 function frameScene(snap) {
+  boardFitBounds=null;boardFitKey=null;
   const box = new THREE.Box3().setFromObject(board.group)
     .union(new THREE.Box3().setFromObject(lessonGroup));
   if (bboard.visible) box.union(new THREE.Box3().setFromObject(bboard));
@@ -905,6 +925,7 @@ toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
   if (k === 'plus') rig.tDist = Math.max(90, rig.tDist * .87);
+  keepBoardInView();
   if (k === 'up3d') { rig.tAz = -.62; rig.tPol = 1.07; }
   if (k === 'schematic') {state.settings.schematic=!state.settings.schematic;saveSettings();applySettings();}
   if (k === 'info') openPartInfo({ label: 'Learn ESP32', desc: 'Sixteen interactive lessons on the ESP32: wire it, run the code, watch it work. Design inspired by Learn Arduino by Dilum Sanjaya; this is an original ESP32 implementation.' });
@@ -1152,7 +1173,7 @@ function resize() {
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
-new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); }).observe($('#stageWrap'));
+const stageResizeObserver=new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); });stageResizeObserver.observe($('#stageWrap'));stageResizeObserver.observe(canvas);
 let rsT; addEventListener('resize', () => { const guide=$('#blinkGuide'); if(guide){if(innerWidth<1024)$('#stageWrap').append(guide);else $('#panelBody').insertBefore(guide,$('#panelBody .code-card'));} clearTimeout(rsT); rsT = setTimeout(() => { resize(); frameScene(); renderRail(); }, 250); });
 
 // ---------- boot ----------
