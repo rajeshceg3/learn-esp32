@@ -214,7 +214,14 @@ function rebuildTags() {
       d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
     } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(t.click, api);});
     if(state.lesson===0){
-      d.classList.add('board-part-button');boardDock.append(d);
+      d.classList.add('board-part-button');
+      d.setAttribute('aria-label',trTag(t.label));
+      if(t.label==='MICROCONTROLLER'){
+        const prefix={en:'MICRO',de:'MIKRO',es:'MICRO',pt:'MICRO',fr:'MICRO',it:'MICRO',tr:'MİKRO',id:'MIKRO',hi:'माइक्रो',ko:'마이크로'}[currentLang()];
+        const label=trTag(t.label),text=d.querySelector('b');
+        if(prefix&&label.startsWith(prefix)){text.replaceChildren(document.createTextNode(prefix),document.createElement('wbr'),document.createTextNode(label.slice(prefix.length)));text.classList.add('word-parts');}
+      }
+      boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
     }else tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
