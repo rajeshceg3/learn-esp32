@@ -1,4 +1,4 @@
-import {validateOriginal,downloadRecovery} from './persistence.js';
+import {validateOriginal,downloadRecovery,installRestoreUI} from './persistence.js';
 import {PARKING_SAMPLES,parkingFrame,parkingCopy} from './parking-learning.js';
 // Learn ESP32 - app shell. Original code.
 // Build: grid-nav-pointer-20261104
@@ -1035,6 +1035,7 @@ function openSheet(kind, data, anchor) {
       row('reduceMotion', T('set_motion'), T('set_motion_d')) +
       `<button class="danger-btn" id="resetProgress">${T('reset_progress')}</button><section style="padding:16px 0;font:15px/1.6 Arial,sans-serif"><h3>Keep your learning data</h3><p role="status">${recoveryBlocked?'Unreadable earlier browser data is preserved. Changes cannot be saved until it is recovered.':'Progress and settings save only in this browser, not in the cloud.'} Download a recovery file, then import it into your private saved-apps home. Nothing transfers automatically.</p><button id="downloadRecovery" class="danger-btn">Download learning recovery file</button><a style="display:block;padding:12px 0" href="https://saved-apps.vercel.app/" target="_blank" rel="noopener noreferrer">Open private saved-apps home</a></section>`;
     body.querySelector('#downloadRecovery').onclick=()=>downloadRecovery();
+    installRestoreUI(body);
     body.querySelectorAll('.switch').forEach(sw => sw.onclick = () => {
       const k = sw.dataset.k; S[k] = !S[k]; sw.classList.toggle('on', S[k]); sw.setAttribute('aria-checked',String(S[k])); saveSettings(); applySettings();
     });
