@@ -697,3 +697,5 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  .main:has(#sheet.open) #stageWrap.board-intro #stage,.main:has(#sheet.open) #stageWrap.board-intro .tags,.main:has(#sheet.open) #stageWrap.board-intro .leaders{visibility:hidden}
  .main:has(#sheet.open) #stageWrap.board-intro #boardAnnotationDock,.main:has(#sheet.open) #stageWrap.board-intro .toolbar{visibility:hidden;pointer-events:none}
 }
+
+#boardAnnotationDock .board-part-button b.word-parts{overflow-wrap:normal;word-break:normal}
