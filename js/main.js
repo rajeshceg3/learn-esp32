@@ -51,7 +51,26 @@ grid.visible = false; // screen-space grid stays legible through camera changes
 
 // ---------- camera rig ----------
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
+let boardFitBounds=null,boardFitKey=null;
+function keepBoardInView(){
+  if(state.lesson!==0)return;
+  const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
+  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);}
+  const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
+  rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
+  rig.tTarget.z=THREE.MathUtils.clamp(rig.tTarget.z,center.z-14,center.z+14);
+  const width=canvas.clientWidth||1,height=canvas.clientHeight||1;camera.aspect=width/height;camera.updateProjectionMatrix();
+  const probe=camera.clone();
+  let distance=rig.tDist;
+  for(let i=0;i<5;i++){
+    probe.position.set(rig.tTarget.x+distance*Math.sin(rig.tPol)*Math.sin(rig.tAz),rig.tTarget.y+distance*Math.cos(rig.tPol),rig.tTarget.z+distance*Math.sin(rig.tPol)*Math.cos(rig.tAz));probe.lookAt(rig.tTarget);probe.updateMatrixWorld(true);
+    let need=1;for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}
+    if(need<=1.005)break;distance*=need*1.015;
+  }
+  rig.tDist=distance;boardFitKey=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');
+}
 function applyCam(dt) {
+  keepBoardInView();
   const k = state.settings.reduceMotion ? 1 : 1 - Math.exp(-dt * 9);
   rig.az += (rig.tAz - rig.az) * k; rig.pol += (rig.tPol - rig.pol) * k; rig.dist += (rig.tDist - rig.dist) * k;
   rig.target.lerp(rig.tTarget, k);
@@ -93,7 +112,7 @@ canvas.addEventListener('pointermove', e => {
   }
 });
 canvas.addEventListener('pointerup', e => { if(heldScenePointer===e.pointerId){releaseScenePointer();return;} if(objectDrag?.id===e.pointerId){if(objectDrag.moved<6)pickAt(e);objectDrag=null;return;} if(heldPianoPointer===e.pointerId){releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
-canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); idle.t = 0; }, { passive: false });
+canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); keepBoardInView();idle.t = 0; }, { passive: false });
 canvas.addEventListener('pointercancel',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;});
 canvas.addEventListener('lostpointercapture',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;});
 addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();});
@@ -162,8 +181,12 @@ const schPanel = createSchematicPanel(document.getElementById('schematic'), {
 const tagsEl = $('#tags');
 const leadersEl = $('#leaders');
 let tagDivs = [], wireDivs = [];
+const boardPartMarker=new THREE.Mesh(new THREE.SphereGeometry(.7,16,12),new THREE.MeshBasicMaterial({color:0x00aaa0}));boardPartMarker.visible=false;scene.add(boardPartMarker);
+const boardDock=document.createElement('nav');boardDock.id='boardAnnotationDock';boardDock.setAttribute('aria-label','Board parts');boardDock.hidden=true;$('#stageWrap').append(boardDock);
 function rebuildTags() {
-  tagsEl.innerHTML = ''; tagDivs = []; wireDivs = [];
+  tagsEl.innerHTML = ''; boardPartMarker.visible=false;boardDock.replaceChildren(); tagDivs = []; wireDivs = [];
+  $('#stageWrap').classList.toggle('board-intro',state.lesson===0);
+  boardDock.hidden=state.lesson!==0||!state.settings.labels;
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
@@ -190,7 +213,10 @@ function rebuildTags() {
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
       d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
     } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(t.click, api);});
-    tagsEl.appendChild(d);
+    if(state.lesson===0){
+      d.classList.add('board-part-button');boardDock.append(d);
+      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
+    }else tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
     tagDivs.push({ d, t, dot, ln });
@@ -208,6 +234,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
+    if(state.lesson===0){d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
     if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
@@ -287,7 +314,7 @@ function placeTags() {
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
-  const vis = tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
+  const vis = state.lesson===0?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
   for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
@@ -304,6 +331,7 @@ function placeTags() {
     if (!moved) break;
   }
   tagDivs.forEach(({ d, ln }) => {
+    if(state.lesson===0)return;
     if (d.style.display === 'none') return;
     d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
     d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
@@ -357,7 +385,7 @@ canvas.addEventListener('pointermove', e => {
   const part = hits[0]?.object.userData.part;
   hoverPart = part || null;
   const hp = $('#partTag');
-  if (part && state.settings.labels) {
+  if (part && state.settings.labels && state.lesson!==0) {
     hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
@@ -476,6 +504,7 @@ function loadLesson(i, keepTab) {
 }
 
 function frameScene(snap) {
+  boardFitBounds=null;boardFitKey=null;
   const box = new THREE.Box3().setFromObject(board.group)
     .union(new THREE.Box3().setFromObject(lessonGroup));
   if (bboard.visible) box.union(new THREE.Box3().setFromObject(bboard));
@@ -896,6 +925,7 @@ toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);
   if (k === 'plus') rig.tDist = Math.max(90, rig.tDist * .87);
+  keepBoardInView();
   if (k === 'up3d') { rig.tAz = -.62; rig.tPol = 1.07; }
   if (k === 'schematic') {state.settings.schematic=!state.settings.schematic;saveSettings();applySettings();}
   if (k === 'info') openPartInfo({ label: 'Learn ESP32', desc: 'Sixteen interactive lessons on the ESP32: wire it, run the code, watch it work. Design inspired by Learn Arduino by Dilum Sanjaya; this is an original ESP32 implementation.' });
@@ -989,7 +1019,7 @@ function focusComponent(object){
 // ---------- sheets ----------
 let sheetOpener=null;
 function closeSheet(restoreFocus=true){
-  clearComponentFocus();
+  clearComponentFocus();boardPartMarker.visible=false;boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));
   $('#sheet').classList.remove('open');state.sheet=null;
   if(restoreFocus&&sheetOpener?.isConnected)sheetOpener.focus({preventScroll:true});
   sheetOpener=null;
@@ -1143,7 +1173,7 @@ function resize() {
   camera.aspect = w / h; camera.updateProjectionMatrix();
 }
 addEventListener('resize', resize);
-new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); }).observe($('#stageWrap'));
+const stageResizeObserver=new ResizeObserver(() => { resize(); if (state.lesson != null) frameScene(); });stageResizeObserver.observe($('#stageWrap'));stageResizeObserver.observe(canvas);
 let rsT; addEventListener('resize', () => { const guide=$('#blinkGuide'); if(guide){if(innerWidth<1024)$('#stageWrap').append(guide);else $('#panelBody').insertBefore(guide,$('#panelBody .code-card'));} clearTimeout(rsT); rsT = setTimeout(() => { resize(); frameScene(); renderRail(); }, 250); });
 
 // ---------- boot ----------
