@@ -162,8 +162,12 @@ const schPanel = createSchematicPanel(document.getElementById('schematic'), {
 const tagsEl = $('#tags');
 const leadersEl = $('#leaders');
 let tagDivs = [], wireDivs = [];
+const boardPartMarker=new THREE.Mesh(new THREE.SphereGeometry(.7,16,12),new THREE.MeshBasicMaterial({color:0x00aaa0}));boardPartMarker.visible=false;scene.add(boardPartMarker);
+const boardDock=document.createElement('nav');boardDock.id='boardAnnotationDock';boardDock.setAttribute('aria-label','Board parts');boardDock.hidden=true;$('#stageWrap').append(boardDock);
 function rebuildTags() {
-  tagsEl.innerHTML = ''; tagDivs = []; wireDivs = [];
+  tagsEl.innerHTML = ''; boardPartMarker.visible=false;boardDock.replaceChildren(); tagDivs = []; wireDivs = [];
+  $('#stageWrap').classList.toggle('board-intro',state.lesson===0);
+  boardDock.hidden=state.lesson!==0||!state.settings.labels;
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
@@ -190,7 +194,10 @@ function rebuildTags() {
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
       d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
     } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(t.click, api);});
-    tagsEl.appendChild(d);
+    if(state.lesson===0){
+      d.classList.add('board-part-button');boardDock.append(d);
+      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
+    }else tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
     tagDivs.push({ d, t, dot, ln });
@@ -208,6 +215,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
+    if(state.lesson===0){d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
     if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
@@ -287,7 +295,7 @@ function placeTags() {
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
-  const vis = tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
+  const vis = state.lesson===0?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
   for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
@@ -304,6 +312,7 @@ function placeTags() {
     if (!moved) break;
   }
   tagDivs.forEach(({ d, ln }) => {
+    if(state.lesson===0)return;
     if (d.style.display === 'none') return;
     d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
     d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
@@ -357,7 +366,7 @@ canvas.addEventListener('pointermove', e => {
   const part = hits[0]?.object.userData.part;
   hoverPart = part || null;
   const hp = $('#partTag');
-  if (part && state.settings.labels) {
+  if (part && state.settings.labels && state.lesson!==0) {
     hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
@@ -989,7 +998,7 @@ function focusComponent(object){
 // ---------- sheets ----------
 let sheetOpener=null;
 function closeSheet(restoreFocus=true){
-  clearComponentFocus();
+  clearComponentFocus();boardPartMarker.visible=false;boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed','false'));
   $('#sheet').classList.remove('open');state.sheet=null;
   if(restoreFocus&&sheetOpener?.isConnected)sheetOpener.focus({preventScroll:true});
   sheetOpener=null;
