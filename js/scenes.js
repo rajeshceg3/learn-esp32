@@ -1,3 +1,4 @@
+import {parkingFrame,parkingStage} from './parking-learning.js';
 // Learn ESP32 — lesson scene assembly + simulation behaviour. Original code.
 import * as THREE from 'three';
 import { MAT, box, cyl, pinLocal } from './scene.js';
@@ -499,6 +500,7 @@ project: {
     s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance to the car.' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT', i: 'bulb', d: 'Green, amber or red by distance.' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car', i: 'hand', d: 'Click to move it closer.' } ];
     s.api.tl = (r, y, g) => s.refs.tl.userData.set(r, y, g);
     s.api._dist = 40;
+    s.api.parkingPose=cm=>{s.api._dist=cm;s.refs.car.position.x=96-(46-cm)*1.1;};
     s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist <= 8 ? 46 : api._dist - 12;
       s.refs.car.position.x = 96 - (46 - api._dist) * 1.1; } };
   },
@@ -506,8 +508,14 @@ project: {
     let acc = 0;
     return {
       running: false,
-      start() { this.running = true; api.serial('Parking sensor live. Click the car to move it.'); },
+      start() { this.running = true; api.serial('Scripted parking exploration. Click the car to move it.'); },
       stop() { this.running = false; api.tl(0, 0, 0); },
+      teach(stage,busy,reduced,sample=20){
+        this.running=false;const v=parkingStage(stage,sample);api._parkingState=v;
+        api.tl(v.outputs.red,v.outputs.amber,v.outputs.green);
+        api.parkingPose?.(v.cm);
+        api.line?.(stage<0?0:[5,11,12,13,13,14,15,16,17][stage]);
+      },
       tick(dt) { if (!this.running) return; const d = api._dist;
         api.line?.(d<10?16:d<30?15:14); api.tl(d < 10, d >= 10 && d < 30, d >= 30);
         acc += dt; if (acc > .6) { acc = 0; api.serial(`${d.toFixed(1)} cm → ${d < 10 ? 'STOP' : d < 30 ? 'careful' : 'clear'}`); } },

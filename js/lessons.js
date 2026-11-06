@@ -481,14 +481,14 @@ void loop() {
 {
   id: 'project', num: 16, title: 'Build a project', heading: 'Parking sensor',
   lede: 'Put it all together: the distance sensor watches the obstacle and a traffic light tells the driver when to stop. Green, amber, red — just like the real thing.',
-  features: [['gear', 'Everything from lessons 2–12 combined'], ['wave', 'Distance decides the light'], ['hand', 'Drag the car toward the sensor']],
+  features: [['gear', 'Everything from lessons 2–12 combined'], ['wave', 'Distance decides the light'], ['hand', 'Click the car in continuous exploration']],
   pinout: [['GPIO5 · 18', 'TRIG · ECHO', 'The HC-SR04 measures the gap.', '#1aa3a1'], ['GPIO 25·26·33', 'Red · amber · green', 'One light per zone.', '#2a56a3'], ['VIN · GND', 'Supplies', 'Sensor on 5 V, LEDs on 3.3 V logic.', '#d64a3a']],
   example: [
-    'Over 30 cm: green. Under 20 cm: amber. Under 10 cm: red.',
-    'The loop measures every 100 ms and picks the light for the zone.',
+    'At least 30 cm: green. From 10 up to 30 cm: amber. Below 10 cm: red.',
+    'The loop reads an echo width, converts the round-trip time to distance, writes three pins in sequence, then delays 100 ms. Measurement adds time too.',
     'Add the buzzer from lesson 8 for beeping that speeds up as you park.',
   ],
-  specs: [['Zones', '30 / 20 / 10 cm'], ['Rate', '10 reads / s'], ['Hysteresis', '±2 cm to avoid flicker'], ['Extras', 'Buzzer optional']],
+  specs: [['Boundaries', '30 / 10 cm'], ['Loop wait', '100 ms plus measurement'], ['Hysteresis', 'None in this code'], ['Extras', 'Buzzer optional']],
   code:
 `const int TRIG = 5, ECHO = 18;
 const int RED = 25, AMBER = 26, GREEN = 33;
