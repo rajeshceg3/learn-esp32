@@ -692,3 +692,8 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 @media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
  #stageWrap.board-intro #stage,#stageWrap.board-intro .tags,#stageWrap.board-intro .leaders,#stageWrap.board-intro .stage-vignette{left:0;right:auto}
 }
+/* Short landscape details are one opaque reading surface, never model/text stacking. */
+@media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
+ .main:has(#sheet.open) #stageWrap.board-intro #stage,.main:has(#sheet.open) #stageWrap.board-intro .tags,.main:has(#sheet.open) #stageWrap.board-intro .leaders{visibility:hidden}
+ .main:has(#sheet.open) #stageWrap.board-intro #boardAnnotationDock,.main:has(#sheet.open) #stageWrap.board-intro .toolbar{visibility:hidden;pointer-events:none}
+}
