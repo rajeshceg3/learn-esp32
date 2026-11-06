@@ -1,3 +1,4 @@
+import {PARKING_SAMPLES,parkingFrame,parkingCopy} from './parking-learning.js';
 // Learn ESP32 - app shell. Original code.
 // Build: grid-nav-pointer-20261104
 import * as THREE from 'three';
@@ -256,6 +257,14 @@ function placeTags() {
     }
     if(innerWidth>=1024&&!wide&&LESSONS[state.lesson]?.id==='stepper'){
       const p={'COILS · 14·27·26·25':[.22,.16],'BUTTON':[.76,.20],'STEPPER':[.76,.76]}[t.label];
+      if(p){cx=r.width*p[0];cy=r.height*p[1]}
+    }
+    if(innerWidth<1024&&LESSONS[state.lesson]?.id==='project'){
+      const p={'HC-SR04':[.25,.20],'TRAFFIC LIGHT':[.75,.20],'CAR':[.78,.69]}[t.label];
+      if(p){cx=r.width*p[0];cy=r.height*p[1]}
+    }
+    if(innerWidth>=1024&&LESSONS[state.lesson]?.id==='project'){
+      const p={'HC-SR04':[.37,.17],'TRAFFIC LIGHT':[.78,.24],'CAR':[.30,.79]}[t.label];
       if(p){cx=r.width*p[0];cy=r.height*p[1]}
     }
     if(innerWidth>=1024&&LESSONS[state.lesson]?.id==='force'){
@@ -529,11 +538,12 @@ function hl(code) {
 }
 
 // One controller owns guided progress; panel rerenders do not advance it.
-const isGuidedLesson=()=>['blink','servo','motor','temp','stepper','plant','force'].includes(LESSONS[state.lesson]?.id);
-let thermalSample=24, wheelTarget=3, plantSample=1850;
+const isGuidedLesson=()=>['blink','servo','motor','temp','stepper','plant','force','project'].includes(LESSONS[state.lesson]?.id);
+let thermalSample=24, wheelTarget=3, plantSample=1850, parkingSample=20;
+const isParkingGuide=()=>LESSONS[state.lesson]?.id==='project';
 const isForceGuide=()=>LESSONS[state.lesson]?.id==='force';
 const isPlantGuide=()=>LESSONS[state.lesson]?.id==='plant';
-const guideSample=()=>isPlantGuide()?plantSample:isWheelGuide()?wheelTarget:thermalSample;
+const guideSample=()=>isParkingGuide()?parkingSample:isPlantGuide()?plantSample:isWheelGuide()?wheelTarget:thermalSample;
 const isWheelGuide=()=>LESSONS[state.lesson]?.id==='stepper';
 const isThermalGuide=()=>LESSONS[state.lesson]?.id==='temp';
 const isMotorGuide=()=>LESSONS[state.lesson]?.id==='motor';
@@ -543,6 +553,7 @@ const blinkGuide = new LearningSteps(5, stage => {
   updateBlinkGuide();
 });
 function blinkStageCopy(stage) {
+  if(isParkingGuide())return parkingCopy(stage,parkingSample);
   if(isForceGuide()){
     const v=forceStage(stage),copy=FORCE_COPY[stage];
     return copy?[copy[0],copy[1]+` State: raw ${v.raw??'pending'}, mapped duty ${v.duty??'pending'}, rung=${v.rung}, written output ${v.output}, bell ${v.bell&&blinkGuide.busy?'playing':'off'}.`]:['Follow a pressure history','One press runs one action, then holds. Read high, keep high, release below the rearm threshold, then press high again. Continuous held-pressure exploration is separate.'];
@@ -600,7 +611,7 @@ function blinkStageCopy(stage) {
   ][stage] || ['Explore one line at a time', 'One press runs one part of the blink loop, then waits.'];
 }
 function updateBlinkGuide() {
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide()||isParkingGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const box=$('#blinkGuide');if(!box)return;
   const {stage,busy}=blinkGuide, [title,copy]=blinkStageCopy(stage),last=blinkGuide.count-1;
@@ -616,7 +627,7 @@ function nextBlinkStage() {
   if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
-  blinkGuide.advance(isForceGuide()?([4,11].includes(next)?400:next===13?20:250):isPlantGuide()?(next===6?500:state.settings.reduceMotion?0:300):isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
+  blinkGuide.advance(isParkingGuide()?(next===8?100:state.settings.reduceMotion?0:300):isForceGuide()?([4,11].includes(next)?400:next===13?20:250):isPlantGuide()?(next===6?500:state.settings.reduceMotion?0:300):isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
 
 }
 addEventListener('blur',()=>blinkGuide.settle());
@@ -626,7 +637,7 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)blinkGuide.
 const TABS = ['overview', 'pinout', 'example', 'specifications'];
 function renderPanel() {
   $('#stageWrap > #blinkGuide')?.remove();
-  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide());
+  document.documentElement.classList.toggle('thermal-learning',isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide()||isParkingGuide());
   document.documentElement.classList.toggle('blink-learning',isGuidedLesson());
   const L = trLesson(LESSONS[state.lesson]);
   $('#tabbar').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t ? 'on' : ''}" role="tab" aria-selected="${state.tab === t}" data-tab="${t}">${T('tab_' + t)}</button>`).join('');
@@ -652,14 +663,15 @@ function renderPanel() {
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
-  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isForceGuide()?'Force meter':isPlantGuide()?'Smart plant':isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
+  if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isParkingGuide()?'Parking sensor':isForceGuide()?'Force meter':isPlantGuide()?'Smart plant':isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
     ${isThermalGuide()?`<label class="guide-sample" for="guideSample">Example sample <select id="guideSample"><option value="24" ${thermalSample===24?'selected':''}>24 C (below threshold)</option><option value="34" ${thermalSample===34?'selected':''}>34 C (above threshold)</option></select></label>`:''}
     ${isWheelGuide()?`<label class="guide-sample" for="guideSample">Target segment <select id="guideSample">${Array.from({length:8},(_,n)=>`<option value="${n}" ${wheelTarget===n?'selected':''}>${n}${n===0?' (one full turn)':''}</option>`).join('')}</select></label>`:''}
     ${isPlantGuide()?`<label class="guide-sample" for="guideSample">Example voltage <select id="guideSample">${PLANT_SAMPLES.map(m=>`<option value="${m}" ${plantSample===m?'selected':''}>${m} mV${m===2800?' (dry clamp)':m===900?' (wet clamp)':''}</option>`).join('')}</select></label>`:''}
+    ${isParkingGuide()?`<label class="guide-sample" for="guideSample">Example distance <select id="guideSample">${PARKING_SAMPLES.map(cm=>`<option value="${cm}" ${parkingSample===cm?'selected':''}>${cm} cm${cm===10||cm===30?' (boundary)':''}</option>`).join('')}</select></label><details class="parking-think"><summary>Predict first: which light, and why?</summary><p>Choose green, amber or red in your own words before the writes. Use the 10 and 30 cm boundary examples to check whether equality changes your rule. Each new example starts all lights off.</p><button type="button" id="parkingReveal">Compare with the rule</button><p id="parkingAnswer" hidden></p></details>`:''}
     <div class="guide-explanation" role="status" aria-live="polite" aria-atomic="true"><h3 id="guideTitle"></h3><p id="guideCopy"></p></div>
     <div class="guide-controls"><button type="button" id="guidePrevious" aria-label="Previous step">←</button><button type="button" id="guideNext">Next step</button><button type="button" id="guideReset">Replay</button></div>
-    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide()?'Explore continuously':'Watch the full loop'}</button>
+    <button type="button" id="guideContinuous" class="guide-continuous">${isMotorGuide()||isThermalGuide()||isWheelGuide()||isPlantGuide()||isForceGuide()||isParkingGuide()?'Explore continuously':'Watch the full loop'}</button>
   </section>`;
   h += `<div class="code-card">
     <div class="code-head"><span class="code-title">${T('try_it')}</span><span class="code-actions">
@@ -675,9 +687,10 @@ function renderPanel() {
   body.innerHTML = h;
   if(isGuidedLesson()){
     if(innerWidth<1024)$('#stageWrap').append($('#blinkGuide'));
-    blinkGuide.count=isForceGuide()?FORCE_COPY.length:isPlantGuide()?7:isWheelGuide()?7:isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
+    blinkGuide.count=isParkingGuide()?9:isForceGuide()?FORCE_COPY.length:isPlantGuide()?7:isWheelGuide()?7:isThermalGuide()?6:isMotorGuide()?7:isServoGuide()?4:5;
     updateBlinkGuide();
     if(!state.running)cur.sim?.teach?.(blinkGuide.stage,blinkGuide.busy,state.settings.reduceMotion,guideSample());
+    if(isParkingGuide()){ $('#guideSample').onchange=e=>{parkingSample=Number(e.target.value);stopSim();blinkGuide.reset();};$('#parkingReveal').onclick=()=>{const f=parkingFrame(parkingSample),p=$('#parkingAnswer');p.hidden=false;p.textContent=`${f.cm} cm selects ${f.zone}. Green includes 30; amber includes 10 but excludes 30; red is strictly below 10. No hysteresis means values crossing a boundary can flicker. This code does not show echo timeout handling or make a safety-rated parking controller.`;};}
     if(isPlantGuide())$('#guideSample').onchange=e=>{plantSample=Number(e.target.value);stopSim();blinkGuide.reset();};
     if(isWheelGuide())$('#guideSample').onchange=e=>{wheelTarget=Number(e.target.value);stopSim();blinkGuide.reset();};
     if(isThermalGuide())$('#guideSample').onchange=e=>{thermalSample=Number(e.target.value);stopSim();blinkGuide.reset();};
