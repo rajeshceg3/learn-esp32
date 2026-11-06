@@ -1,3 +1,4 @@
+import {validateOriginal,downloadRecovery} from './persistence.js';
 import {PARKING_SAMPLES,parkingFrame,parkingCopy} from './parking-learning.js';
 // Learn ESP32 - app shell. Original code.
 // Build: grid-nav-pointer-20261104
@@ -20,9 +21,9 @@ const state = {
   settings: { labels: true, flow: true, grid: true, turntable: false, sound: true, reduceMotion: false, schematic: false, lang: 'en' },
   consoleHeight:null,done: new Set(), sheet: null, startedAt: 0, timing: [500, 500], logs: [], activeLine: 0,
 };
-try { Object.assign(state.settings, JSON.parse(localStorage.getItem('esp32:settings') || '{}'));
-  (JSON.parse(localStorage.getItem('esp32:done') || '[]')).forEach(i => state.done.add(i)); } catch {}
-const saveSettings = () => { try { localStorage.setItem('esp32:settings', JSON.stringify(state.settings)); localStorage.setItem('esp32:done', JSON.stringify([...state.done])); } catch {} };
+let recoveryBlocked=false;
+try {const prior=validateOriginal(localStorage);Object.assign(state.settings,prior.settings);prior.done.forEach(i=>state.done.add(i))}catch {recoveryBlocked=true}
+const saveSettings=()=>{if(recoveryBlocked)return;try{localStorage.setItem('esp32:settings',JSON.stringify(state.settings));localStorage.setItem('esp32:done',JSON.stringify([...state.done]))}catch{}};
 if (matchMedia('(prefers-reduced-motion: reduce)').matches && localStorage.getItem('esp32:settings') === null) state.settings.reduceMotion = true;
 
 // ---------- renderer ----------
@@ -1032,7 +1033,8 @@ function openSheet(kind, data, anchor) {
       row('turntable', T('set_turntable'), T('set_turntable_d')) +
       row('sound', T('set_sound'), T('set_sound_d')) +
       row('reduceMotion', T('set_motion'), T('set_motion_d')) +
-      `<button class="danger-btn" id="resetProgress">${T('reset_progress')}</button>`;
+      `<button class="danger-btn" id="resetProgress">${T('reset_progress')}</button><section style="padding:16px 0;font:15px/1.6 Arial,sans-serif"><h3>Keep your learning data</h3><p role="status">${recoveryBlocked?'Unreadable earlier browser data is preserved. Changes cannot be saved until it is recovered.':'Progress and settings save only in this browser, not in the cloud.'} Download a recovery file, then import it into your private saved-apps home. Nothing transfers automatically.</p><button id="downloadRecovery" class="danger-btn">Download learning recovery file</button><a style="display:block;padding:12px 0" href="https://saved-apps.vercel.app/" target="_blank" rel="noopener noreferrer">Open private saved-apps home</a></section>`;
+    body.querySelector('#downloadRecovery').onclick=()=>downloadRecovery();
     body.querySelectorAll('.switch').forEach(sw => sw.onclick = () => {
       const k = sw.dataset.k; S[k] = !S[k]; sw.classList.toggle('on', S[k]); sw.setAttribute('aria-checked',String(S[k])); saveSettings(); applySettings();
     });
