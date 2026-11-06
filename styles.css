@@ -699,3 +699,34 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 }
 
 #boardAnnotationDock .board-part-button b.word-parts{overflow-wrap:normal;word-break:normal}
+/* Blink keeps all four labels/actions below its fitted circuit, never on parts. */
+#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 360px);bottom:auto}
+#stageWrap.blink-docked #boardAnnotationDock{bottom:244px;max-height:108px;grid-template-columns:repeat(2,minmax(0,1fr))}
+#stageWrap.blink-docked .toolbar{bottom:193px}
+#stageWrap.blink-docked .stage-credit,#stageWrap.blink-docked .view-hint{display:none}
+@media(max-width:1023px){#stageWrap.blink-docked{height:800px;min-height:800px;max-height:none}#stageWrap.blink-docked .blink-guide{bottom:0}}
+@media(min-width:1024px){#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 170px)}#stageWrap.blink-docked #boardAnnotationDock{bottom:56px}#stageWrap.blink-docked .toolbar{bottom:8px}}
+
+#stageWrap.blink-docked > #runTag{top:auto!important;left:12px!important;bottom:354px;transform:none;font-size:12px}
+@media(min-width:1024px){#stageWrap.blink-docked > #runTag{bottom:170px}}
+@media(max-width:1023px) and (min-height:501px){
+ #stageWrap.blink-docked{height:auto;min-height:0;max-height:none}
+ #stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:320px}
+ #stageWrap.blink-docked #boardAnnotationDock{top:330px;bottom:auto;max-height:104px}
+ #stageWrap.blink-docked .toolbar{top:438px;bottom:auto}
+ #stageWrap.blink-docked > #runTag{top:482px!important;bottom:auto}
+ #stageWrap.blink-docked .blink-guide{position:relative;top:auto;bottom:auto;margin-top:516px}
+}
+@media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
+ body:has(#stageWrap.blink-docked) .topbar{min-height:54px;height:54px;padding:6px 14px;flex-wrap:nowrap}
+ body:has(#stageWrap.blink-docked) .brand-tag,body:has(#stageWrap.blink-docked) .clock,body:has(#stageWrap.blink-docked) .topbar-right{display:none}
+ #stageWrap.blink-docked{height:540px;min-height:540px;margin-top:0}
+ #stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{left:0;right:auto;width:calc(100% - 230px);height:204px}
+ #stageWrap.blink-docked #boardAnnotationDock{left:auto;right:12px;top:12px;bottom:auto;width:206px;max-height:200px}
+ #stageWrap.blink-docked .toolbar{left:10px;right:240px;top:214px;bottom:auto;width:auto;transform:none;justify-content:space-around}
+ #stageWrap.blink-docked > #runTag{top:144px!important;left:auto!important;right:12px;bottom:auto;width:206px}
+ #stageWrap.blink-docked .blink-guide{top:270px;bottom:0}
+ .main:has(#sheet.open) #stageWrap.blink-docked #stage,.main:has(#sheet.open) #stageWrap.blink-docked .tags,.main:has(#sheet.open) #stageWrap.blink-docked .leaders{visibility:hidden}
+ .main:has(#sheet.open) #stageWrap.blink-docked #boardAnnotationDock,.main:has(#sheet.open) #stageWrap.blink-docked .toolbar{visibility:hidden;pointer-events:none}
+}
+@media(min-width:1024px){#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 204px)}}
