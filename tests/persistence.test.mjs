@@ -1,0 +1,4 @@
+import test from'node:test';import assert from'node:assert/strict';import{readRecovery,validateOriginal,LESSON_IDS}from'../js/persistence.js';import{LESSONS}from'../js/lessons.js';
+const store=data=>({getItem:k=>data[k]??null});
+test('exported mapping exactly matches lesson order and raw bytes preserved',()=>{assert.deepEqual(LESSON_IDS,LESSONS.map(x=>x.id));const data={'esp32:done':' [0, 15] ','esp32:settings':'{"sound":false}'};assert.deepEqual(JSON.parse(readRecovery(store(data)).raw).raw,data);assert.deepEqual(validateOriginal(store(data)),{done:[0,15],settings:{sound:false}})});
+test('original malformed inputs reject without writes; raw export always available',()=>{for(const raw of ['{bad','null','{}','[16]','["0"]']){const s=store({'esp32:done':raw});assert.throws(()=>validateOriginal(s));assert.equal(JSON.parse(readRecovery(s).raw).raw['esp32:done'],raw)}});
