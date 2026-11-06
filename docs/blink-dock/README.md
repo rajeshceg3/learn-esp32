@@ -14,3 +14,11 @@ Portrait uses a model, dock, camera toolbar, readout, then a normal-flow teachin
 - Existing board regression's "dock must be absent after lesson0" expectation is updated to permit the intentionally docked blink lesson.
 
 Screenshots are browser evidence, not a physical-device test. Global overlap adoption is unfinished.
+
+## Hosted verification (2026-11-07)
+
+Runtime PR12 merged as bf0b0add0726d0b739b0af105e1dfe025c880731. Production https://learn-esp32-xi.vercel.app/ serves byte-identical main.js and styles.css. Hosted 320/390/1320/844 checks pass all five stages holding after each press, live HIGH readout bounds, Previous/Replay, resistor/LED actions, GPIO description, and knob separation. Final hosted phone, desktop, landscape and description pixels inspected. Await the panel transition before screenshotting its body; an immediate snapshot can show an unfinished animation.
+
+Main.js SHA256: 875df1130ca29b30a9cacfb44ea47ba8355468b077bd4dc6834f6f07aacbd4ac
+
+Styles.css SHA256: 06fb495b3dd2dcb096fcf521e1fdb537cf0e3607aec784febba82dcec200f953
