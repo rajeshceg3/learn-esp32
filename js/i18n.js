@@ -69,6 +69,7 @@ export function trLesson(L) {
   if (t.pinout) m.pinout = L.pinout.map((r, i) => [r[0], t.pinout[i]?.[0] ?? r[1], t.pinout[i]?.[1] ?? r[2], r[3]]);
   if (t.specs) m.specs = L.specs.map((r, i) => [t.specs[i]?.[0] ?? r[0], t.specs[i]?.[1] ?? r[1]]);
   if (t.example) m.example = L.example.map((p, i) => t.example[i] ?? p);
+  if(L.id==='distance')m.features[2]=['hand','Simulation (English): click the obstacle to step distance.'];
   if(L.id==='button')m.features[2]=['hand',BUTTON_SIM_HELP[cur]||BUTTON_SIM_HELP.en];
   return m;
 }

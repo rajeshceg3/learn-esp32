@@ -1,0 +1,7 @@
+# Distance lesson spatial controls
+
+Lesson7 reserves separate circuit, control and electrical-warning space. Model labels no longer sit on board or sensor. The obstacle control shows the selected scripted cm. Both endpoints of its movement are reserved in camera fit through zoom/rotation. Initial30cm car pose is now consistent with subsequent value-to-position mapping; unchanged click cycle is30,42,54,8,20,32,44,8… Enter also steps. This is not dragging or a live ultrasonic measurement. Run logs selected distance, Stop pauses. Overview no longer says drag. English simulation note on all teaching tabs distinguishes editor from hardware; localized overview override uses marked English rather than retaining a wrong drag instruction. No translation-quality claim.
+
+Retained wiring-warning button opens complete schematic, including required echo divider. Warning has its own reserved row on phones and right-side space in short landscape, never over circuit or dock.
+
+Test: PLAYWRIGHT_MODULE=/path/to/playwright node tests/distance-dock-regression.cjs. VIEWPORTS supplies pairs. HOSTED_URL uses public UI, not internal state. Local320/390/844/1320 tests assert full cycle, actual pose and fitted bounds, keyboard, Stop,3descriptions,44px controls, warning bounds and schematic path.12unit tests pass. Local safe pixels retained; hosted follow-through must be verified separately. Browser emulation, not physical-device proof.
