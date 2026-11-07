@@ -393,10 +393,11 @@ stepper: {
     const btn=C.pushButton();btn.position.copy(bb(9,2));s.add(btn,'btn');
     ['D14','D27','D26','D25'].forEach((p,i)=>s.wires.push(wireTo(pin(p),bb(10+i,5),[WIRE.orange,WIRE.yellow,WIRE.green,WIRE.purple][i],13,p)));
     s.wires.push(wireTo(pin('VIN'),bb(16,6),WIRE.red,15,'VIN'),wireTo(pin('GND'),bb(17,7),WIRE.navy,12,'GND'),wireTo(pin('D4'),bb(8,2),WIRE.white,14,'D4'),wireTo(pin('GND'),bb(10,3),WIRE.navy,10,'GND'));
-    s.tags=[{at:pin('D14'),label:'COILS · 14·27·26·25',i:'pins',d:'Four coils energised in sequence.'},{at:V(76,18,0),label:'STEPPER',i:'gear',d:'2048 steps per turn.'},{at:bb(9,2).add(V(0,8,0)),label:'BUTTON',click:'btn',i:'hand',d:'Press to spin the wheel.'}];
+    s.tags=[{at:pin('D14'),label:'COILS · 14·27·26·25',i:'pins',d:'Four coils energised in sequence.'},{at:V(76,18,0),label:'STEPPER',i:'gear',d:'2048 nominal steps per turn in the example. The browser position is scripted, not measured motor feedback.'},{at:bb(9,2).add(V(0,8,0)),label:'BUTTON',click:'btn',i:'hand',d:'Run or Explore continuously, then click or press Enter to spin. Presses while moving are ignored.'}];
     let wheelStatus='STEPPER';s.tags[1].value=()=>wheelStatus;
     s.api.wheelReadout=text=>{wheelStatus=text;};
     s.api.stepper=a=>s.refs.stepper.userData.setAngle(a);
+    s.framingPoints=[V(59,19,-17),V(93,19,17)];
     s.api.pressButton=on=>s.refs.btn.userData.setPressed(on);
     s.onClick=(w,api)=>{if(w==='btn')api.spinWheel?.();};
   },
@@ -406,7 +407,7 @@ stepper: {
     const prizes=['200','100','50','JACKPOT','1000','2×','500','AGAIN'];
     const sim={running:false,
       start(){teaching=false;taughtStage=-2;this.running=true;api.wheelReadout?.('STEPPER · explore');api.serial('Press the button to spin the wheel!');},
-      stop(){teaching=false;taughtStage=-2;this.running=false;busy=false;api.pressButton(false);},
+      stop(){teaching=false;taughtStage=-2;this.running=false;busy=false;api.pressButton(false);api.wheelReadout?.('STEPPER · stopped');},
       teach(stage,active,reduced,destination=3){
         const next=Math.max(0,Math.min(7,Math.round(destination))), changed=stage!==taughtStage||next!==taughtTarget;
         this.running=false;busy=false;at=stage>=4?next:0;target=baseAngle+Math.PI*2+next*Math.PI/4;
@@ -417,9 +418,9 @@ stepper: {
         api.wheelReadout?.(stage<4?'STEPPER · at 0':stage===4?`QUEUED · ${2048+next*256} steps`:stage===5&&teaching?`MOVING · target ${next}`:`STEPPER · at ${next}`);
         api.line?.(stage<0?0:[9,15,16,18,19,23,22][stage]);
       },
-      tick(dt){if(teaching){t=Math.min(1.6,t+dt);const u=t/1.6,e=u*u*(3-2*u);a=baseAngle+(target-baseAngle)*e;api.stepper(a);return;}if(!this.running||!busy)return;t=Math.min(4,t+dt);const u=t/4,e=u*u*(3-2*u);a=from+(target-from)*e;api.stepper(a);api.pressButton(t<.18);api.line?.(16);if(t>=4){busy=false;api.serial('Landed on '+prizes[at]);}},
+      tick(dt){if(teaching){t=Math.min(1.6,t+dt);const u=t/1.6,e=u*u*(3-2*u);a=baseAngle+(target-baseAngle)*e;api.stepper(a);return;}if(!this.running||!busy)return;t=Math.min(4,t+dt);const u=t/4,e=u*u*(3-2*u);a=from+(target-from)*e;api.stepper(a);api.pressButton(t<.18);api.line?.(16);if(t>=4){busy=false;api.wheelReadout?.(`STEPPER · segment ${at}`);api.serial('Landed on '+prizes[at]);}},
     };
-    api.spinWheel=()=>{if(!sim.running||busy)return;busy=true;t=0;from=a;const next=Math.floor(Math.random()*8);const desired=-(next*Math.PI/4+Math.PI/8)-Math.PI/2;const delta=((desired-a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);target=a+Math.PI*2+delta;at=next;api.pressButton(true);api.serial('Spinning…');};
+    api.spinWheel=()=>{if(!sim.running||busy)return;busy=true;t=0;from=a;const next=Math.floor(Math.random()*8);const desired=-(next*Math.PI/4+Math.PI/8)-Math.PI/2;const delta=((desired-a)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);target=a+Math.PI*2+delta;at=next;api.pressButton(true);api.wheelReadout?.('STEPPER · spinning');api.serial('Spinning…');};
     return sim;
   },
 },
