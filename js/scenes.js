@@ -289,11 +289,13 @@ piano: {
 motor: {
   build(s) {
     const m = C.dcMotor(); m.position.set(78, 0, -6); s.add(m, 'motor');
+    s.framingPoints=[V(64,-5,10),V(92,23,12)]; // reserve rotating propeller's full disk
     const tr = C.npn(); tr.position.copy(bb(14, 2)); s.add(tr, 'npn');
     const res = C.resistor(1000); res.position.copy(bb(12, 2)); res.position.z += 1.27; s.add(res, 'resistor');
     s.wires.push(wireTo(pin('D27'), bb(10, 2), WIRE.orange, 14, 'D27'), wireTo(pin('VIN'), V(78, 2, -14), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(17, 4), WIRE.navy, 12, 'GND'), wireTo(bb(16, 2), V(78, 2, 2), WIRE.navy, 18));
     s.tags = [ { at: pin('D27'), label: 'GPIO27 · PWM', i: 'bolt', d: 'PWM sets the motor speed.' }, { at: bb(14, 2).add(V(0, 7, 0)), label: '2N2222', i: 'chip', d: 'Transistor switches the motor current.' }, { at: V(78, 26, -6), label: 'MOTOR', click: 'motor', i: 'gear', d: 'Click to change speed.' } ];
-    s.api.spin = v => s.refs.motor.userData.spin(v);
+    let motorSpeed=0;s.tags[2].value=()=>`MOTOR · ${motorSpeed} speed units`;
+    s.api.spin = v => {motorSpeed=+v.toFixed(1);s.refs.motor.userData.spin(v);};
     s.api.tickMotor = dt => s.refs.motor.userData.tick(dt);
     const speeds = [0, 6, 14, 22];
     s.onClick = (w, api) => { if (w === 'motor') { api._si = ((api._si ?? 0) + 1) % speeds.length; api._speed = speeds[api._si]; } };
