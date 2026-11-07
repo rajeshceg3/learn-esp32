@@ -53,9 +53,9 @@ grid.visible = false; // screen-space grid stays legible through camera changes
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
 let boardFitBounds=null,boardFitKey=null;
 function keepBoardInView(){
-  if(![0,1].includes(state.lesson))return;
+  if(![0,1,2,3].includes(state.lesson))return;
   const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
-  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if(state.lesson===1){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));}}
+  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));}}
   const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
   rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
   rig.tTarget.z=THREE.MathUtils.clamp(rig.tTarget.z,center.z-14,center.z+14);
@@ -184,10 +184,11 @@ let tagDivs = [], wireDivs = [];
 const boardPartMarker=new THREE.Mesh(new THREE.SphereGeometry(.7,16,12),new THREE.MeshBasicMaterial({color:0x00aaa0}));boardPartMarker.visible=false;scene.add(boardPartMarker);
 const boardDock=document.createElement('nav');boardDock.id='boardAnnotationDock';boardDock.setAttribute('aria-label','Board parts');boardDock.hidden=true;$('#stageWrap').append(boardDock);
 function rebuildTags() {
-  $('#stageWrap > #runTag')?.remove();tagsEl.innerHTML = ''; boardPartMarker.visible=false;boardDock.replaceChildren(); tagDivs = []; wireDivs = [];
+  $('#stageWrap > #runTag')?.remove();tagsEl.innerHTML = ''; boardPartMarker.visible=false;boardDock.replaceChildren();$('#circuitReadouts')?.remove();tagDivs = []; wireDivs = [];
   $('#stageWrap').classList.toggle('board-intro',state.lesson===0);
   $('#stageWrap').classList.toggle('blink-docked',state.lesson===1);
-  boardDock.hidden=![0,1].includes(state.lesson)||!state.settings.labels;
+  $('#stageWrap').classList.toggle('functional-docked',[2,3].includes(state.lesson));
+  boardDock.hidden=![0,1,2,3].includes(state.lesson)||!state.settings.labels;
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
@@ -224,17 +225,18 @@ function rebuildTags() {
       }
       boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
-    }else if(state.lesson===1){
-      d.classList.add('board-part-button');d.setAttribute('aria-label',trTag(t.label));boardDock.append(d);
-      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
+    }else if([1,2,3].includes(state.lesson)){
+      d.classList.add('board-part-button');d.setAttribute('aria-label',trTag(t.label));d.setAttribute('aria-description',trTagDesc(t.label,t.d));d.title=trTagDesc(t.label,t.d);boardDock.append(d);
+      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click||({'LED':'led'}[t.label])];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
     }else tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
     tagDivs.push({ d, t, dot, ln });
   });
+  const wireDock=document.createElement('div');wireDock.id='circuitReadouts';wireDock.setAttribute('aria-label','Circuit wire readings');if(state.lesson===3)$('#stageWrap').append(wireDock);
   (cur.scene?.wires||[]).filter(w=>w.badge).forEach(w=>{
     const d=document.createElement('span');d.className='wire-badge';d.dir='ltr';
-    d.style.setProperty('--wire-color',w.badge.color);tagsEl.appendChild(d);
+    d.style.setProperty('--wire-color',w.badge.color);(state.lesson===3?wireDock:tagsEl).appendChild(d);
     const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
     ln.classList.add('wire-leader');ln.style.stroke=w.badge.color;leadersEl.appendChild(ln);
     wireDivs.push({w,d,ln});
@@ -245,7 +247,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
-    if([0,1].includes(state.lesson)){d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
+    if([0,1,2,3].includes(state.lesson)){if(t.value){const value=t.value(),label=d.querySelector('b');label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value){label.textContent=value;d.setAttribute('aria-label',value);}}if(state.lesson===2&&t.click==='button')d.setAttribute('aria-pressed',String(!!api._pressed));d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
     if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
@@ -325,7 +327,7 @@ function placeTags() {
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
-  const vis = [0,1].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
+  const vis = [0,1,2,3].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
   for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
@@ -342,7 +344,7 @@ function placeTags() {
     if (!moved) break;
   }
   tagDivs.forEach(({ d, ln }) => {
-    if([0,1].includes(state.lesson))return;
+    if([0,1,2,3].includes(state.lesson))return;
     if (d.style.display === 'none') return;
     d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
     d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
@@ -360,6 +362,7 @@ function placeTags() {
   wireDivs.forEach(({w,d,ln})=>{
     const value=w.badge.value();if(d.textContent!==value)d.textContent=value;
     if(state.lesson===1){d.style.display='none';ln.style.display='none';return;}
+    if(state.lesson===3){d.style.display='inline-flex';ln.style.display='none';return;}
     const p=w.curve.getPoint(w.badge.fraction??.5).project(camera);
     const ax=(p.x*.5+.5)*r.width,ay=(-p.y*.5+.5)*r.height;
     const ok=p.z<1&&ax>0&&ax<r.width&&ay>0&&ay<r.height;
@@ -398,7 +401,7 @@ canvas.addEventListener('pointermove', e => {
   const part = hits[0]?.object.userData.part;
   hoverPart = part || null;
   const hp = $('#partTag');
-  if (part && state.settings.labels && ![0,1].includes(state.lesson)) {
+  if (part && state.settings.labels && ![0,1,2,3].includes(state.lesson)) {
     hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
