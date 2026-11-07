@@ -5,3 +5,11 @@ Lesson11's4descriptions/live readouts and HEAT action have reserved control spac
 Preserve6stage24/34C example sequence, Previous/Replay, sample choice and independent continuous heat simulation. Explicit marked English note on all4tabs names browser-scripted temperature versus sensor/hardware/editor. Fan threshold is above30C; Stop forces fan off. No translation certification or measured-heat-transfer/hardware claim.
 
 Local320/390/844/1320 tests/thermal-dock-regression.cjs passes2samples6stage lines/pending24or34C/fanHIGHLOW outputs, previous/replay, native slider5/40cm and exact dryerx66/82, poweron thresholdHIGH, actual model-pointer drag, StopLOW,44px/fit/rotatezoom/descriptions/tab-progress/4tab note/switch.12units including actual thermal factory500idle-tick holds pass. HOSTED_URL tests public UI/readouts rather than injected state; hosted qualification follows.
+
+Final runtime4f4df063c86a171a6a192c67b6dd5252b4a5ad7b (spatial77d47ae + model-inspector anchor correction) at https://learn-esp32-xi.vercel.app/ qualified hosted390/844 public UI2samples6stages/previous/replay/5and40cm native slider/power/heatHIGH/StopLOW/fit/rotatezoom/4tabs/progress/switch. Source main/scenes/styles served byte-identical. Actual final phonehot/landscape/opaqueHEATinspector/scrolledguide/explicit-note pixels inspected and retained. Local actual model click-to-inspector and drag tested; hosted test uses public inspector action and readouts, not injected model projection/state.12units and390board6infos24rotations16lessonRunStop smoke passed before one-line anchor correction;12units and targeted local/hosted suites rerun after correction. No hardware/heat-transfer certification.
+
+js/main.js SHA256 493154aa717ca6c3ae78edfffede043f412cc504f93ee9088d66d81ffa95380c
+
+js/scenes.js SHA256 9c6027570e30dfd42714cb45df712b3729281aa09e9831ef43e3b988099e375a
+
+styles.css SHA256 76eebf4821a6c21d25f6947c741fda7f08ee43aefb6f41f78f4f47d94b0b6773
