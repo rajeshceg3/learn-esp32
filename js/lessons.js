@@ -212,7 +212,7 @@ void loop() {
 {
   id: 'sound', num: 8, title: 'Make a sound', heading: 'Make a sound',
   lede: 'A piezo buzzer clicks every time its pin flips. Flip it fast and the clicks blur into a note — the ESP32’s LEDC timer does the flipping for you.',
-  features: [['bulb', '<code>ledcWriteTone()</code> plays a frequency'], ['clock', 'Duration in milliseconds'], ['hand', 'Pick a melody below']],
+  features: [['bulb', '<code>ledcWriteTone()</code> plays a frequency'], ['clock', 'Duration in milliseconds'], ['hand', 'Run the fixed C / E / G / rest melody']],
   pinout: [['GPIO19', 'Buzzer +', 'Square wave from an LEDC channel.', '#2a56a3'], ['GND', 'Buzzer −', 'The other terminal.', '#2f3547']],
   example: [
     'Concert A is 440 Hz: the pin flips 440 times a second.',
