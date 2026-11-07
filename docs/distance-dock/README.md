@@ -20,4 +20,4 @@ styles.css SHA256 5c72af52095d458afa91cfd4312a1c1a55c41ca5ba6ee5b8426682ef1ad919
 
 Final schematic pixel review caught faint model showing through soft-card background. Distance schematic now has opaque background; model, tags, dock and toolbar are suppressed while it is open. Close restores interaction. This correction is runtime, not evidence-only.
 
-Final opaque-schematic correctionPR23 merged6040f8baf33d5ec7d8dd1601e185c3be36db236d. Hosted390/844 rerun passes hidden model/dock while open, close restores controls, and final schematic pixels supersede earlier translucent capture. CSS served byte-identical after correction.
+Final opaque-schematic correctionPR23 merged6040f8baf33d5ec7d8dd1601e185c3be36db236d. Hosted390 hidden model/dock and restoration pass; landscape exposed header/body overlap blocking Close, fixed with nonshrinking sticky44px header and nonshrinking diagram body. Final hosted rerun required, and final schematic pixels supersede earlier translucent capture. CSS served byte-identical after correction.

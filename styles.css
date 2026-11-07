@@ -765,3 +765,6 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 #stageWrap.distance-docked:has(.schematic.is-on) .leaders,
 #stageWrap.distance-docked:has(.schematic.is-on) #boardAnnotationDock,
 #stageWrap.distance-docked:has(.schematic.is-on) .toolbar{visibility:hidden;pointer-events:none}
+#stageWrap.distance-docked .sch-head{flex-shrink:0;position:sticky;top:0;z-index:2;background:#f8f2e5;align-items:center}
+#stageWrap.distance-docked .sch-close{width:44px;height:44px;flex-shrink:0}
+#stageWrap.distance-docked .sch-body{display:block;flex-shrink:0;min-height:auto}
