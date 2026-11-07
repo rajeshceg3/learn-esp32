@@ -16,8 +16,10 @@ js/i18n.js SHA256 f31c85a1dfbbc4fd49df72c2443ac2da28c5eee14eb71d41924bedd370d63c
 
 js/lessons.js SHA256 67e4a06505b0d6f0384181fd1d7f1f49b713d7ac892cdbdc26dadd15650066d3
 
-styles.css SHA256 5c72af52095d458afa91cfd4312a1c1a55c41ca5ba6ee5b8426682ef1ad919ca
+styles.css SHA256 ae5ce42fb5d2cf4d059ee1863e1e704a66e2d613787b50c4520a16f34265c817
 
 Final schematic pixel review caught faint model showing through soft-card background. Distance schematic now has opaque background; model, tags, dock and toolbar are suppressed while it is open. Close restores interaction. This correction is runtime, not evidence-only.
 
 Final opaque-schematic correctionPR23 merged6040f8baf33d5ec7d8dd1601e185c3be36db236d. Hosted390 hidden model/dock and restoration pass; landscape exposed header/body overlap blocking Close, fixed with nonshrinking sticky44px header and nonshrinking diagram body. Final hosted rerun required, and final schematic pixels supersede earlier translucent capture. CSS served byte-identical after correction.
+
+Final runtimePR24 87ac587c07548ff946a8866fdd3fba66a55b78e7: hosted390/844 full cycle + opaque schematic + scroll-to-divider + real Close/restore tests pass. Final actual opaque phone and scrolled landscape pixels inspected. Previous notes describing pending rerun are superseded by this result. CSS served byte-identical; current SHA256 ae5ce42fb5d2cf4d059ee1863e1e704a66e2d613787b50c4520a16f34265c817.
