@@ -53,9 +53,9 @@ grid.visible = false; // screen-space grid stays legible through camera changes
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
 let boardFitBounds=null,boardFitKey=null;
 function keepBoardInView(){
-  if(![0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson))return;
+  if(![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson))return;
   const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
-  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));for(const p of cur.scene?.framingPoints||[])boardFitBounds.expandByPoint(p);}}
+  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));for(const p of cur.scene?.framingPoints||[])boardFitBounds.expandByPoint(p);}}
   const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
   rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
   rig.tTarget.z=THREE.MathUtils.clamp(rig.tTarget.z,center.z-14,center.z+14);
@@ -117,7 +117,7 @@ canvas.addEventListener('pointerup', e => { if(heldScenePointer===e.pointerId){r
 canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); keepBoardInView();idle.t = 0; }, { passive: false });
 canvas.addEventListener('pointercancel',e=>{releasePianoPointer(`canvas:${e.pointerId}`);releaseScenePointer();objectDrag=null;drag=null;});
 canvas.addEventListener('lostpointercapture',e=>{releasePianoPointer(`canvas:${e.pointerId}`);releaseScenePointer();objectDrag=null;});
-addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();if(state.lesson===13)cur.scene?.holdEnd?.(api);});
+addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();if([13,14].includes(state.lesson))cur.scene?.holdEnd?.(api);});
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
   const key=e.key.toLowerCase();
@@ -195,9 +195,10 @@ function rebuildTags() {
   $('#stageWrap').classList.toggle('servo-docked',state.lesson===11);
   $('#stageWrap').classList.toggle('wheel-docked',state.lesson===12);
   $('#stageWrap').classList.toggle('plant-docked',state.lesson===13);
+  $('#stageWrap').classList.toggle('force-docked',state.lesson===14);
   $('#stageWrap').classList.toggle('piano-docked',state.lesson===8);$('#pianoNoteDock')?.remove();
-  $('#stageWrap').classList.toggle('functional-docked',[2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson));
-  boardDock.hidden=![0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)||!state.settings.labels;
+  $('#stageWrap').classList.toggle('functional-docked',[2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson));
+  boardDock.hidden=![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)||!state.settings.labels;
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
@@ -232,7 +233,8 @@ function rebuildTags() {
       const end=()=>cur.scene.tagHold?.(t.click,false,api);
       d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);d.addEventListener('blur',end);
       d.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)&&!e.repeat&&state.running){e.preventDefault();cur.scene.tagHold?.(t.click,true,api);}});
-      d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key))end();});
+      d.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key)){e.preventDefault();end();}});
+      if(state.lesson===14)d.addEventListener('keydown',e=>{if(api._pressing&&['ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();api._pressureTarget=Math.max(.05,Math.min(1,api._pressureTarget+(e.key==='ArrowDown'?.1:-.1)));}});
     } else if (t.click) d.addEventListener('click', () => {const inspector=cur.scene.inspect?.(t.click);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(t.click, api);});
     if(state.lesson===0){
       d.classList.add('board-part-button');
@@ -244,7 +246,7 @@ function rebuildTags() {
       }
       boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
-    }else if([1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)){
+    }else if([1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)){
       d.classList.add('board-part-button');d.setAttribute('aria-label',trTag(t.label));d.setAttribute('aria-description',trTagDesc(t.label,t.d));d.title=trTagDesc(t.label,t.d);boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click||({'LED':'led'}[t.label])];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
     }else tagsEl.appendChild(d);
@@ -266,7 +268,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
-    if([0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)){if(t.value){const value=t.value(),label=d.querySelector('b');label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value){label.textContent=value;d.setAttribute('aria-label',value);}}if(state.lesson===2&&t.click==='button')d.setAttribute('aria-pressed',String(!!api._pressed));if(state.lesson===13&&t.hold)d.setAttribute('aria-pressed',String(!!api._watering));d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
+    if([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)){if(t.value){const value=t.value(),label=d.querySelector('b');label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value){label.textContent=value;d.setAttribute('aria-label',value);}}if(state.lesson===2&&t.click==='button')d.setAttribute('aria-pressed',String(!!api._pressed));if(state.lesson===13&&t.hold)d.setAttribute('aria-pressed',String(!!api._watering));if(state.lesson===14&&t.hold)d.setAttribute('aria-pressed',String(!!api._pressing));d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
     if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
@@ -346,7 +348,7 @@ function placeTags() {
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
-  const vis = [0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
+  const vis = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
   for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
@@ -363,7 +365,7 @@ function placeTags() {
     if (!moved) break;
   }
   tagDivs.forEach(({ d, ln }) => {
-    if([0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson))return;
+    if([0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson))return;
     if (d.style.display === 'none') return;
     d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
     d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
@@ -420,7 +422,7 @@ canvas.addEventListener('pointermove', e => {
   const part = hits[0]?.object.userData.part;
   hoverPart = part || null;
   const hp = $('#partTag');
-  if (part && state.settings.labels && ![0,1,2,3,4,5,6,7,8,9,10,11,12,13].includes(state.lesson)) {
+  if (part && state.settings.labels && ![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14].includes(state.lesson)) {
     hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
@@ -727,6 +729,7 @@ function renderPanel() {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
+  if(state.lesson===14)h+=`<p class="lesson-lede force-sim-note" lang="en" dir="ltr">Simulation (English): Next step follows one high, repeated high, low, then high sample history, and waits after each action. WRITTEN is the last output sample; SERVO shows its 12-bit duty, not a measured angle. The bell rings once above 3071, rearms only below 2662, and stops after 400 ms. Explore continuously or Run uses a separate smoothed pressure model: hold PRESS PAD and drag down to press harder, or hold Space or Enter and use Down/Up arrows to raise/lower pressure. Release or blur releases pressure; Stop immediately resets pressure and silences the tone. These are not calibrated grams or live sensor readings. The editor is not executed.</p>`;
   if(state.lesson===13)h+=`<p class="lesson-lede plant-sim-note" lang="en" dir="ltr">Simulation (English): Next step follows one selected millivolt example, then waits. Drawing the hidden frame buffer does not update the OLED until Send the frame. Explore continuously or Run uses a separate scripted moisture percentage: hold PLANT or WATER, or the plant/can model, to water; release to dry. The controls support held Space or Enter. Stop ends watering and returns the OLED to ESP32. These are not live probe readings; real probes need dry/wet calibration. The editor is not executed.</p>`;
   if(state.lesson===12)h+=`<p class="lesson-lede wheel-sim-note" lang="en" dir="ltr">Simulation (English): Next step follows one chosen target from segment 0, then waits at each action. Queuing nominal steps does not turn the wheel; the move is a separate action. Explore continuously or Run enables random spins using BUTTON, Enter on its control, or the model button. Another press while moving is ignored. Stop freezes the current wheel position and releases the button. Motion is scripted easing, not measured motor acceleration or position. The editor is not executed.</p>`;
   if(state.lesson===11)h+=`<p class="lesson-lede servo-sim-note" lang="en" dir="ltr">Simulation (English): Next step follows the shown sweep example in four actions, then waits. Explore continuously or Run uses a separate smooth, scripted sweep. Click SERVO or press Enter on its control to cycle three illustrative sweep rates; this does not change the editor's delay(15). The angle readout is the browser model, not measured feedback. Stop returns the horn to 0°. The editor is not executed; real servo endpoints need calibration.</p>`;
