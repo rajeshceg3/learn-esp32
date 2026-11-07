@@ -53,9 +53,9 @@ grid.visible = false; // screen-space grid stays legible through camera changes
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
 let boardFitBounds=null,boardFitKey=null;
 function keepBoardInView(){
-  if(![0,1,2,3,4,5,6,7].includes(state.lesson))return;
+  if(![0,1,2,3,4,5,6,7,8].includes(state.lesson))return;
   const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
-  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3,4,5,6,7].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));for(const p of cur.scene?.framingPoints||[])boardFitBounds.expandByPoint(p);}}
+  if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3,4,5,6,7,8].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));for(const p of cur.scene?.framingPoints||[])boardFitBounds.expandByPoint(p);}}
   const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
   rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
   rig.tTarget.z=THREE.MathUtils.clamp(rig.tTarget.z,center.z-14,center.z+14);
@@ -87,12 +87,14 @@ let heldPianoPointer = null, objectDrag = null, heldScenePointer = null;
 const objectDragPlane = new THREE.Plane(new THREE.Vector3(0,1,0),0);
 function sceneGroundPoint(e){ const r=canvas.getBoundingClientRect();mouseV.set(((e.clientX-r.left)/r.width)*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(mouseV,camera);return ray.ray.intersectPlane(objectDragPlane,new THREE.Vector3()); }
 function releaseScenePointer(){if(heldScenePointer!==null)cur.scene?.holdEnd?.(api);heldScenePointer=null;}
-function releasePianoPointer() { if (heldPianoPointer !== null) cur.sim?.release?.(); heldPianoPointer = null; }
+let pianoOwner=null;
+function releasePianoPointer(owner) { if(owner!==undefined&&pianoOwner!==owner)return; if(pianoOwner!==null||heldPianoPointer!==null)cur.sim?.release?.();pianoOwner=null;heldPianoPointer=null;document.querySelectorAll('[data-piano-note]').forEach(b=>b.setAttribute('aria-pressed','false')); }
+function beginPiano(owner,i){if(!state.running)return;releasePianoPointer();pianoOwner=owner;cur.sim?.note?.(i,true);document.querySelectorAll('[data-piano-note]').forEach(b=>b.setAttribute('aria-pressed',String(+b.dataset.pianoNote===i)));}
 canvas.addEventListener('pointerdown', e => {
   if (e.button !== 0) return;
   if (state.running && cur.scene?.pickKey) {
     const i = pianoKeyAt(e);
-    if (i >= 0) { releasePianoPointer(); heldPianoPointer = e.pointerId; cur.sim?.note?.(i, true); canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+    if (i >= 0) { beginPiano(`canvas:${e.pointerId}`,i); heldPianoPointer = e.pointerId; canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
   }
   sceneGroundPoint(e);
   if(state.running&&cur.scene?.holdStart?.(ray,api,e)){heldScenePointer=e.pointerId;canvas.setPointerCapture(e.pointerId);e.preventDefault();return;}
@@ -113,8 +115,8 @@ canvas.addEventListener('pointermove', e => {
 });
 canvas.addEventListener('pointerup', e => { if(heldScenePointer===e.pointerId){releaseScenePointer();return;} if(objectDrag?.id===e.pointerId){if(objectDrag.moved<6)pickAt(e);objectDrag=null;return;} if(heldPianoPointer===e.pointerId){releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;return;} if (drag && drag.moved < 6) pickAt(e); drag = null; });
 canvas.addEventListener('wheel', e => { e.preventDefault(); rig.tDist = Math.min(420, Math.max(90, rig.tDist * (1 + Math.sign(e.deltaY) * .09))); keepBoardInView();idle.t = 0; }, { passive: false });
-canvas.addEventListener('pointercancel',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;drag=null;});
-canvas.addEventListener('lostpointercapture',()=>{releasePianoPointer();releaseScenePointer();objectDrag=null;});
+canvas.addEventListener('pointercancel',e=>{releasePianoPointer(`canvas:${e.pointerId}`);releaseScenePointer();objectDrag=null;drag=null;});
+canvas.addEventListener('lostpointercapture',e=>{releasePianoPointer(`canvas:${e.pointerId}`);releaseScenePointer();objectDrag=null;});
 addEventListener('blur',()=>{releasePianoPointer();releaseScenePointer();});
 addEventListener('keydown', e => {
   if(e.target?.closest('input,textarea,select,[contenteditable=true]'))return;
@@ -188,12 +190,23 @@ function rebuildTags() {
   $('#stageWrap').classList.toggle('board-intro',state.lesson===0);
   $('#stageWrap').classList.toggle('blink-docked',state.lesson===1);
   $('#stageWrap').classList.toggle('distance-docked',state.lesson===6);
-  $('#stageWrap').classList.toggle('functional-docked',[2,3,4,5,6,7].includes(state.lesson));
-  boardDock.hidden=![0,1,2,3,4,5,6,7].includes(state.lesson)||!state.settings.labels;
+  $('#stageWrap').classList.toggle('piano-docked',state.lesson===8);$('#pianoNoteDock')?.remove();
+  $('#stageWrap').classList.toggle('functional-docked',[2,3,4,5,6,7,8].includes(state.lesson));
+  boardDock.hidden=![0,1,2,3,4,5,6,7,8].includes(state.lesson)||!state.settings.labels;
   leadersEl.innerHTML = '';
   if (typeof partTag !== 'undefined') tagsEl.appendChild(partTag); // hover label survives rebuilds
   const rt = document.createElement('div'); rt.className = 'tag mini live'; rt.id = 'runTag'; rt.style.display = 'none';
   (state.lesson===1?$('#stageWrap'):tagsEl).appendChild(rt);
+  if(state.lesson===8){
+    const keys=document.createElement('div');keys.id='pianoNoteDock';keys.setAttribute('aria-label','Piano notes - Run, then hold to play');keys.lang='en';
+    ['C4','D4','E4','F4','G4','A4','B4','C5'].forEach((note,i)=>{const b=document.createElement('button');b.type='button';b.dataset.pianoNote=i;b.textContent=note;b.setAttribute('aria-label',`${note}, ${[262,294,330,349,392,440,494,523][i]} Hz - hold to play`);b.setAttribute('aria-pressed','false');
+      b.addEventListener('pointerdown',e=>{if(e.button!==0||!state.running)return;e.preventDefault();b.setPointerCapture(e.pointerId);beginPiano(`dock:${e.pointerId}`,i);});
+      for(const event of ['pointerup','pointercancel','lostpointercapture'])b.addEventListener(event,e=>releasePianoPointer(`dock:${e.pointerId}`));
+      b.addEventListener('keydown',e=>{if([' ','Enter'].includes(e.key)){e.preventDefault();if(!e.repeat)beginPiano(`key:${i}:${e.key}`,i);}});
+      b.addEventListener('keyup',e=>{if([' ','Enter'].includes(e.key)){e.preventDefault();releasePianoPointer(`key:${i}:${e.key}`);}});
+      b.addEventListener('blur',()=>{if(pianoOwner?.startsWith(`key:${i}:`))releasePianoPointer();});keys.append(b);
+    });$('#stageWrap').append(keys);
+  }
   if (!state.settings.labels) return;
   const list = cur.scene?.tags || [];
   list.forEach(t => {
@@ -226,7 +239,7 @@ function rebuildTags() {
       }
       boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
-    }else if([1,2,3,4,5,6,7].includes(state.lesson)){
+    }else if([1,2,3,4,5,6,7,8].includes(state.lesson)){
       d.classList.add('board-part-button');d.setAttribute('aria-label',trTag(t.label));d.setAttribute('aria-description',trTagDesc(t.label,t.d));d.title=trTagDesc(t.label,t.d);boardDock.append(d);
       d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click||({'LED':'led'}[t.label])];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
     }else tagsEl.appendChild(d);
@@ -248,7 +261,7 @@ function placeTags() {
   const v = new THREE.Vector3();
   const wide = r.width >= 700; // desktop: cards offset to the side; mobile: pill above anchor
   tagDivs.forEach(({ d, t, dot, ln }) => {
-    if([0,1,2,3,4,5,6,7].includes(state.lesson)){if(t.value){const value=t.value(),label=d.querySelector('b');label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value){label.textContent=value;d.setAttribute('aria-label',value);}}if(state.lesson===2&&t.click==='button')d.setAttribute('aria-pressed',String(!!api._pressed));d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
+    if([0,1,2,3,4,5,6,7,8].includes(state.lesson)){if(t.value){const value=t.value(),label=d.querySelector('b');label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value){label.textContent=value;d.setAttribute('aria-label',value);}}if(state.lesson===2&&t.click==='button')d.setAttribute('aria-pressed',String(!!api._pressed));d.style.display='flex';dot.style.display='none';ln.style.display='none';return;}
     if(t.value){const value=t.value(),label=d.querySelector('b');if(label){label.dir='ltr';label.style.unicodeBidi='isolate';if(label.textContent!==value)label.textContent=value;}}
     if (t.dyn && cur.scene?.refs?.[t.dyn]) { cur.scene.refs[t.dyn].getWorldPosition(v); v.y += 8; }
     else v.copy(t.at);
@@ -328,7 +341,7 @@ function placeTags() {
     d._x = cx; d._y = cy;
   });
   // de-overlap: nudge colliding cards apart
-  const vis = [0,1,2,3,4,5,6,7].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
+  const vis = [0,1,2,3,4,5,6,7,8].includes(state.lesson)?[]:tagDivs.map(o => o.d).filter(d => d.style.display !== 'none');
   for (let pass = 0; pass < 6; pass++) {
     let moved = false;
     for (let i = 0; i < vis.length; i++) for (let j = i + 1; j < vis.length; j++) {
@@ -345,7 +358,7 @@ function placeTags() {
     if (!moved) break;
   }
   tagDivs.forEach(({ d, ln }) => {
-    if([0,1,2,3,4,5,6,7].includes(state.lesson))return;
+    if([0,1,2,3,4,5,6,7,8].includes(state.lesson))return;
     if (d.style.display === 'none') return;
     d._x = Math.min(r.width - d.offsetWidth / 2 - 6, Math.max(d.offsetWidth / 2 + 6, d._x));
     d._y = Math.min(r.height - d.offsetHeight / 2 - 6, Math.max(d.offsetHeight / 2 + 6, d._y));
@@ -402,7 +415,7 @@ canvas.addEventListener('pointermove', e => {
   const part = hits[0]?.object.userData.part;
   hoverPart = part || null;
   const hp = $('#partTag');
-  if (part && state.settings.labels && ![0,1,2,3,4,5,6,7].includes(state.lesson)) {
+  if (part && state.settings.labels && ![0,1,2,3,4,5,6,7,8].includes(state.lesson)) {
     hp.textContent = localizedPart(part).title; hp.style.display = 'flex';
     hp.style.left = (e.clientX - r.left) + 'px'; hp.style.top = (e.clientY - r.top - 34) + 'px';
   } else hp.style.display = 'none';
@@ -709,6 +722,7 @@ function renderPanel() {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
+  if(state.lesson===8)h+=`<p class="lesson-lede piano-sim-note" lang="en" dir="ltr">Simulation (English): press Run, then hold a note button or a coloured model key. Release to silence. Note buttons also work with held Space or Enter. One note plays at a time: the newest press takes over; releasing it silences, rather than restoring an older note. Stop and leaving this lesson silence it. The editor is not executed; the sound setting can mute browser audio.</p>`;
   if(state.lesson===7)h+=`<p class="lesson-lede sound-sim-note" lang="en" dir="ltr">Simulation (English): Run repeats a fixed C/E/G/rest pattern: 262/330/392 Hz for 400 ms each, then a 600 ms rest. Stop silences it. There is no melody picker, and the editor is not executed. The sound setting can mute browser audio.</p>`;
   if(state.lesson===6)h+=`<p class="lesson-lede distance-sim-note" lang="en" dir="ltr">Simulation (English): click the obstacle or press Enter on its control to step through scripted distances. This is not a drag or a live sound measurement. Run logs the selected centimetres; Stop pauses logging. The editor is not executed.</p>`;
   if(state.lesson===5)h+=`<p class="lesson-lede light-sim-note" lang="en" dir="ltr">Simulation (English): click the lamp or press Enter on its control to toggle two scripted readings: near 3300, far 320. While running, the night light is off near and on far. Stop turns it off. The editor is not executed; the sketch shows the hardware threshold rule.</p>`;
@@ -818,6 +832,7 @@ function startSim() {
   }, 3000);
 }
 function stopSim() {
+  releasePianoPointer();
   if (!state.running) return;
   state.running = false; api.line?.(0);document.querySelectorAll('.nav-btn[data-k=play]').forEach(e=>e.classList.remove('on'));
   $('#btnRun')?.classList.remove('is-running'); if($('#btnRun')) { $('#btnRun').title=T('run'); $('#btnRun').setAttribute('aria-label',T('run')); }
