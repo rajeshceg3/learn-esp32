@@ -448,7 +448,7 @@ function pickAt(e) {
       let o = hits[0].object;
       while (o && !o.userData._clickId && o.parent) o = o.parent === cur.scene.root ? null : o.parent;
       const id = o?.userData?._clickId;
-      if (id) {const inspector=cur.scene.inspect?.(id);if(inspector)openSheet(inspector,null,d);else cur.scene.onClick?.(id, api); return; }
+      if (id) {const inspector=cur.scene.inspect?.(id);if(inspector)openSheet(inspector,null,canvas);else cur.scene.onClick?.(id, api); return; }
     }
   }
   const hits = ray.intersectObjects(Object.values(board.parts), false);
