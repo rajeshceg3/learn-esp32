@@ -190,8 +190,8 @@ light: {
     s.wires.push(wireTo(pin('D35'), bb(13, 4), WIRE.green, 22, 'D35'), wireTo(pin('D26'), bb(16, 7), WIRE.orange, 21, 'D26'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 23, '3V3'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
       { at: pin('D35'), label: 'GPIO35 · ADC', i: 'wave', d: 'Reads the light level.' }, { at: bb(13, 2).add(V(0, 8, 0)), label: 'LDR', i: 'info', d: 'Resistance drops as light rises.' },
-      { at: V(bb(26,5).x+15,21,bb(26,5).z), label: 'LAMP', click: 'torch', dyn: 'torch', i: 'bolt', d: 'Click to move it closer.' },
-      { at: bb(19, 7).add(V(0, 10, 0)), label: 'NIGHT LIGHT', i: 'bulb', d: 'Turns on when it gets dark.' },
+      { at: V(bb(26,5).x+15,21,bb(26,5).z), label: 'LAMP', click: 'torch', dyn: 'torch', i: 'bolt', d: 'Click or press Enter to toggle the lamp between near and far. The simulation uses two scripted light levels.' },
+      { at: bb(19, 7).add(V(0, 10, 0)), label: 'NIGHT LIGHT', i: 'bulb', d: 'While running, the simulated night light is on with the lamp far away and off with it near. Stop turns it off.' },
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
     s.onClick = (w, api) => { if (w === 'torch') { api._near = !api._near;
@@ -201,7 +201,7 @@ light: {
     api._near = false; let acc = 0;
     return {
       running: false,
-      start() { this.running = true; api.serial('Sketch running. Click the lamp to move it closer.'); },
+      start() { this.running = true; api.serial('Scripted light simulation. Click the lamp to toggle near/far: 3300/320. The editor is not executed.'); },
       stop() { this.running = false; api.setLed(false); },
       tick(dt) { if (!this.running) return; const dark = !api._near; api.line?.(12); api.setLed(dark);
         acc += dt; if (acc > 1) { acc = 0; api.serial(`light = ${dark ? 320 : 3300}${dark ? '  (dark → night light on)' : ''}`); } },
@@ -499,7 +499,7 @@ project: {
     const tl = C.trafficLight(); tl.position.copy(bb(22, 2)); s.add(tl, 'tl');
     const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
     s.wires.push(wireTo(pin('D5'), bb(7, 6), WIRE.yellow, 13, 'D5'), wireTo(pin('D18'), bb(8, 7), WIRE.green, 13, 'D18'), wireTo(pin('D25'), bb(20, 4), WIRE.red, 14, 'D25'), wireTo(pin('D26'), bb(21, 5), WIRE.orange, 14, 'D26'), wireTo(pin('D33'), bb(22, 6), WIRE.green, 14, 'D33'), wireTo(pin('VIN'), bb(13, 5), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(14, 8), WIRE.navy, 12, 'GND'));
-    s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance to the car.' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT', i: 'bulb', d: 'Green, amber or red by distance.' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car', i: 'hand', d: 'Click to move it closer.' } ];
+    s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance to the car.' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT', i: 'bulb', d: 'Green, amber or red by distance.' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car', i: 'hand', d: 'Click or press Enter to toggle the lamp between near and far. The simulation uses two scripted light levels.' } ];
     s.api.tl = (r, y, g) => s.refs.tl.userData.set(r, y, g);
     s.api._dist = 40;
     s.api.parkingPose=cm=>{s.api._dist=cm;s.refs.car.position.x=96-(46-cm)*1.1;};

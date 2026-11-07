@@ -1,0 +1,5 @@
+# Light lesson control-space repair
+
+Lesson6 uses the fitted circuit plus reserved dock. GPIO35, LDR, lamp action and night-light description no longer occupy model space. The fit includes both scripted lamp poses, including after rotate/zoom. The lamp is click/Enter toggle, not drag; moving it is not a continuous sensor simulation. Run enables near3300/off or far320/on; Stop extinguishes the LED. Added explicit English simulation note on all teaching tabs distinguishes this from hardware/editor execution.
+
+Tests: PLAYWRIGHT_MODULE=/path/to/playwright node tests/light-dock-regression.cjs. VIEWPORTS controls viewport pairs; HOSTED_URL uses real UI without injected state. Local test asserts actual lamp position, near/far, emissive intensity, keyboard, Stop, fitted model bounds,44px controls and3descriptions. Verified390/844/320/1320 locally. Browser-emulation evidence, not physical-device proof. English teaching-note scope is marked explicitly, no new translation-quality claim. Retain hosted follow-through separately.
