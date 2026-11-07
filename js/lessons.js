@@ -328,7 +328,7 @@ void loop() {
 {
   id: 'servo', num: 12, title: 'Sweep a servo', heading: 'Sweep a servo',
   lede: 'A servo is a motor that knows where it is. Send a 50 Hz pulse whose width says the angle, and it holds that position against your finger.',
-  features: [['gear', 'Pulse width = angle'], ['clock', '1–2 ms pulses, 50 times a second'], ['hand', 'Click the servo to nudge it']],
+  features: [['gear', 'Pulse width = angle'], ['clock', '1–2 ms pulses, 50 times a second'], ['hand', 'Click the servo to change sweep rate']],
   pinout: [['GPIO13', 'Signal', 'LEDC channel at 50 Hz, 12-bit.', '#2a56a3'], ['VIN', 'Power', 'Servos want 5 V, not 3.3 V.', '#d64a3a'], ['GND', 'Ground', 'Brown or black wire.', '#2f3547']],
   example: [
     'A 1 ms pulse means 0°, 2 ms means 180°; the servo repeats it 50 times a second.',

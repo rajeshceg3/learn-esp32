@@ -360,9 +360,11 @@ servo: {
   build(s) {
     const sv = C.servo(); sv.position.set(74, 0, 2); sv.rotation.y = .5; s.add(sv, 'servo');
     s.wires.push(wireTo(pin('D13'), V(64, 2, 8), WIRE.orange, 15, 'D13'), wireTo(pin('VIN'), V(68, 2, 12), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), V(60, 2, 12), WIRE.navy, 13, 'GND'));
-    s.tags = [ { at: pin('D13'), label: 'GPIO13 · 50 Hz', i: 'bolt', d: '50 Hz pulses set the angle.' }, { at: V(74, 20, 2), label: 'SERVO', click: 'servo', i: 'gear', d: 'Click to change sweep speed.' } ];
-    s.api.servo = a => s.refs.servo.userData.setAngle(a);
-    s.onClick = (w, api) => { if (w === 'servo') api._rate = ((api._rate ?? 0) + 1) % 3; };
+    s.tags = [ { at: pin('D13'), label: 'GPIO13 · 50 Hz', i: 'bolt', d: '50 Hz pulses set the angle.' }, { at: V(74, 20, 2), label: 'SERVO', click: 'servo', i: 'gear', d: 'Click or press Enter to cycle three illustrative continuous sweep rates. The learner guide remains one action at a time.', value: () => `SERVO · ${Math.round(-(s.api._servoAngle||0)*180/Math.PI)}° · rate ${(s.api._rate||0)+1}/3` }, { at: pin('VIN'), label: '5 V POWER', i: 'bolt', d: 'The scene shows VIN powering the servo. Use a suitable 5 V servo supply, not 3.3 V.' }, { at: pin('GND'), label: 'COMMON GROUND', i: 'pins', d: 'The servo and ESP32 need a shared ground reference.' } ];
+    // Reserve the horn swept envelope at every angle, not only its initial pose.
+    s.framingPoints=[V(49,28,-23),V(99,28,27)];
+    s.api.servo = a => {s.api._servoAngle=a;s.refs.servo.userData.setAngle(a);};
+    s.onClick = (w, api) => { if (w === 'servo') {api._rate = ((api._rate ?? 0) + 1) % 3;s.api._rate=api._rate;} };
   },
   sim: api => {
     let t = 0, teaching = null, angle = 0; api._rate = 0; const rates = [.7, 1.2, 2];
