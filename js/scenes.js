@@ -244,7 +244,7 @@ sound: {
     const seq = [[262, 'C'], [330, 'E'], [392, 'G'], [0, 'rest']]; let i = -1, wait = 0;
     return {
       running: false,
-      start() { this.running = true; i = -1; wait = 0; api.serial('Playing C · E · G …'); },
+      start() { this.running = true; i = -1; wait = 0; api.serial('Scripted C / E / G / rest melody. The editor is not executed.'); },
       stop() { this.running = false; api.tone(0); },
       tick(dt) { if (!this.running) return; wait -= dt * 1000;
         if (wait <= 0) { i = (i + 1) % seq.length; const [f, n] = seq[i];
