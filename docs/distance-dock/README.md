@@ -17,3 +17,5 @@ js/i18n.js SHA256 f31c85a1dfbbc4fd49df72c2443ac2da28c5eee14eb71d41924bedd370d63c
 js/lessons.js SHA256 67e4a06505b0d6f0384181fd1d7f1f49b713d7ac892cdbdc26dadd15650066d3
 
 styles.css SHA256 2d6d11d4f71eccc2374e305cf495e85d705483e77816ead0a4d057017d84c18e
+
+Final schematic pixel review caught faint model showing through soft-card background. Distance schematic now has opaque background; model, tags, dock and toolbar are suppressed while it is open. Close restores interaction. This correction is runtime, not evidence-only.
