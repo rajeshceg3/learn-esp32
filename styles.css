@@ -749,3 +749,12 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  .main:has(#sheet.open) #stageWrap.functional-docked #stage,.main:has(#sheet.open) #stageWrap.functional-docked .tags,.main:has(#sheet.open) #stageWrap.functional-docked .leaders{visibility:hidden}
  .main:has(#sheet.open) #stageWrap.functional-docked #boardAnnotationDock,.main:has(#sheet.open) #stageWrap.functional-docked .toolbar,.main:has(#sheet.open) #circuitReadouts{visibility:hidden;pointer-events:none}
 }
+
+/* Ultrasonic wiring warning is a separate reserved row, never a circuit overlay. */
+#stageWrap.distance-docked #wiringCue{top:auto;bottom:166px;left:12px;right:12px;max-width:none;min-height:44px}
+#stageWrap.distance-docked #boardAnnotationDock{bottom:58px;max-height:100px}
+@media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
+ #stageWrap.distance-docked #boardAnnotationDock{top:12px;bottom:auto;max-height:140px}
+ #stageWrap.distance-docked #wiringCue{left:auto;right:12px;top:160px;bottom:auto;width:260px;max-width:260px}
+ .main:has(#sheet.open) #stageWrap.distance-docked #wiringCue{visibility:hidden;pointer-events:none}
+}

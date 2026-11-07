@@ -181,7 +181,7 @@ void loop() {
 {
   id: 'distance', num: 7, title: 'Read a sensor', heading: 'Read a sensor',
   lede: 'The HC-SR04 sends a burst of ultrasound and listens for the echo. The ESP32 times the echo pulse on GPIO18 and turns it into centimetres.',
-  features: [['wave', '<code>pulseIn()</code> times the echo'], ['pins', 'TRIG out on GPIO5, ECHO in on GPIO18'], ['hand', 'Drag the obstacle closer and further']],
+  features: [['wave', '<code>pulseIn()</code> times the echo'], ['pins', 'TRIG out on GPIO5, ECHO in on GPIO18'], ['hand', 'Click the obstacle to step simulated distance']],
   pinout: [['GPIO5', 'TRIG output', 'A 10 µs pulse starts a measurement.', '#2a56a3'], ['GPIO18', 'ECHO input', 'Reads HIGH for the echo’s flight time.', '#1aa3a1'], ['5V · GND', 'Sensor supply', 'The HC-SR04 runs on 5 V from VIN.', '#d64a3a']],
   example: [
     'Sound travels ≈ 343 m/s: every 29 µs of echo time is one centimetre out and back.',

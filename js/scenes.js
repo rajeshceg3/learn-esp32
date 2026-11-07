@@ -211,22 +211,24 @@ light: {
 distance: {
   build(s) {
     const us = C.ultrasonic(); us.position.copy(bb(15, 6)); s.add(us, 'us');
-    const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
+    const car = C.toyCar(); car.position.set(96-(44-30)*1.1, 0, 28); s.add(car, 'car');
+    const carBounds=new THREE.Box3().setFromObject(car);s.framingPoints=[];
+    for(const distance of[8,54])for(const x of[carBounds.min.x,carBounds.max.x])for(const y of[carBounds.min.y,carBounds.max.y])for(const z of[carBounds.min.z,carBounds.max.z])s.framingPoints.push(V(x+(distance-30)*1.1,y,z));
     s.wires.push(wireTo(pin('D5'), bb(11, 6), WIRE.yellow, 14, 'D5'), wireTo(pin('D18'), bb(12, 7), WIRE.green, 14, 'D18'), wireTo(pin('VIN'), bb(19, 5), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(20, 8), WIRE.navy, 12, 'GND'));
     s.tags = [
       { at: pin('D5'), label: 'TRIG · GPIO5', i: 'bolt', d: 'Sends the ultrasonic pulse.' }, { at: pin('D18'), label: 'ECHO · GPIO18', i: 'wave', d: 'Listens for the echo.' },
       { at: bb(15, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance with sound.' },
-      { at: V(96, 14, 28), label: 'OBSTACLE', click: 'car', dyn: 'car', i: 'hand', d: 'Click to move it.' },
+      { at: V(96, 14, 28), label: 'OBSTACLE', value:()=>`OBSTACLE · ${s.currentDistance??30} cm`, click: 'car', dyn: 'car', i: 'hand', d: 'Click or press Enter to step through scripted distances.' },
     ];
     s.api._dist = 30;
-    s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist >= 44 ? 8 : api._dist + 12;
+    s.onClick = (w, api) => { if (w === 'car') { api._dist = api._dist >= 44 ? 8 : api._dist + 12;s.currentDistance=api._dist;
       s.refs.car.position.x = 96 - (44 - api._dist) * 1.1; } };
   },
   sim: api => {
     let acc = 0;
     return {
       running: false,
-      start() { this.running = true; api.serial('Measuring. Click the car to move it.'); },
+      start() { this.running = true; api.serial('Scripted distance simulation. Click the obstacle to step distances; the editor is not executed.'); },
       stop() { this.running = false; },
       tick(dt) { if (!this.running) return; acc += dt; if (acc > .5) { acc = 0; api.line?.(14); api.serial(`${api._dist.toFixed(1)} cm`); } },
     };
@@ -497,7 +499,9 @@ project: {
   build(s) {
     const us = C.ultrasonic(); us.position.copy(bb(10, 6)); s.add(us, 'us');
     const tl = C.trafficLight(); tl.position.copy(bb(22, 2)); s.add(tl, 'tl');
-    const car = C.toyCar(); car.position.set(96, 0, 28); s.add(car, 'car');
+    const car = C.toyCar(); car.position.set(96-(44-30)*1.1, 0, 28); s.add(car, 'car');
+    const carBounds=new THREE.Box3().setFromObject(car);s.framingPoints=[];
+    for(const distance of[8,54])for(const x of[carBounds.min.x,carBounds.max.x])for(const y of[carBounds.min.y,carBounds.max.y])for(const z of[carBounds.min.z,carBounds.max.z])s.framingPoints.push(V(x+(distance-30)*1.1,y,z));
     s.wires.push(wireTo(pin('D5'), bb(7, 6), WIRE.yellow, 13, 'D5'), wireTo(pin('D18'), bb(8, 7), WIRE.green, 13, 'D18'), wireTo(pin('D25'), bb(20, 4), WIRE.red, 14, 'D25'), wireTo(pin('D26'), bb(21, 5), WIRE.orange, 14, 'D26'), wireTo(pin('D33'), bb(22, 6), WIRE.green, 14, 'D33'), wireTo(pin('VIN'), bb(13, 5), WIRE.red, 15, 'VIN'), wireTo(pin('GND'), bb(14, 8), WIRE.navy, 12, 'GND'));
     s.tags = [ { at: bb(10, 6).add(V(0, 12, 0)), label: 'HC-SR04', i: 'info', d: 'Measures distance to the car.' }, { at: bb(22, 2).add(V(0, 28, 0)), label: 'TRAFFIC LIGHT', i: 'bulb', d: 'Green, amber or red by distance.' }, { at: V(96, 14, 28), label: 'CAR', click: 'car', dyn: 'car', i: 'hand', d: 'Click or press Enter to toggle the lamp between near and far. The simulation uses two scripted light levels.' } ];
     s.api.tl = (r, y, g) => s.refs.tl.userData.set(r, y, g);
