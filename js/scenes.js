@@ -86,8 +86,8 @@ button: {
     const led = C.led5mm(C.LED_COLORS.yellow); led.position.copy(bb(18, 7)); s.add(led, 'led');
     s.wires.push(wireTo(pin('D27'), bb(12, 1), WIRE.green, 20, 'D27'), wireTo(pin('D26'), bb(15, 7), WIRE.orange, 23, 'D26'), wireTo(pin('GND'), bb(21, 4), WIRE.navy, 19, 'GND'));
     s.tags = [
-      { at: pin('D27'), label: 'GPIO27 · IN', i: 'bolt', d: 'Reads LOW while the button is held.' },
-      { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button', i: 'hand', d: 'Click to press and hold.' },
+      { at: pin('D27'), label: 'GPIO27 · IN', i: 'bolt', d: 'Hardware: pressed reads LOW; released reads HIGH.' },
+      { at: bb(14, 1).add(V(0, 9, 0)), label: 'BUTTON', click: 'button', i: 'hand', d: 'Simulation: click to press; click again to release. Enter/Space also toggle. Stop releases it.' },
       { at: bb(18, 7).add(V(0, 10, 0)), label: 'LED', i: 'bulb', d: 'Follows the button state.' },
     ];
     s.api.setLed = on => s.refs.led.userData.setLit(on);
@@ -98,12 +98,12 @@ button: {
     api._pressed = false;
     const sim = {
       running: false,
-      start() { this.running = true; api.line?.(10); api.serial('Sketch running. Press the button.'); },
+      start() { this.running = true; api.line?.(10); api.serial('Simulation running. Click BUTTON to press; click again to release.'); },
       stop() { this.running = false; api.setLed(false); api.press(false); api._pressed = false; api.flow('D26', false); },
       tick() {},
     };
     api._press = p => { api._pressed = p; api.press(p);
-      if (sim.running) { api.line?.(11); api.setLed(p); api.flow('D26', p); api.serial(p ? 'GPIO27 reads LOW → LED on' : 'Released → HIGH → LED off'); } };
+      if (sim.running) { api.line?.(11); api.setLed(p); api.flow('D26', p); api.serial(p ? 'GPIO27 reads LOW → LED on' : 'Simulation released → HIGH → LED off'); } };
     return sim;
   },
 },

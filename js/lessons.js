@@ -70,12 +70,13 @@ void loop() {
 {
   id: 'button', num: 3, title: 'Push a button', heading: 'Push a button',
   lede: 'Inputs let the board sense the world. A push button connects GPIO27 to ground, and the ESP32’s internal pull-up keeps the pin HIGH until you press.',
-  features: [['pins', 'Digital input with <code>digitalRead()</code>'], ['res', '<code>INPUT_PULLUP</code> — no extra resistor needed'], ['hand', 'Click the button on the breadboard to press it']],
-  pinout: [['GPIO27', 'Button input', 'Uses the internal pull-up: press reads LOW.', '#2a56a3'], ['GPIO26', 'LED output', 'Lights while the button is held.', '#1aa3a1'], ['GND', 'Button return', 'The other leg of the button.', '#2f3547']],
+  features: [['pins', 'Digital input with <code>digitalRead()</code>'], ['res', '<code>INPUT_PULLUP</code> — no extra resistor needed'], ['hand', 'Simulation: click BUTTON to press; click again to release']],
+  pinout: [['GPIO27', 'Button input', 'Uses the internal pull-up: press reads LOW.', '#2a56a3'], ['GPIO26', 'LED output', 'Hardware: lights while pressed. Simulation: stays on until toggled off.', '#1aa3a1'], ['GND', 'Button return', 'The other leg of the button.', '#2f3547']],
   example: [
     '<code>pinMode(BUTTON, INPUT_PULLUP)</code> turns on a resistor inside the chip.',
     'Released, the pin reads HIGH. Pressed, it connects to GND and reads LOW.',
     'The sketch lights the LED while <code>digitalRead()</code> says LOW — pressed.',
+    'In this scripted simulation, click BUTTON or press Enter/Space to toggle pressed/released. Stop clears it. Real hardware uses a momentary switch; the displayed sketch is not executed.',
   ],
   specs: [['Internal pull-up', '≈ 45 kΩ to 3.3 V'], ['Press reading', 'LOW'], ['Released reading', 'HIGH'], ['Debounce', '10–30 ms in software']],
   code:

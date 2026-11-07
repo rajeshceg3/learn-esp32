@@ -7,7 +7,7 @@ import { buildBoard, BOARD, MAT, box, cyl } from './scene.js';
 import * as C from './components.js';
 import { SCENES, BOARD_POS, BB_POS, setLessonLayout } from './scenes.js';
 import { LESSONS, BOARD_SPECS } from './lessons.js';
-import { LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
+import { BUTTON_SIM_HELP, LANGS, T, applyLang, currentLang, setLocaleData, trLesson, trTag, trTagDesc, trCompName, trCompDesc } from './i18n.js';
 import { translateRuntime } from './runtime-i18n.js';
 import { createSchematicPanel } from './schematic.js';
 import { LearningSteps } from './learning-steps.js';
@@ -224,10 +224,10 @@ function rebuildTags() {
         if(prefix&&label.startsWith(prefix)){text.replaceChildren(document.createTextNode(prefix),document.createElement('wbr'),document.createTextNode(label.slice(prefix.length)));text.classList.add('word-parts');}
       }
       boardDock.append(d);
-      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
+      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const partId={'USB PORT':'usb','MICROCONTROLLER':'module','EN · BOOT':'en','BUILT-IN LED':'bled'}[t.label],part=board.parts[partId];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
     }else if([1,2,3].includes(state.lesson)){
       d.classList.add('board-part-button');d.setAttribute('aria-label',trTag(t.label));d.setAttribute('aria-description',trTagDesc(t.label,t.d));d.title=trTagDesc(t.label,t.d);boardDock.append(d);
-      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click||({'LED':'led'}[t.label])];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:trTagDesc(t.label,t.d)},d);});
+      d.addEventListener('click',()=>{boardDock.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(b===d)));const part=cur.scene.refs[t.click||({'LED':'led'}[t.label])];if(part){const bounds=new THREE.Box3().setFromObject(part);bounds.getCenter(boardPartMarker.position);boardPartMarker.position.y=bounds.max.y+.7;}else boardPartMarker.position.copy(t.at);boardPartMarker.visible=true;if(!t.click)openSheet('component',{title:trTag(t.label),desc:state.lesson===2?(BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en):trTagDesc(t.label,t.d)},d);});
     }else tagsEl.appendChild(d);
     const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     leadersEl.appendChild(ln);
@@ -708,6 +708,7 @@ function renderPanel() {
     h = `<div class="lesson-head"><div class="lesson-title">${T('tab_specifications')}</div><button class="icon-btn fs-btn" id="btnFs" title="${T('fullscreen_lesson')}" aria-label="${T('fullscreen_lesson')}">${ICON.expand}</button></div>
       <div class="specs">${L.specs.map(([k, v]) => `<div class="spec-tile"><b>${k}</b><span>${v}</span></div>`).join('')}</div>`;
   }
+  if(state.lesson===2)h+=`<p class="lesson-lede button-sim-note">${BUTTON_SIM_HELP[currentLang()]||BUTTON_SIM_HELP.en}</p>`;
   h = `<div class="tab-card"><div class="info-content">${h}</div></div>`;
   if(isGuidedLesson())h+=`<section id="blinkGuide" class="blink-guide" lang="en" dir="ltr" aria-label="${isParkingGuide()?'Parking sensor':isForceGuide()?'Force meter':isPlantGuide()?'Smart plant':isWheelGuide()?'Prize wheel':isThermalGuide()?'Thermostat':isMotorGuide()?'Motor':isServoGuide()?'Servo':'Blink'} lesson, step by step">
     <div class="guide-top"><span>${currentLang()==='en'?'Step by step':'Step by step (English)'}</span><span id="guideProgress" aria-label="Lesson progress"></span></div>
