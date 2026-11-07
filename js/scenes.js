@@ -5,7 +5,7 @@ import { MAT, box, cyl, pinLocal } from './scene.js';
 import * as C from './components.js';
 import {POT_HELP} from './i18n.js';
 import {plantFrame} from './plant-learning.js';
-import {forceStage} from './force-learning.js';
+import {forceStage,forceDuty} from './force-learning.js';
 
 export const BOARD_POS = new THREE.Vector3(-38, 0, 25);
 export const BB_POS = new THREE.Vector3(38, 0, 0);
@@ -480,7 +480,7 @@ force: {
     const r=C.resistor(10000);r.position.copy(bb(14,2));s.add(r,'resistor');
     const bz=C.buzzer();bz.position.copy(bb(9,2));s.add(bz,'buzzer');
     s.wires.push(wireTo(pin('D35'),V(46,1,19),WIRE.green,13,'D35'),wireTo(pin('3V3'),V(50,1,19),WIRE.red,15,'3V3'),wireTo(V(46,1,19),bb(13,2),WIRE.green,10),wireTo(bb(15,2),pin('GND'),WIRE.navy,12,'GND'),wireTo(pin('D13'),V(-18,3,-26),WIRE.orange,16,'D13'),wireTo(pin('VIN'),V(-15,3,-26),WIRE.red,17,'VIN'),wireTo(pin('GND'),V(-21,3,-26),WIRE.navy,18,'GND'),wireTo(pin('D19'),bb(8,2),WIRE.purple,13,'D19'),wireTo(pin('GND'),bb(10,2),WIRE.navy,12,'GND'));
-    s.tags=[{at:V(-18,34,-27),label:'STRENGTH',i:'gear',d:'Needle tracks the scripted pressure.'},{at:V(48,2,29),label:'PRESS PAD',click:'fsr',hold:true,i:'hand',d:'Hold and drag down to press harder.'}];
+    s.tags=[{at:V(-18,34,-27),label:'STRENGTH',i:'gear',value:()=>`SERVO · ${forceDuty(pressureRaw)} duty`,d:'Illustrative needle follows the written pressure sample. PWM duty is 12-bit at 50 Hz, not a measured angle or calibrated force.'},{at:V(48,2,29),label:'PRESS PAD',click:'fsr',hold:true,i:'hand',d:'Run, then hold and drag down to press harder. Or hold Space/Enter and use Down/Up arrows. Release or blur releases pressure.'}];
     let pressureRaw=0;
     s.tags.push({at:pin('D35'),label:'GPIO35 · ADC',i:'wave',value:()=>`WRITTEN · ${pressureRaw}`,d:'Pressure sample currently written to the illustrated output, 0–4095.'});
     s.api.forceMeter=(v)=>{pressureRaw=Math.round(v*4095);s.refs.meter.userData.setLevel(v);s.refs.fsr.userData.setPress(v);};
