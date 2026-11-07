@@ -322,6 +322,7 @@ temp: {
   build(s) {
     const t=C.tmp36();t.position.copy(bb(14,2));s.add(t,'tmp');
     const dryer=C.heatGun();dryer.position.set(82,0,7);s.add(dryer,'heat');
+    const dryerBounds=new THREE.Box3().setFromObject(dryer);s.framingPoints=[dryerBounds.min.clone(),dryerBounds.max.clone(),dryerBounds.min.clone().add(V(-16,0,0)),dryerBounds.max.clone().add(V(-16,0,0))];
     const fan=C.coolingFan();fan.position.set(65,0,-23);s.add(fan,'fan');
     const tr=C.npn();tr.position.copy(bb(20,2));s.add(tr,'npn');
     const r=C.resistor(1000);r.position.copy(bb(18,2));s.add(r,'resistor');
