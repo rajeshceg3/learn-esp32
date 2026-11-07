@@ -768,3 +768,12 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 #stageWrap.distance-docked .sch-head{flex-shrink:0;position:sticky;top:0;z-index:2;background:#f8f2e5;align-items:center}
 #stageWrap.distance-docked .sch-close{width:44px;height:44px;flex-shrink:0}
 #stageWrap.distance-docked .sch-body{display:block;flex-shrink:0;min-height:auto}
+
+/* Piano notes and descriptions each have space of their own, away from wires. */
+#pianoNoteDock{position:absolute;left:12px;right:12px;bottom:58px;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+#pianoNoteDock button{min-width:0;min-height:44px;border:1px solid #a99b84;border-radius:8px;background:#fff8ed;color:#172344;font:600 14px monospace;touch-action:none;user-select:none}
+#pianoNoteDock button[aria-pressed=true]{background:#174957;color:white;box-shadow:inset 0 3px 0 #052d37}
+#pianoNoteDock button:focus-visible{outline:3px solid #138c94;outline-offset:2px}
+#stageWrap.piano-docked #boardAnnotationDock{bottom:110px;max-height:112px}
+@media(max-width:500px){#stageWrap.piano-docked{height:600px;min-height:600px}#stageWrap.piano-docked #stage,#stageWrap.piano-docked .tags,#stageWrap.piano-docked .leaders,#stageWrap.piano-docked .stage-vignette{height:330px}#stageWrap.piano-docked #boardAnnotationDock{top:340px;bottom:auto;max-height:112px}#pianoNoteDock{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:1023px) and (max-height:500px) and (orientation:landscape){#stageWrap.piano-docked{height:274px;min-height:274px}#stageWrap.piano-docked #boardAnnotationDock{top:12px;bottom:auto;max-height:112px}#pianoNoteDock{left:auto;right:12px;top:136px;bottom:auto;width:260px;grid-template-columns:repeat(4,minmax(0,1fr))}.main:has(#sheet.open) #pianoNoteDock{visibility:hidden;pointer-events:none}}
