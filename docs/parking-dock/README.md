@@ -1,0 +1,9 @@
+# Parking spatial and state qualification
+
+Three reserved44px echo/lights/car controls, complete fitted circuit/car-motion envelope, separate voltage-divider warning, and mobile learner guide outside those rows. Five examples40/20/8/30/10cm retain9learner stages, roundtrip echo conversion and three separate output writes. Exactly30green/10amber, no hysteresis. Previous/Replay retained.
+
+Correct copied lamp description, guide/mainAPI/model distance mismatch and negative continuous distance. Model distance syncs when guide selects and continuous starts. Click/Enter approaches12cm at a time, clamps8cm then resets46; Stop clears lights and keeps car. Modelclick retained. ECHO/WRITTENLIGHTS/CAR readouts source-backed, not live sensor data. All4tabs explicitly distinguish guide/fresh examples/independent continuous script/editor-not-executed and5VECHO divider requirement. Englishnote, no translation certification.
+
+Local320/1320active390/844reduced:5samples9stages exactecho/readouts/code/outputs/holds/PreviousReplay; continuous8/46/34/22/10/8/46 andEnter/modelclick/Stopkeepcar;44px/cue separation/allreachablecarbounds/8rotations18zoom/opaque descriptions/4tabs/progress/switch pass. Final viewport-bounded schematic4width retest after pixel finding: opaque pane, hidden+inert model/dock/toolbar, bottomLED scroll/44pxstickyclose/return pass;844fulljourney rerun. All12unitcases incl guide-to-continuous synchronization/threshold equality/Stopdistance and390board6infos24rotations16lessonRunStop smoke pass.
+
+Local injected exactcode-line/modelraycast/geometry scope is separate from hosted public UI. Hosted qualification follows runtime merge. No live sensor, physical circuit, calibration or translation certification. The 3D ECHO wire remains explicitly simplified; schematic contains10kΩ/15kΩ divider and220ΩLEDseries resistors.
