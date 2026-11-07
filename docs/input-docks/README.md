@@ -22,3 +22,7 @@ main.js SHA256 c00f2498eac884ac206569bb2a0fadc1ae777546b224f92ef0bbf0ea1d27a4ba
 styles.css SHA256 22a5cf6ce58355f19b9628cb36e6e8d70554346ea551373b8e068839386e14d4
 
 Touch local coverage: combined run passed320/390/1320 and844button before120second timeout; separate844 input regression passed both lessons. The earlier local suite before touch extension passed all4widths. No timed-out run is counted as a full pass.
+
+## Teaching correction after review
+
+PR16 runtime42e31fef97cfa3e6ddeac93d55c302ee130de070 reconciles earlier ambiguous "held" text. Real hardware is momentary; simulation toggles via click/Enter/Space, Stop releases, editor code is not executed. Audited GPIO/BUTTON help, overview hint, pinout, example, serial-start and locale overrides.14locale help variants added, not translation-quality certification. Every teaching tab and component description states the distinction. No interaction behavior changed. New copy regression and390 input regression pass; hosted390/844 fourtab/description content checks pass, four changed source files match production bytes. Corrected phone/landscape description pixels inspected and retained. Prior description captures are historical evidence, superseded by button-copy-hosted images.
