@@ -160,7 +160,9 @@ rgb: {
     [['D25', 11, WIRE.red], ['D26', 12, WIRE.green], ['D33', 13, 0x4d7de8]].forEach(([p, cr, c]) => s.wires.push(wireTo(pin(p), bb(cr, 2), c, 22, p)));
     s.wires.push(wireTo(pin('GND'), bb(18, 3), WIRE.navy, 19, 'GND'));
     s.tags = [
-      { at: pin('D25'), label: 'R·G·B = 25·26·33', i: 'pins', d: 'Three outputs mix one colour.' },
+      { at: pin('D25'), label: 'R · GPIO25', i: 'pins', d: 'Red output channel.' },
+      { at: pin('D26'), label: 'G · GPIO26', i: 'pins', d: 'Green output channel.' },
+      { at: pin('D33'), label: 'B · GPIO33', i: 'pins', d: 'Blue output channel.' },
       { at: bb(15, 2).add(V(0, 10, 0)), label: 'RGB LED', click: 'rgb', i: 'bulb', d: 'Click to try the next palette colour.' },
     ];
     s.api.rgb = (r, g, b) => s.refs.rgb.userData.setRGB(r, g, b);
