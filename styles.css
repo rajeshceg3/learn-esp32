@@ -758,3 +758,10 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  #stageWrap.distance-docked #wiringCue{left:auto;right:12px;top:160px;bottom:auto;width:260px;max-width:260px}
  .main:has(#sheet.open) #stageWrap.distance-docked #wiringCue{visibility:hidden;pointer-events:none}
 }
+/* The wiring diagram is a reading surface, not a translucent model overlay. */
+#stageWrap.distance-docked .schematic{background:#f8f2e5}
+#stageWrap.distance-docked:has(.schematic.is-on) #stage,
+#stageWrap.distance-docked:has(.schematic.is-on) .tags,
+#stageWrap.distance-docked:has(.schematic.is-on) .leaders,
+#stageWrap.distance-docked:has(.schematic.is-on) #boardAnnotationDock,
+#stageWrap.distance-docked:has(.schematic.is-on) .toolbar{visibility:hidden;pointer-events:none}

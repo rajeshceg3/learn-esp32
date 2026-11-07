@@ -5,3 +5,17 @@ Lesson7 reserves separate circuit, control and electrical-warning space. Model l
 Retained wiring-warning button opens complete schematic, including required echo divider. Warning has its own reserved row on phones and right-side space in short landscape, never over circuit or dock.
 
 Test: PLAYWRIGHT_MODULE=/path/to/playwright node tests/distance-dock-regression.cjs. VIEWPORTS supplies pairs. HOSTED_URL uses public UI, not internal state. Local320/390/844/1320 tests assert full cycle, actual pose and fitted bounds, keyboard, Stop,3descriptions,44px controls, warning bounds and schematic path.12unit tests pass. Local safe pixels retained; hosted follow-through must be verified separately. Browser emulation, not physical-device proof.
+
+RuntimePR22 merged163b8ef38a73339c250def60cf422d3f76c562d1. Hosted390/844 full UI cycle/keyboard/Stop/rotation/zoom/descriptions/warning/schematic tests pass. Hosted4teaching-tab note check passes. Actual initial30cm phone, nearest8cm phone, far54cm landscape, opaque description, schematic-divider destination and explicit desktop simulation note inspected. All changed served sources (main,scenes,i18n,lessons,styles) byte-match runtime; source hashes retained below.390board6infos24rotation16lessonRunStop smoke passes, not full audits of remaining lessons. Physical device and localized semantic certification remain out of scope.
+
+js/main.js SHA256 9f0bbd893f818226aab7e5fadf2be590683aa51659a89b7ff1c97da9e736b687
+
+js/scenes.js SHA256 86cab1a7bf0c3e7081fb5df21bdd2f727d1196c1fea934e409c15985ba831158
+
+js/i18n.js SHA256 f31c85a1dfbbc4fd49df72c2443ac2da28c5eee14eb71d41924bedd370d63ca5
+
+js/lessons.js SHA256 67e4a06505b0d6f0384181fd1d7f1f49b713d7ac892cdbdc26dadd15650066d3
+
+styles.css SHA256 2d6d11d4f71eccc2374e305cf495e85d705483e77816ead0a4d057017d84c18e
+
+Final schematic pixel review caught faint model showing through soft-card background. Distance schematic now has opaque background; model, tags, dock and toolbar are suppressed while it is open. Close restores interaction. This correction is runtime, not evidence-only.
