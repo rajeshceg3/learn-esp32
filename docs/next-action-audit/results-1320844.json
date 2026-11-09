@@ -1,0 +1,50 @@
+[
+  {
+    "width": 1320,
+    "lesson": 1,
+    "stages": 5,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 1320,
+    "lesson": 9,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 1320,
+    "lesson": 10,
+    "stages": 6,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 1320,
+    "lesson": 11,
+    "stages": 4,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 1320,
+    "lesson": 12,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 1320,
+    "lesson": 13,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  }
+]

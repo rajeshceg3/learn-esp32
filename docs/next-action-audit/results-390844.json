@@ -1,0 +1,66 @@
+[
+  {
+    "width": 390,
+    "lesson": 1,
+    "stages": 5,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 9,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 10,
+    "stages": 6,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 11,
+    "stages": 4,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 12,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 13,
+    "stages": 7,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 14,
+    "stages": 14,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  },
+  {
+    "width": 390,
+    "lesson": 15,
+    "stages": 9,
+    "readingClear": true,
+    "keyboardNext": true,
+    "replayPrevious": true
+  }
+]

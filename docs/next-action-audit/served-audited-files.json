@@ -1,0 +1,22 @@
+[
+  {
+    "file": "index.html",
+    "match": true,
+    "sha256": "aeabce87f699a6f05a7434c57aa83bc42b9a4248dfe7ef3a2cd715a62ab24238"
+  },
+  {
+    "file": "styles.css",
+    "match": true,
+    "sha256": "974708142062609ce02d86bbd5006b48ce0ff01df515469f795f7b6bc9a1a6c6"
+  },
+  {
+    "file": "js/main.js",
+    "match": true,
+    "sha256": "237463ccb61dba0a5708d8f13f5f3b0a5d281a25900984e41a29b8ad180fabef"
+  },
+  {
+    "file": "js/learning-steps.js",
+    "match": true,
+    "sha256": "3666bdd221a7278cebb4848302cc00833c0bd6388fff03eb0abd33b0a41b93be"
+  }
+]
