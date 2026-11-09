@@ -1,0 +1,1118 @@
+[
+  {
+    "width": 390,
+    "lesson": 1,
+    "before": {
+      "x": 76,
+      "y": 388,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 388,
+        "width": 208.734375,
+        "height": 44,
+        "top": 388,
+        "right": 284.734375,
+        "bottom": 432,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 333,
+        "width": 336,
+        "height": 37.78125,
+        "top": 333,
+        "right": 363,
+        "bottom": 370.78125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 320,
+        "top": -247,
+        "right": 377,
+        "bottom": 73,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 9,
+    "before": {
+      "x": 76,
+      "y": 399.671875,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 388,
+        "width": 208.734375,
+        "height": 44,
+        "top": 388,
+        "right": 284.734375,
+        "bottom": 432,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 333,
+        "width": 336,
+        "height": 37.78125,
+        "top": 333,
+        "right": 363,
+        "bottom": 370.78125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 10,
+    "before": {
+      "x": 76,
+      "y": 445.671875,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 434,
+        "width": 208.734375,
+        "height": 44,
+        "top": 434,
+        "right": 284.734375,
+        "bottom": 478,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 379,
+        "width": 336,
+        "height": 37.78125,
+        "top": 379,
+        "right": 363,
+        "bottom": 416.78125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 11,
+    "before": {
+      "x": 76,
+      "y": 388,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 388,
+        "width": 208.734375,
+        "height": 44,
+        "top": 388,
+        "right": 284.734375,
+        "bottom": 432,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 333,
+        "width": 336,
+        "height": 37.78125,
+        "top": 333,
+        "right": 363,
+        "bottom": 370.78125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 12,
+    "before": {
+      "x": 76,
+      "y": 445.671875,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 445.671875,
+        "width": 208.734375,
+        "height": 44,
+        "top": 445.671875,
+        "right": 284.734375,
+        "bottom": 489.671875,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 379,
+        "width": 336,
+        "height": 56.671875,
+        "top": 379,
+        "right": 363,
+        "bottom": 435.671875,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 13,
+    "before": {
+      "x": 76,
+      "y": 501.671875,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 501.671875,
+        "width": 208.734375,
+        "height": 44,
+        "top": 501.671875,
+        "right": 284.734375,
+        "bottom": 545.671875,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 435,
+        "width": 336,
+        "height": 56.671875,
+        "top": 435,
+        "right": 363,
+        "bottom": 491.671875,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 14,
+    "before": {
+      "x": 76,
+      "y": 418.5625,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 437.453125,
+        "width": 208.734375,
+        "height": 44,
+        "top": 437.453125,
+        "right": 284.734375,
+        "bottom": 481.453125,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 333,
+        "width": 336,
+        "height": 94.453125,
+        "top": 333,
+        "right": 363,
+        "bottom": 427.453125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "lesson": 15,
+    "before": {
+      "x": 76,
+      "y": 574.3125,
+      "width": 208.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 593.203125,
+        "width": 208.734375,
+        "height": 44,
+        "top": 593.203125,
+        "right": 284.734375,
+        "bottom": 637.203125,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 488.75,
+        "width": 336,
+        "height": 94.453125,
+        "top": 488.75,
+        "right": 363,
+        "bottom": 583.203125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -247,
+        "width": 364,
+        "height": 330,
+        "top": -247,
+        "right": 377,
+        "bottom": 83,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 390,
+    "errors": []
+  },
+  {
+    "width": 844,
+    "lesson": 1,
+    "before": {
+      "x": 76,
+      "y": 248,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 248,
+        "width": 662.734375,
+        "height": 44,
+        "top": 248,
+        "right": 738.734375,
+        "bottom": 292,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 193,
+        "width": 790,
+        "height": 18.890625,
+        "top": 193,
+        "right": 817,
+        "bottom": 211.890625,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -141,
+        "width": 588,
+        "height": 204,
+        "top": -141,
+        "right": 601,
+        "bottom": 63,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 9,
+    "before": {
+      "x": 76,
+      "y": 0,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 0,
+        "width": 662.734375,
+        "height": 44,
+        "top": 0,
+        "right": 738.734375,
+        "bottom": 44,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -55,
+        "width": 790,
+        "height": 18.890625,
+        "top": -55,
+        "right": 817,
+        "bottom": -36.109375,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 10,
+    "before": {
+      "x": 76,
+      "y": 46,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 46,
+        "width": 662.734375,
+        "height": 44,
+        "top": 46,
+        "right": 738.734375,
+        "bottom": 90,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -9,
+        "width": 790,
+        "height": 18.890625,
+        "top": -9,
+        "right": 817,
+        "bottom": 9.890625,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 11,
+    "before": {
+      "x": 76,
+      "y": 0,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 0,
+        "width": 662.734375,
+        "height": 44,
+        "top": 0,
+        "right": 738.734375,
+        "bottom": 44,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -55,
+        "width": 790,
+        "height": 18.890625,
+        "top": -55,
+        "right": 817,
+        "bottom": -36.109375,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 12,
+    "before": {
+      "x": 76,
+      "y": 46,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 46,
+        "width": 662.734375,
+        "height": 44,
+        "top": 46,
+        "right": 738.734375,
+        "bottom": 90,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -9,
+        "width": 790,
+        "height": 18.890625,
+        "top": -9,
+        "right": 817,
+        "bottom": 9.890625,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 13,
+    "before": {
+      "x": 76,
+      "y": 46,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 46,
+        "width": 662.734375,
+        "height": 44,
+        "top": 46,
+        "right": 738.734375,
+        "bottom": 90,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -9,
+        "width": 790,
+        "height": 37.78125,
+        "top": -9,
+        "right": 817,
+        "bottom": 28.78125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 14,
+    "before": {
+      "x": 76,
+      "y": 0,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 0,
+        "width": 662.734375,
+        "height": 44,
+        "top": 0,
+        "right": 738.734375,
+        "bottom": 44,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": -55,
+        "width": 790,
+        "height": 37.78125,
+        "top": -55,
+        "right": 817,
+        "bottom": -17.21875,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "lesson": 15,
+    "before": {
+      "x": 76,
+      "y": 67.75,
+      "width": 662.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 76,
+        "y": 67.75,
+        "width": 662.734375,
+        "height": 44,
+        "top": 67.75,
+        "right": 738.734375,
+        "bottom": 111.75,
+        "left": 76
+      },
+      "copy": {
+        "x": 27,
+        "y": 12.75,
+        "width": 790,
+        "height": 37.78125,
+        "top": 12.75,
+        "right": 817,
+        "bottom": 50.53125,
+        "left": 27
+      },
+      "canvas": {
+        "x": 13,
+        "y": -389,
+        "width": 534,
+        "height": 210,
+        "top": -389,
+        "right": 547,
+        "bottom": -179,
+        "left": 13
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 844,
+    "errors": []
+  },
+  {
+    "width": 1320,
+    "lesson": 1,
+    "before": {
+      "x": 998,
+      "y": 596.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 596.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 596.296875,
+        "right": 1212.734375,
+        "bottom": 640.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 517.296875,
+        "width": 342,
+        "height": 45,
+        "top": 517.296875,
+        "right": 1291,
+        "bottom": 562.296875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 409.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 503.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 9,
+    "before": {
+      "x": 998,
+      "y": 623.796875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 596.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 596.296875,
+        "right": 1212.734375,
+        "bottom": 640.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 517.296875,
+        "width": 342,
+        "height": 45,
+        "top": 517.296875,
+        "right": 1291,
+        "bottom": 562.296875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 379.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 473.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 10,
+    "before": {
+      "x": 998,
+      "y": 642.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 642.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 642.296875,
+        "right": 1212.734375,
+        "bottom": 686.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 563.296875,
+        "width": 342,
+        "height": 45,
+        "top": 563.296875,
+        "right": 1291,
+        "bottom": 608.296875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 379.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 473.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 11,
+    "before": {
+      "x": 998,
+      "y": 596.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 596.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 596.296875,
+        "right": 1212.734375,
+        "bottom": 640.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 517.296875,
+        "width": 342,
+        "height": 45,
+        "top": 517.296875,
+        "right": 1291,
+        "bottom": 562.296875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 379.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 473.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 12,
+    "before": {
+      "x": 998,
+      "y": 642.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 642.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 642.296875,
+        "right": 1212.734375,
+        "bottom": 686.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 563.296875,
+        "width": 342,
+        "height": 67.5,
+        "top": 563.296875,
+        "right": 1291,
+        "bottom": 630.796875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 379.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 473.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 13,
+    "before": {
+      "x": 998,
+      "y": 642.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 642.296875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 642.296875,
+        "right": 1212.734375,
+        "bottom": 686.296875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 563.296875,
+        "width": 342,
+        "height": 67.5,
+        "top": 563.296875,
+        "right": 1291,
+        "bottom": 630.796875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 327.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 421.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 14,
+    "before": {
+      "x": 998,
+      "y": 621.296875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 643.796875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 643.796875,
+        "right": 1212.734375,
+        "bottom": 687.796875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 517.296875,
+        "width": 342,
+        "height": 112.5,
+        "top": 517.296875,
+        "right": 1291,
+        "bottom": 629.796875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 379.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 473.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "lesson": 15,
+    "before": {
+      "x": 998,
+      "y": 538.546875,
+      "width": 214.734375,
+      "height": 44
+    },
+    "result": {
+      "next": {
+        "x": 998,
+        "y": 538.546875,
+        "width": 214.734375,
+        "height": 44,
+        "top": 538.546875,
+        "right": 1212.734375,
+        "bottom": 582.546875,
+        "left": 998
+      },
+      "copy": {
+        "x": 949,
+        "y": 412.046875,
+        "width": 342,
+        "height": 112.5,
+        "top": 412.046875,
+        "right": 1291,
+        "bottom": 524.546875,
+        "left": 949
+      },
+      "canvas": {
+        "x": 60,
+        "y": 94,
+        "width": 860,
+        "height": 327.703125,
+        "top": 94,
+        "right": 920,
+        "bottom": 421.703125,
+        "left": 60
+      },
+      "hit": true,
+      "text": "Next step",
+      "overflow": false,
+      "position": "static"
+    }
+  },
+  {
+    "width": 1320,
+    "errors": []
+  }
+]
