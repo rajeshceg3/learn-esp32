@@ -937,7 +937,7 @@ function renderRail() {
       ${state.done.has(i) ? '<span class="done-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M4 12l5 5L20 7"/></svg></span>' : ''}
       <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
     </button>`).join('');
-  rail.querySelectorAll('.lesson-card').forEach(c => c.onclick = () => loadLesson(+c.dataset.i));
+  rail.querySelectorAll('.lesson-card').forEach(c => c.onclick = () => { loadLesson(+c.dataset.i); if (innerWidth < 1024) requestAnimationFrame(() => { const r = $('#stage').getBoundingClientRect(); const vis = Math.min(r.bottom, innerHeight) - Math.max(r.top, 0); if (vis < r.height * .55) $('#stageWrap').scrollIntoView({ behavior: 'auto', block: 'start' }); }); });
   // explicit prev/next tap arrows like the reference rail
   $('#railPrev').onclick = () => rail.scrollBy({left: -rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
   $('#railNext').onclick = () => rail.scrollBy({left: rail.clientWidth * .8 * (document.dir === 'rtl' ? -1 : 1), behavior: 'smooth'});
