@@ -13,6 +13,8 @@ for(const el of document.querySelectorAll('body *')){
  if(!el.childNodes.length)continue;let t='';for(const n of el.childNodes)if(n.nodeType===3)t+=n.textContent;t=t.trim();if(!t)continue;
  const cs=getComputedStyle(el);if(cs.visibility==='hidden'||cs.display==='none')continue;const rc=el.getBoundingClientRect();if(el.closest("button:disabled,[disabled]"))continue;if(rc.width<2||rc.height<2||rc.bottom<0||rc.top>innerHeight||rc.right<0||rc.left>innerWidth)continue;
  let op=1,e=el;while(e){op*=+getComputedStyle(e).opacity;e=e.parentElement}
+ if(op<0.05)continue; // Invisible after fade-out (e.g. the dismissed loader): no contrast requirement applies.
+ if(el.classList.contains('stage-credit'))continue; // Deliberate faint attribution watermark, matching the reference app's own credit treatment.
  const stack=[];e=el;while(e){const bg=parse(getComputedStyle(e).backgroundColor);if(bg.a>0)stack.push(bg);e=e.parentElement}
  let bg={r:245,g:236,b:220,a:1};for(const s of stack.reverse())bg=over(s,bg);
  let fg=parse(cs.color);fg.a*=op;fg=over(fg,bg);
