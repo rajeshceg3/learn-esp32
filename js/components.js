@@ -110,11 +110,11 @@ export function pushButton() {
 }
 export function potentiometer() {
   const g = new THREE.Group();
-  g.add(box(10, 4.5, 10, new THREE.MeshStandardMaterial({ color: 0x35507a, roughness: .5 }), 0, 2.2, 0));
-  const knob = cyl(3.4, 3.4, 3.2, MAT.plastic, 0, 6, 0); g.add(knob);
-  const line = box(.7, .4, 3, MAT.white, 0, 7.7, -1); knob.add(line); line.position.set(0,1.8,-1);
+  g.add(box(10, 4.5, 10, new THREE.MeshStandardMaterial({ color: 0x3a63b8, roughness: .5 }), 0, 2.2, 0));
+  const knob = cyl(4.3, 4.3, 3.6, MAT.plastic, 0, 6, 0); g.add(knob);
+  const line = box(.8, .4, 3.4, MAT.white, 0, 7.7, -1); knob.add(line); line.position.set(0,1.8,-1);
   ink(knob,0x141a2e,35);
-  for(let i=0;i<14;i++){const a=i*Math.PI*2/14;const rib=box(.3,2.5,.5,MAT.chip,Math.sin(a)*3.4,0,Math.cos(a)*3.4,a);knob.add(rib);}
+  for(let i=0;i<14;i++){const a=i*Math.PI*2/14;const rib=box(.35,2.7,.55,MAT.chip,Math.sin(a)*4.3,0,Math.cos(a)*4.3,a);knob.add(rib);}
   [-2.54, 0, 2.54].forEach(x => g.add(cyl(.32, .32, 5, MAT.pinMetal, x, -2, 4, 6)));
   g.userData.setAngle = a => { knob.rotation.y = a; };
   return g;
