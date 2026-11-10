@@ -687,13 +687,24 @@ function updateBlinkGuide() {
   box.dataset.stage=stage;box.dataset.busy=String(busy);
   $('#guideProgress').textContent=`${Math.max(0,stage+1)} / ${blinkGuide.count}`;
   $('#guideTitle').textContent=title;$('#guideCopy').textContent=copy;
-  $('#guideNext').setAttribute('aria-disabled',String(busy||stage===last));
-  $('#guideNext').textContent=busy?'Running this step…':stage===last?'Loop complete':'Next step';
+  $('#guideNext').setAttribute('aria-disabled',String(busy));
+  $('#guideNext').textContent=busy?'Running this step…':stage===last?(state.lesson===LESSONS.length-1?'Choose a lesson':'Next lesson'):'Next step';
   $('#guidePrevious').disabled=busy||stage<0;
   box.classList.toggle('is-busy',busy);
 }
 function nextBlinkStage() {
-  if(!isGuidedLesson()||blinkGuide.busy||blinkGuide.stage===blinkGuide.count-1)return;
+  if(!isGuidedLesson()||blinkGuide.busy)return;
+  if(blinkGuide.stage===blinkGuide.count-1){
+    if(state.lesson<LESSONS.length-1){
+      loadLesson(state.lesson+1);
+      requestAnimationFrame(()=>{
+        const stage=$('#stageWrap');
+        stage.tabIndex=-1;stage.focus({preventScroll:true});
+        stage.scrollIntoView({behavior:'auto',block:'start'});
+      });
+    }else showLessons();
+    return;
+  }
   if(state.running)stopSim();
   const next=blinkGuide.stage+1;
   blinkGuide.advance(isParkingGuide()?(next===8?100:state.settings.reduceMotion?0:300):isForceGuide()?([4,11].includes(next)?400:next===13?20:250):isPlantGuide()?(next===6?500:state.settings.reduceMotion?0:300):isWheelGuide()?(state.settings.reduceMotion?0:next===5?1600:300):isThermalGuide()?(next===5?200:300):isMotorGuide()?([2,4].includes(next)?2000:next===6?1000:300):isServoGuide()?(state.settings.reduceMotion?0:next>=2?555:250):(next===2?state.timing[0]:next===4?state.timing[1]:state.settings.reduceMotion?0:300));
@@ -985,12 +996,17 @@ toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
 });
 
 // ---------- navs ----------
+function showLessons(){
+  const rail=$('#lessonRail'),active=rail.querySelector('.lesson-card.on');
+  $('#lessonsSec').scrollIntoView({behavior:state.settings.reduceMotion?'auto':'smooth',block:'center'});
+  active?.focus({preventScroll:true});
+}
 function renderNavs() {
   $('#viewHint').textContent=T('view_hint');
   const toolKeys=['turn_left','turn_right','zoom_out','zoom_in','reset_view','flow','schematic']; document.querySelectorAll('.tool-btn').forEach((b,i)=>{ b.title=T(toolKeys[i]);b.setAttribute('aria-label',T(toolKeys[i])); });
   const items = [
     ['home', 'Home', 'home', () => loadLesson(0)],
-    ['lessons', 'Lessons', 'lessons', () => { if(innerWidth>=1024) $('#lessonRail').scrollIntoView({ behavior: state.settings.reduceMotion ? 'auto' : 'smooth' }); }],
+    ['lessons', 'Lessons', 'lessons', showLessons],
     ['comp', 'Components', 'comp', el => openSheet('components', null, el)],
     ['play', 'Simulator', 'play', () => state.running ? stopSim() : startSim()],
     ['settings', 'Settings', 'settings', el => openSheet('settings', null, el)],

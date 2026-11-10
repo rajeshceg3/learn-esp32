@@ -1,0 +1,17 @@
+{
+  "pass": true,
+  "widths": [
+    390,
+    1320
+  ],
+  "checks": [
+    "restored completion unchanged",
+    "Tamil shell with explicit English guide",
+    "held Enter",
+    "rapid double click",
+    "Replay",
+    "tab switching",
+    "continuous and stop",
+    "Space continuation and focus"
+  ]
+}
