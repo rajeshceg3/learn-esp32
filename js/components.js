@@ -149,7 +149,7 @@ export function ultrasonic() {
   for(let i=0;i<128;i+=6){mc.beginPath();mc.moveTo(i,0);mc.lineTo(i,128);mc.moveTo(0,i);mc.lineTo(128,i);mc.stroke();}
   const meshTex=new THREE.CanvasTexture(meshCanvas);meshTex.colorSpace=THREE.SRGBColorSpace;
   for(const x of[-6.3,6.3]){
-    const can=ink(cyl(4.4,4.4,7,MAT.metalDark,x,8.1,4.2),0x303847,35);can.rotation.x=Math.PI/2;g.add(can);emitters.push(can);
+    const can=ink(cyl(4.4,4.4,7,new THREE.MeshStandardMaterial({color:0xe8ecef,roughness:.55,metalness:.05}),x,8.1,4.2),0x303847,35);can.rotation.x=Math.PI/2;g.add(can);emitters.push(can);
     const rim=ink(cyl(4.45,4.45,.45,MAT.metal,x,8.1,7.85),0x303847,35);rim.rotation.x=Math.PI/2;g.add(rim);
     const disk=new THREE.Mesh(new THREE.CircleGeometry(3.8,40),new THREE.MeshBasicMaterial({map:meshTex}));disk.position.set(x,8.1,8.1);g.add(disk);
   }
