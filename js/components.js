@@ -48,7 +48,7 @@ export function breadboard(cols=24) {
 // ---------- wires ----------
 export function wire(a, b, color = 0xec5a4b, arch = 14) {
   const g = new THREE.Group();
-  const mid = a.clone().add(b).multiplyScalar(.5); mid.y += arch;
+  const mid = a.clone().add(b).multiplyScalar(.5); mid.y += arch * .65;
   const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
   const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 24, .55, 8), new THREE.MeshStandardMaterial({ color, roughness: .5 }));
   tube.castShadow = true; g.add(tube);
