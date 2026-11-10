@@ -711,11 +711,12 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 @media(min-width:1024px){#stageWrap.blink-docked > #runTag{bottom:170px}}
 @media(max-width:1023px) and (min-height:501px){
  #stageWrap.blink-docked{height:auto;min-height:0;max-height:none}
- #stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:320px}
- #stageWrap.blink-docked #boardAnnotationDock{top:330px;bottom:auto;max-height:104px}
- #stageWrap.blink-docked .toolbar{top:438px;bottom:auto}
- #stageWrap.blink-docked > #runTag{top:482px!important;bottom:auto}
- #stageWrap.blink-docked .blink-guide{position:relative;top:auto;bottom:auto;margin-top:516px}
+ #stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:262px}
+ #stageWrap.blink-docked #boardAnnotationDock{top:268px;bottom:auto;display:flex;gap:6px;max-height:52px;overflow-x:auto;overflow-y:hidden;padding:2px 3px}
+ #stageWrap.blink-docked #boardAnnotationDock .board-part-button{flex:1 0 auto;min-height:44px;padding:4px 10px;font-size:11.5px;letter-spacing:.02em}
+ #stageWrap.blink-docked .toolbar{top:322px;bottom:auto}
+ #stageWrap.blink-docked > #runTag{top:368px!important;bottom:auto}
+ #stageWrap.blink-docked .blink-guide{position:relative;top:auto;bottom:auto;margin-top:368px}
 }
 @media(max-width:1023px) and (max-height:500px) and (orientation:landscape){
  body:has(#stageWrap.blink-docked) .topbar{min-height:54px;height:54px;padding:6px 14px;flex-wrap:nowrap}
