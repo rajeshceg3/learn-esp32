@@ -212,8 +212,8 @@ distance: {
   build(s) {
     const us = C.ultrasonic(); us.position.copy(bb(15, 6)); s.add(us, 'us');
     const car = C.toyCar(); car.position.set(96-(44-30)*1.1, 0, 28); s.add(car, 'car');
-    const carBounds=new THREE.Box3().setFromObject(car);s.framingPoints=[];
-    for(const distance of[8,54])for(const x of[carBounds.min.x,carBounds.max.x])for(const y of[carBounds.min.y,carBounds.max.y])for(const z of[carBounds.min.z,carBounds.max.z])s.framingPoints.push(V(x+(distance-30)*1.1,y,z));
+    // No static travel reserve: the initial frame fits the real scene and
+    // keepBoardInView tracks the live car bounds as it steps distances.
     s.wires.push(wireTo(pin('D5'), bb(11, 6), WIRE.yellow, 14, 'D5'), wireTo(pin('D18'), bb(12, 7), WIRE.green, 14, 'D18'), wireTo(pin('VIN'), bb(19, 5), WIRE.red, 16, 'VIN'), wireTo(pin('GND'), bb(20, 8), WIRE.navy, 12, 'GND'));
     s.tags = [
       { at: pin('D5'), label: 'TRIG · GPIO5', i: 'bolt', d: 'Sends the ultrasonic pulse.' }, { at: pin('D18'), label: 'ECHO · GPIO18', i: 'wave', d: 'Listens for the echo.' },

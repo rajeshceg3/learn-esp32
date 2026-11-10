@@ -78,7 +78,8 @@ const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210,
 let boardFitBounds=null,boardFitKey=null,fitPts=null;
 function keepBoardInView(){
   if(![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(state.lesson))return;
-  const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
+  const dynCar=cur.scene?.refs?.car;
+  const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight,dynCar?dynCar.position.x.toFixed(2):''].join(',');if(key===boardFitKey)return;
   if(!boardFitBounds){board.group.updateWorldMatrix(true,true);boardFitBounds=new THREE.Box3().setFromObject(board.group);if([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(state.lesson)){boardFitBounds.union(new THREE.Box3().setFromObject(bboard));boardFitBounds.union(new THREE.Box3().setFromObject(lessonGroup));for(const p of cur.scene?.framingPoints||[])boardFitBounds.expandByPoint(p);}}
   const bounds=boardFitBounds,center=bounds.getCenter(new THREE.Vector3());
   rig.tTarget.x=THREE.MathUtils.clamp(rig.tTarget.x,center.x-14,center.x+14);
@@ -89,9 +90,10 @@ function keepBoardInView(){
   for(let i=0;i<5;i++){
     probe.position.set(rig.tTarget.x+distance*Math.sin(rig.tPol)*Math.sin(rig.tAz),rig.tTarget.y+distance*Math.cos(rig.tPol),rig.tTarget.z+distance*Math.sin(rig.tPol)*Math.cos(rig.tAz));probe.lookAt(rig.tTarget);probe.updateMatrixWorld(true);
     let need=1;if(fitPts&&fitPts.length){const v=new THREE.Vector3();for(const p of fitPts){v.copy(p).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}}else for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}
+    if(dynCar){dynCar.updateWorldMatrix(true,true);const cb=new THREE.Box3().setFromObject(dynCar);for(const x of[cb.min.x,cb.max.x])for(const y of[cb.min.y,cb.max.y])for(const z of[cb.min.z,cb.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}}
     if(need<=1.005)break;distance*=need*1.015;
   }
-  rig.tDist=distance;boardFitKey=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');
+  rig.tDist=distance;boardFitKey=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight,dynCar?dynCar.position.x.toFixed(2):''].join(',');
 }
 function applyCam(dt) {
   keepBoardInView();
