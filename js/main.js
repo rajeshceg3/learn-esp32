@@ -49,9 +49,33 @@ ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground)
 const grid = new THREE.GridHelper(600, 60, 0xd8c5a8, 0xe3d3ba);
 grid.visible = false; // screen-space grid stays legible through camera changes
 
+// ---------- teaching camera table (one entry per lesson, shared by first load and Reset) ----------
+// az/pol: viewing angle (radians; pol is measured from straight down). fill: distance multiplier after the
+// silhouette fit (below 1 is closer). focus: 0..1 pull of the target toward the lesson's own parts.
+// d = desktop (>=1024px), p = phone. Each angle is chosen so the part being taught is not hidden behind another.
+const TEACH_CAM=[
+  {d:{az:1.0,pol:1.07,fill:.9,focus:0},p:{az:1.0,pol:1.07,fill:.95,focus:0}},      // 1 board hero
+  {d:{az:.55,pol:.85,fill:.66,focus:.35},p:{az:.6,pol:.6,fill:.9,focus:.3}},       // 2 LED and resistor on the rail
+  {d:{az:.45,pol:.8,fill:.66,focus:.35},p:{az:.5,pol:.6,fill:.9,focus:.3}},        // 3 button
+  {d:{az:.7,pol:.85,fill:.66,focus:.35},p:{az:1.0,pol:.6,fill:.9,focus:.3}},       // 4 knob
+  {d:{az:.55,pol:.85,fill:.66,focus:.35},p:{az:.6,pol:.6,fill:.9,focus:.3}},       // 5 RGB
+  {d:{az:.6,pol:.85,fill:.66,focus:.35},p:{az:.6,pol:.6,fill:.9,focus:.3}},        // 6 light sensor
+  {d:{az:.5,pol:.85,fill:.66,focus:.4},p:{az:.55,pol:.62,fill:.92,focus:.3}},      // 7 distance sensor and car
+  {d:{az:.6,pol:.85,fill:.66,focus:.35},p:{az:.6,pol:.6,fill:.9,focus:.3}},        // 8 buzzer
+  {d:{az:.5,pol:.8,fill:.66,focus:.3},p:{az:.55,pol:.6,fill:.92,focus:.25}},       // 9 piano keys
+  {d:{az:.7,pol:.85,fill:.66,focus:.4},p:{az:.7,pol:.62,fill:.9,focus:.3}},        // 10 motor
+  {d:{az:.65,pol:.85,fill:.66,focus:.4},p:{az:.65,pol:.62,fill:.92,focus:.3}},     // 11 heat
+  {d:{az:.65,pol:.85,fill:.66,focus:.4},p:{az:.65,pol:.62,fill:.92,focus:.3}},     // 12 servo
+  {d:{az:.65,pol:.88,fill:.66,focus:.4},p:{az:.65,pol:.64,fill:.92,focus:.3}},     // 13 stepper wheel
+  {d:{az:.65,pol:.88,fill:.66,focus:.4},p:{az:.65,pol:.64,fill:.92,focus:.3}},     // 14 plant
+  {d:{az:.65,pol:.9,fill:.66,focus:.3},p:{az:.65,pol:.65,fill:.92,focus:.25}},     // 15 force
+  {d:{az:.65,pol:.9,fill:.9,focus:.25},p:{az:.65,pol:.65,fill:.94,focus:.2}},      // 16 parking project
+];
+function teachCam(i){const t=TEACH_CAM[i]||TEACH_CAM[1];return innerWidth<1024?t.p:t.d}
+function applyTeachCamAngles(i){const c=teachCam(i);rig.tAz=c.az;rig.tPol=c.pol}
 // ---------- camera rig ----------
 const rig = { target: new THREE.Vector3(6, 6, 6), az: 1.0, pol: 1.07, dist: 210, tAz: 1.0, tPol: 1.07, tDist: 210, tTarget: new THREE.Vector3(6, 6, 6) };
-let boardFitBounds=null,boardFitKey=null;
+let boardFitBounds=null,boardFitKey=null,fitPts=null;
 function keepBoardInView(){
   if(![0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15].includes(state.lesson))return;
   const key=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');if(key===boardFitKey)return;
@@ -64,7 +88,7 @@ function keepBoardInView(){
   let distance=rig.tDist;
   for(let i=0;i<5;i++){
     probe.position.set(rig.tTarget.x+distance*Math.sin(rig.tPol)*Math.sin(rig.tAz),rig.tTarget.y+distance*Math.cos(rig.tPol),rig.tTarget.z+distance*Math.sin(rig.tPol)*Math.cos(rig.tAz));probe.lookAt(rig.tTarget);probe.updateMatrixWorld(true);
-    let need=1;for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}
+    let need=1;if(fitPts&&fitPts.length){const v=new THREE.Vector3();for(const p of fitPts){v.copy(p).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}}else for(const x of[bounds.min.x,bounds.max.x])for(const y of[bounds.min.y,bounds.max.y])for(const z of[bounds.min.z,bounds.max.z]){const v=new THREE.Vector3(x,y,z).project(probe);need=Math.max(need,Math.abs(v.x)/.9,Math.abs(v.y)/.9);}
     if(need<=1.005)break;distance*=need*1.015;
   }
   rig.tDist=distance;boardFitKey=[rig.tAz,rig.tPol,rig.tDist,...rig.tTarget.toArray(),canvas.clientWidth,canvas.clientHeight].join(',');
@@ -513,7 +537,7 @@ function loadLesson(i, keepTab) {
   stopSim();
   blinkGuide.reset();
   state.lesson = i; state.timing = [500, 500]; state.logs = [];
-  rig.tAz = i === 0 || ([3].includes(i) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = i > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07;
+  applyTeachCamAngles(i);
   clearComponentFocus();lessonGroup.clear();
   const ls = new LessonScene();
   const def = SCENES[LESSONS[i].sim];
@@ -552,6 +576,8 @@ function frameScene(snap) {
   const c = box.getCenter(new THREE.Vector3());
   const w = canvas.clientWidth || 1, h = canvas.clientHeight || 1, aspect = w / h;
   rig.tTarget.set(c.x, aspect < 1 ? c.y * .9 : Math.max(2, c.y * .55), c.z);
+  const tc=teachCam(state.lesson);
+  if(tc.focus&&lessonGroup.children.length){const lb=new THREE.Box3().setFromObject(lessonGroup);if(!lb.isEmpty()){const lc=lb.getCenter(new THREE.Vector3());rig.tTarget.x+=(lc.x-c.x)*tc.focus;rig.tTarget.z+=(lc.z-c.z)*tc.focus;}}
   // Projective fit: place a probe camera, project every box corner to NDC,
   // grow distance until the full silhouette clears the viewport minus room
   // reserved for callout pills at the edges. Verified in pixels, not approximated.
@@ -567,6 +593,7 @@ function frameScene(snap) {
       for (let i = 0; i < pos.count; i += stride) pts.push(tv.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld).clone());
     });
   }
+  fitPts=pts;
   camera.aspect = aspect; camera.updateProjectionMatrix();
   const tgt = rig.tTarget, sp = Math.sin(rig.tPol), saz = Math.sin(rig.tAz), caz = Math.cos(rig.tAz);
   const allowX = 1 - Math.min(.1, 44 / w), allowY = 1 - Math.min(.09, 30 / h);
@@ -584,6 +611,7 @@ function frameScene(snap) {
   dist *= 1.015;
   if(!bboard.visible && aspect>=1)dist*=1.12;
   if (!bboard.visible && aspect < 1) dist *= .98; // board-only lesson on portrait: fill the frame like the reference (near-plane perspective clips if tighter)
+  dist*=tc.fill;
   rig.tDist = THREE.MathUtils.clamp(dist, 60, 900);
   if (snap) { rig.target.copy(rig.tTarget); rig.dist = rig.tDist; rig.az = rig.tAz; rig.pol = rig.tPol; }
 }
@@ -983,7 +1011,7 @@ toolbar.innerHTML = [
 ].map(([k, a, ic]) => `<button class="tool-btn ${k === 'waveT' && state.settings.flow ? 'on' : ''}" data-k="${k}" aria-label="${T('nav_' + k)}">${ICON[ic]}</button>`).join('');
 toolbar.querySelectorAll('.tool-btn').forEach(b => b.onclick = () => {
   const k = b.dataset.k; idle.t = 0;
-  if (k === 'reset') { clearComponentFocus();rig.tAz = state.lesson === 0 || ([3].includes(state.lesson) && innerWidth < 1024) ? 1.0 : .65; rig.tPol = state.lesson > 0 ? (innerWidth < 1024 ? .65 : .90) : 1.07; frameScene(); }
+  if (k === 'reset') { clearComponentFocus();applyTeachCamAngles(state.lesson);frameScene(); }
   if (k === 'rotL') rig.tAz += .5;
   if (k === 'rotR') rig.tAz -= .5;
   if (k === 'minus') rig.tDist = Math.min(420, rig.tDist * 1.15);

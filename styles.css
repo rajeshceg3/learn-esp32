@@ -833,3 +833,10 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 /* The active schematic scrolls inside the viewport, including short landscapes. */
 #stageWrap.parking-docked .schematic{max-height:calc(100dvh - 138px)}
 #stageWrap.parking-docked:has(.schematic.is-on) #boardAnnotationDock,#stageWrap.parking-docked:has(.schematic.is-on) .toolbar{display:none}
+
+/* ---- measured contrast pass (WCAG AA 4.5:1 on the cream surfaces; audit: tests/contrast-audit.cjs) ---- */
+:root{--fn:#96461a;--gutter:#6b5f50;--faint-text:#6b5f50}
+.tab{color:#6b5f50}.tab.on{color:var(--navy)}
+.tok-fn{color:#96461a}.tok-num{color:#2f6a79}.tok-com{color:#6b5f50}
+.brand-tag,.credit{color:#6b5f50}
+.guide-top{color:#0f5f60}
