@@ -25,7 +25,7 @@ export function breadboard(cols=24) {
   g.add(box(dims.w - 6, .8, 2.2, new THREE.MeshStandardMaterial({ color: 0xe4d6bc, roughness: .8 }), 0, 8.5, 0));
   // holes texture
   const cv = document.createElement('canvas'); cv.width = 512; cv.height = 176;
-  const c = cv.getContext('2d'); c.fillStyle = '#f4ead6'; c.fillRect(0, 0, 512, 176);
+  const c = cv.getContext('2d'); c.fillStyle = '#d8c08e'; c.fillRect(0, 0, 512, 176);
   // Use the physical 2.54mm grid for both canvas recesses and mounted parts.
   const hx=i=>((i-(dims.cols-1)/2)*BB.pitch/dims.w+.5)*512;
   const hy=j=>((j-(BB.rows-1)/2)*BB.pitch/BB.d+.5)*176;
