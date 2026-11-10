@@ -111,6 +111,7 @@ pot: {
   build(s) {
     const pot = C.potentiometer(); pot.position.copy(bb(13, 2)); s.add(pot, 'pot');
     const led = C.led5mm(C.LED_COLORS.red); led.position.copy(bb(19, 7)); s.add(led, 'led');
+    const res = C.resistor(220); res.position.copy(bb(21, 5)); s.add(res, 'resistor');
     s.wires.push(wireTo(pin('D34'), bb(13, 5), WIRE.green, 14, 'D34'), wireTo(pin('3V3'), bb(10, 1), WIRE.red, 16, '3V3'), wireTo(pin('GND'), bb(16, 1), WIRE.navy, 12, 'GND'), wireTo(pin('D25'), bb(16, 7), WIRE.orange, 14, 'D25'));
     s.tags = [
       { at: pin('D34'), label: 'GPIO34 · ADC', i: 'wave', d: 'Analog input: reads 0 to 4095.' },
