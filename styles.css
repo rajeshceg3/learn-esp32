@@ -711,7 +711,7 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 @media(min-width:1024px){#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 170px)}#stageWrap.blink-docked #boardAnnotationDock{bottom:56px}#stageWrap.blink-docked .toolbar{bottom:8px}}
 
 #stageWrap.blink-docked > #runTag{top:auto!important;left:12px!important;bottom:354px;transform:none;font-size:12px}
-@media(min-width:1024px){#stageWrap.blink-docked > #runTag{bottom:170px}}
+@media(min-width:1024px){#stageWrap.blink-docked > #runTag{bottom:112px}}
 @media(max-width:1023px) and (min-height:501px){
  #stageWrap.blink-docked{height:auto;min-height:0;max-height:none}
  #stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:262px}
@@ -733,10 +733,15 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
  .main:has(#sheet.open) #stageWrap.blink-docked #stage,.main:has(#sheet.open) #stageWrap.blink-docked .tags,.main:has(#sheet.open) #stageWrap.blink-docked .leaders{visibility:hidden}
  .main:has(#sheet.open) #stageWrap.blink-docked #boardAnnotationDock,.main:has(#sheet.open) #stageWrap.blink-docked .toolbar{visibility:hidden;pointer-events:none}
 }
-@media(min-width:1024px){#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 204px)}}
+@media(min-width:1024px){#stageWrap.blink-docked #stage,#stageWrap.blink-docked .tags,#stageWrap.blink-docked .leaders,#stageWrap.blink-docked .stage-vignette{height:calc(100% - 150px)}
+#stageWrap.blink-docked #boardAnnotationDock{bottom:56px;max-height:52px;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 3px}
+#stageWrap.blink-docked #boardAnnotationDock .board-part-button{flex:1 0 auto;min-height:44px;padding:4px 14px}}
 /* Input lessons retain their click/drag contracts in reserved controls. */
 #stageWrap.functional-docked #stage,#stageWrap.functional-docked .tags,#stageWrap.functional-docked .leaders,#stageWrap.functional-docked .stage-vignette{height:calc(100% - 234px);bottom:auto}
 #stageWrap.functional-docked #boardAnnotationDock{bottom:108px;max-height:112px;grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:1024px){#stageWrap.functional-docked #stage,#stageWrap.functional-docked .tags,#stageWrap.functional-docked .leaders,#stageWrap.functional-docked .stage-vignette{height:calc(100% - 148px)}
+#stageWrap.functional-docked #boardAnnotationDock{bottom:96px;max-height:52px;display:flex;gap:8px;overflow-x:auto;overflow-y:hidden;padding:2px 3px}
+#stageWrap.functional-docked #boardAnnotationDock .board-part-button{flex:1 0 auto;min-height:44px;padding:4px 14px}}
 #stageWrap.functional-docked .stage-credit,#stageWrap.functional-docked .view-hint{display:none}
 #stageWrap.functional-docked .toolbar{bottom:8px}
 #circuitReadouts{position:absolute;left:12px;right:12px;bottom:58px;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;min-height:32px}
