@@ -21,7 +21,7 @@ export const MAT = {
   chip:   new THREE.MeshStandardMaterial({ color: 0x2a2d38, roughness: .45 }),
   plastic:new THREE.MeshStandardMaterial({ color: 0x2c3041, roughness: .5 }),
   cream:  new THREE.MeshStandardMaterial({ color: 0xf1e4c8, roughness: .55 }),
-  bread:  new THREE.MeshStandardMaterial({ color: 0xf4ead6, roughness: .7 }),
+  bread:  new THREE.MeshStandardMaterial({ color: 0xd8c08e, roughness: .7 }),
   red:    new THREE.MeshStandardMaterial({ color: 0xec5a4b, roughness: .4 }),
   amber:  new THREE.MeshStandardMaterial({ color: 0xf5b444, roughness: .35, emissive: 0x7a4300, emissiveIntensity: .35 }),
   greenLed:new THREE.MeshStandardMaterial({ color: 0x8bd67c, roughness: .35, emissive: 0x1d5a12, emissiveIntensity: .35 }),

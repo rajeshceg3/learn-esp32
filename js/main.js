@@ -44,7 +44,7 @@ sun.shadow.radius = 5; scene.add(sun);
 const fill = new THREE.DirectionalLight(0xdfe8ff, .55); fill.position.set(-80, 60, -60); scene.add(fill);
 
 // ground: soft shadow catcher + optional grid
-const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: .14 }));
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: .2 }));
 ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 const grid = new THREE.GridHelper(600, 60, 0xd8c5a8, 0xe3d3ba);
 grid.visible = false; // screen-space grid stays legible through camera changes
