@@ -1,0 +1,27 @@
+[
+  {
+    "path": "index.html",
+    "sha256": "aeabce87f699a6f05a7434c57aa83bc42b9a4248dfe7ef3a2cd715a62ab24238",
+    "sameAsReviewedSource": true
+  },
+  {
+    "path": "js/main.js",
+    "sha256": "78e94b0ba80f2a19fd35879315f12f728e408bc2296eb3fa5c3353a9cec72edf",
+    "sameAsReviewedSource": true
+  },
+  {
+    "path": "js/lessons.js",
+    "sha256": "f9e2cc21580cb8e09e9f609335152adbf2dfb0b4a73a546e66276fec4f02c87b",
+    "sameAsReviewedSource": true
+  },
+  {
+    "path": "js/scenes.js",
+    "sha256": "c2a998470497a050660638c1d8c3fef059c3573cb49c6840285066acbf3e1f60",
+    "sameAsReviewedSource": true
+  },
+  {
+    "path": "js/learning-steps.js",
+    "sha256": "3666bdd221a7278cebb4848302cc00833c0bd6388fff03eb0abd33b0a41b93be",
+    "sameAsReviewedSource": true
+  }
+]

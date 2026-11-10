@@ -1,0 +1,30 @@
+[
+  {
+    "w": 390,
+    "i": 1,
+    "completeHolds": true,
+    "backThenNext": true,
+    "explicitContinuation": true
+  },
+  {
+    "w": 390,
+    "i": 9,
+    "completeHolds": true,
+    "backThenNext": true,
+    "explicitContinuation": true
+  },
+  {
+    "w": 390,
+    "i": 10,
+    "completeHolds": true,
+    "backThenNext": true,
+    "explicitContinuation": true
+  },
+  {
+    "w": 390,
+    "i": 11,
+    "completeHolds": true,
+    "backThenNext": true,
+    "explicitContinuation": true
+  }
+]
