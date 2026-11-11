@@ -856,3 +856,9 @@ html.reduce-motion .guide-controls #guideNext{transition:none}html.reduce-motion
 .tok-fn{color:#96461a}.tok-num{color:#2f6a79}.tok-com{color:#6b5f50}
 .brand-tag,.credit{color:#6b5f50}
 .guide-top{color:#0f5f60}
+
+/* Keep the introduction's lesson rail in the first phone view without putting
+   its six part actions back over the board. Short landscape keeps its side dock. */
+@media(max-width:500px) and (min-height:501px){
+ #stageWrap.board-intro{height:58vh;min-height:430px;max-height:580px}
+}

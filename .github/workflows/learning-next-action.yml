@@ -22,6 +22,7 @@ jobs:
           server=$!
           trap 'kill "$server"' EXIT
           node tests/component-fidelity.cjs
+          node tests/phone-intro-framing.cjs
           node tests/next-action-guide.cjs
           node tests/next-action-edges.cjs
       - uses: actions/upload-artifact@v4
