@@ -21,6 +21,7 @@ jobs:
           python3 -m http.server 8796 >/tmp/esp32-server.log 2>&1 &
           server=$!
           trap 'kill "$server"' EXIT
+          node tests/component-fidelity.cjs
           node tests/next-action-guide.cjs
           node tests/next-action-edges.cjs
       - uses: actions/upload-artifact@v4

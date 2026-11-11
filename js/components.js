@@ -88,12 +88,18 @@ export function rgbLed() {
 }
 export function resistor(ohms = 220) {
   const g = new THREE.Group();
-  const body = box(6.5, 2.3, 2.3, new THREE.MeshStandardMaterial({ color: 0xd9b380, roughness: .6 }), 0, 1.6, 0);
-  g.add(ink(body));
-  const bands = { 220: [0xc02020, 0xc02020, 0x704018], 1000: [0x704018, 0x202020, 0xc02020], 10000: [0x704018, 0x202020, 0xd07020] }[ohms] || [0xc02020, 0xc02020, 0x704018];
-  bands.forEach((c, i) => g.add(box(.9, 2.4, 2.4, new THREE.MeshStandardMaterial({ color: c }), -1.8 + i * 1.2, 1.6, 0)));
-  const l1 = cyl(.32, .32, 9, MAT.pinMetal, 0, 0, 0, 6); l1.rotation.z = Math.PI / 2; l1.position.set(-5.4, 1.6, 0);
-  const l2 = l1.clone(); l2.position.x = 5.4; g.add(l1, l2);
+  // Axial ceramic package, not a rectangular IC. The lead tips land on a 3-pitch grid.
+  const coating = new THREE.MeshStandardMaterial({ color: 0xd9b380, roughness: .68 });
+  const profile = [[0,-3.25],[.76,-3.25],[1.1,-2.7],[1.22,-2.25],[1.12,-1.65],[1.12,1.65],[1.22,2.25],[1.1,2.7],[.76,3.25],[0,3.25]];
+  const body = new THREE.Mesh(new THREE.LatheGeometry(profile.map(([r,y])=>new THREE.Vector2(r,y)),20),coating);
+  body.rotation.z = -Math.PI/2;body.position.y=1.6;body.castShadow=body.receiveShadow=true;g.add(ink(body,0x554431,55));
+  const bands = { 220: [0xc02020,0xc02020,0x704018],1000:[0x704018,0x202020,0xc02020],10000:[0x704018,0x202020,0xd07020] }[ohms] || [0xc02020,0xc02020,0x704018];
+  [...bands,0xb2984c].forEach((c,i)=>{const band=cyl(1.135,1.135,i===3?.36:.48,new THREE.MeshStandardMaterial({color:c,roughness:i===3?.38:.62}),[-1.65,-.75,.15,1.55][i],1.6,0,20);band.rotation.z=Math.PI/2;g.add(band);});
+  for(const sign of [-1,1]){
+    const lead = new THREE.CatmullRomCurve3([new THREE.Vector3(sign*3.15,1.6,0),new THREE.Vector3(sign*6.7,1.6,0),new THREE.Vector3(sign*7.62,.8,0),new THREE.Vector3(sign*7.62,-3.2,0)]);
+    const metal=new THREE.Mesh(new THREE.TubeGeometry(lead,14,.28,8,false),MAT.pinMetal);metal.castShadow=true;g.add(metal);
+  }
+  g.userData.ohms = ohms;
   g.userData.body = body;
   return g;
 }
